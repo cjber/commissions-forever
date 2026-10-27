@@ -1,0 +1,18 @@
+package-as: CommissionsForever
+
+manual-changelog:
+  filename: .release-notes.md
+  markup-type: markdown
+
+ignore:
+  - AGENTS.md
+  - tools
+  - types
+  - tests
+  - docs
+  - media/icon.svg
+  - media/icon-400.png
+  - media/icon.svg
+  - media/icon-400.png
+  - stylua.toml
+  - .agents

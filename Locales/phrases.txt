@@ -1,0 +1,14 @@
+-- Every phrase SkillUp shows, with its English text: the template the Locales/<locale>.lua files follow.
+-- Each client language already has its file; to correct a line, edit that file (Locales/README.md).
+local _, ns = ...
+if GetLocale() ~= "deDE" then
+	return
+end
+local L = ns.L
+
+L["Commissions Forever"] = "Commissions Forever"
+L["Have %d"] = "Have %d"
+L["Need %d"] = "Need %d"
+L["No active commission route is available."] = "No active commission route is available."
+L["No tracked materials found"] = "No tracked materials found"
+L["Open turn-in route"] = "Open turn-in route"

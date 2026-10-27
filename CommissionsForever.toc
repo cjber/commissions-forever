@@ -1,0 +1,22 @@
+## Interface: 16001
+## Title: Commissions Forever
+## Notes: Tracks repeatable Classic turn-ins and the materials in your bags.
+## Author: cjber
+## Version: @project-version@
+## Category: Quests
+## X-License: GPL-3.0-or-later
+## X-Website: https://github.com/cjber/commissions-forever
+## SavedVariables: CommissionsForeverDB
+## OptionalDeps: QuestieDB, SkillUpForever, ShortestPathForever
+## IconTexture: Interface\AddOns\CommissionsForever\media\Icon
+## AddonCompartmentFunc: CommissionsForever_OnAddonCompartmentClick
+
+Locales\enUS.lua
+Data\TurnIns.lua
+Core\Model.lua
+Integrations\Questie.lua
+Integrations\SkillUp.lua
+Integrations\ShortestPath.lua
+Core\Core.lua
+Core\API.lua
+UI\Window.lua
