@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-28
+
+- **Check the right addon folder when packaging**: the package gate now verifies the `CommissionsForever` directory instead of a stale `AtlasForever` name, so `tools/check_package.py` no longer fails on a folder that does not exist.
+
 ## [0.1.1] - 2026-10-27
 
 - **Keep development files out of the shipped package**: `ruff.toml` (and the duplicated icon entries) no longer reach the release zip, matching the rest of the suite.
