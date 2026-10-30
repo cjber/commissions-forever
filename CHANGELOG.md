@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **The README credits the people behind the addon.** Its Credits section thanks everyone who reports a bug or asks for a feature, and THIRD_PARTY.md's Ideas and contributors table now has the shape the other Forever addons use, with the SkillUp and Shortest Path integrations moved to its Inputs, so a player whose report is built is credited the same way in every addon.
+
 ## [0.1.3] - 2026-10-28
 
 - **Adopt the suite's shared editor and Dependabot config.** `.luarc.json` and `.github/dependabot.yml` now match the rest of the suite.
