@@ -1,1 +1,11 @@
+tools/.cache/
+__pycache__/
+*.zip
+.release/
+.release-notes.md
+.sift/runs/
+.types/
+.claude/
+reference/
+scratch/
 .ruff_cache/
