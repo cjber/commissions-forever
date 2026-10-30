@@ -57,7 +57,7 @@ Run `stylua --check .`, `luacheck .`, and every `tests/*_spec.lua` with LuaJIT. 
 
 ## Credits
 
-Thanks to Cillian Berragan for the idea; Blizzard for the client APIs; and the QuestieDB, SkillUp Forever and Shortest Path Forever projects for optional public integrations. See [THIRD_PARTY.md](THIRD_PARTY.md) for data sources and licences.
+Thanks to Cillian Berragan for the idea; Blizzard for the client APIs; and the QuestieDB, SkillUp Forever and Shortest Path Forever projects for optional public integrations. Thanks to everyone who reports a bug or asks for a feature, here or on CurseForge. [THIRD_PARTY.md](THIRD_PARTY.md) lists every input and the full credits.
 
 ## Licence
 
