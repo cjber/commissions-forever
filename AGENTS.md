@@ -1,6 +1,6 @@
 # Commissions Forever
 
-Commissions Forever tracks repeatable Classic turn-ins, the materials in your bags, and the next NPC stop. It targets WoW: Forever (`Interface 16001`, `_classic_beta_`).
+Commissions Forever tracks repeatable Classic turn-ins, the materials in your bags, and the next NPC stop. It targets WoW: Forever (`Interface 16001`, client folder `_forever_`).
 
 ## Commands
 
@@ -25,7 +25,7 @@ python3 .sift/agents.py check
 - Never hook Blizzard methods or call protected functions. Do not save frames, functions, userdata, or client tables.
 - Run `stylua --check .`, `luacheck .`, every `tests/*_spec.lua` under LuaJIT, and `.sift/gate.py --base origin/main` plus `.sift/agents.py check` before proposing changes.
 - Render every player-facing UI scene and inspect the PNG at full size. Keep the render reproducible and audit its layout.
-- Never use `-s` on commits; signing is handled by GitHub.
+- Sign commits with `git commit -S`; do not add `-s` sign-off lines.
 
 ## Rules
 
