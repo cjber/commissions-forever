@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-11-02
+
 - **A quest QuestieDB has no name for still counts as a commission.** The addon read the quest log's title from a field the client does not have, so such a quest showed as "Quest" and its number and was left out of the turn-in list. It now uses the quest log's own title.
 
 ## [0.1.5] - 2026-11-02
