@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-02
+
 - **The window shows its English text.** Its title, route button, empty list line and the no-route chat message were passed `true` instead of their words. Every English phrase is now text.
 
 ## [0.1.4] - 2026-10-30
