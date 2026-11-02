@@ -7,7 +7,7 @@ cleanup: [stylua .]
 checks:
   - { name: format, run: "stylua --check ." }
   - { name: lint, run: "luacheck ." }
-  - { name: typecheck, run: "tools/typecheck.sh" }
+  - { name: typecheck, run: "bash tools/typecheck.sh" }
   - { name: specs, run: "for s in tests/*_spec.lua; do luajit \"$s\" || exit 1; done", tests: true }
   - { name: tools, run: "ruff format --check tools && ruff check tools" }
   - { name: screenshots, run: "python3 tools/check_screenshots.py && python3 tools/visual_audit.py" }

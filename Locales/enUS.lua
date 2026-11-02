@@ -11,3 +11,10 @@ ns.L = {
 	["Have %d"] = "Have %d",
 	["Need %d"] = "Need %d",
 }
+
+-- `true` marks a phrase that reads as its own English key.
+for key, value in pairs(ns.L) do
+	if value == true then
+		ns.L[key] = key
+	end
+end
