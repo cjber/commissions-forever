@@ -2,7 +2,8 @@
   "runtime.version": "Lua 5.1",
   "workspace.library": [
     ".types/vscode-wow-api/Annotations/Core",
-    ".types/vscode-wow-api/Annotations/FrameXML"
+    ".types/vscode-wow-api/Annotations/FrameXML",
+    "types"
   ],
   "workspace.ignoreDir": [
     ".git",
@@ -11,6 +12,7 @@
     "tools",
     ".release",
     ".claude",
+    ".agents",
     ".bugpatrol",
     ".speedpatrol",
     ".sloppatrol"

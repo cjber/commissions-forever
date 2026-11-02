@@ -124,8 +124,8 @@ function Questie.ActiveObjectives()
 	local rows = {}
 	for index = 1, shown do
 		local info = C_QuestLog.GetInfo(index)
-		local questID = info and not info.isHeader and info.questID
-		if questID then
+		if info and not info.isHeader and info.questID then
+			local questID = info.questID
 			local ok, values = pcall(db.Quest.GetAll, questID, fields)
 			if ok and type(values) == "table" and type(values[2]) == "table" then
 				local itemObjectives = values[2][3] or {}
@@ -138,7 +138,7 @@ function Questie.ActiveObjectives()
 						local objective = name and liveItems[name]
 						rows[#rows + 1] = {
 							questID = questID,
-							questName = values[1] or info.name or ("Quest " .. questID),
+							questName = values[1] or info.title or ("Quest " .. questID),
 							itemID = itemID,
 							required = objective and objective.numRequired,
 							finished = objective and objective.finished or false,

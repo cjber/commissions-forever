@@ -4,10 +4,7 @@ local addon = CreateFrame("Frame")
 ns.Addon = addon
 
 local function ItemCount(itemID)
-	if C_Item and type(C_Item.GetItemCount) == "function" then
-		return C_Item.GetItemCount(itemID) or 0
-	end
-	return GetItemCount(itemID) or 0
+	return C_Item.GetItemCount(itemID) or 0
 end
 
 function ns.Refresh()
