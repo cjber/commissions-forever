@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-02
+
 - **Every row shows, however long the list.** The window drew twelve rows and silently dropped the rest; the list now scrolls, so a thirteenth material or objective is never hidden.
 - **Each objective keeps its own progress.** Active objectives were paired with the quest log by position, so a reordered or inserted objective showed another item's count. They are now matched by the item the objective names.
 - **The window says when QuestieDB is missing.** Without it, active turn-ins cannot be read; a line under the title now says to install QuestieDB instead of the list quietly leaving them out.
