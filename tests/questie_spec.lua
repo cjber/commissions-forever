@@ -36,7 +36,7 @@ rawset(_G, "C_QuestLog", {
 		return 1, 1
 	end,
 	GetInfo = function()
-		return { questID = 123, name = "Logistics Task Briefing IV" }
+		return { questID = 123, title = "Logistics Task Briefing IV (log)" }
 	end,
 	GetQuestObjectives = function()
 		-- The quest log lists its objectives in its own order, not QuestieDB's, and the third item is not cached yet.
@@ -62,6 +62,19 @@ assert(rows[1].questID == 123 and rows[1].itemID == 54321 and rows[1].required =
 assert(not rows[1].finished, "Runecloth is paired with its own objective, not the first in the log")
 assert(rows[2].itemID == 54322 and rows[2].required == 20 and rows[2].finished, "Thorium Bar keeps its own progress")
 assert(rows[3].required == nil and not rows[3].finished, "an item the client has not named yet claims no progress")
+assert(rows[1].questName == "Logistics Task Briefing IV", "QuestieDB names the quest")
+local questDB = rawget(_G, "LibQuestieDB").Quest
+local questieGetAll = questDB.GetAll
+questDB.GetAll = function()
+	local values = questieGetAll()
+	values[1] = nil
+	return values
+end
+assert(
+	ns.Questie.ActiveObjectives()[1].questName == "Logistics Task Briefing IV (log)",
+	"the quest log's title fills a name QuestieDB lacks"
+)
+questDB.GetAll = questieGetAll
 assert(ns.Questie.Available(), "QuestieDB is available")
 local npc = ns.Questie.NPC(42)
 assert(npc and npc.name == "Quartermaster" and npc.map == 1, "reads a finisher's map from QuestieDB")
