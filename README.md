@@ -65,4 +65,4 @@ GPL-3.0-or-later. See [LICENSE](LICENSE).
 
 ## Development
 
-Run `stylua --check .`, `luacheck .`, and `luajit tests/model_spec.lua`. Before release, run the complete Sift gate and visual audit, render screenshots, and check the packaged TOC.
+Run `stylua --check .`, `luacheck .`, and `luajit tests/model_spec.lua`. Before release, run the complete project-rules gate and visual audit, render screenshots, and check the packaged TOC.

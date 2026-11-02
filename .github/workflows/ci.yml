@@ -30,12 +30,12 @@ jobs:
       - run: python3 tools/visual_audit.py
       # checkout fetches every branch (fetch-depth 0) but strips credentials, so the
       # gate reads origin/<base> from the local clone instead of fetching it again.
-      - name: Sift
+      - name: Project rules
         env:
           BASE: ${{ github.base_ref || github.event.repository.default_branch }}
         run: |
-          python3 .sift/gate.py --base "origin/$BASE"
-          python3 .sift/agents.py check
+          python3 .sloppatrol/gate.py --base "origin/$BASE"
+          python3 .sloppatrol/agents.py check
 
   # Secret scan over the whole history, exactly as the released suite does it.
   secrets:
