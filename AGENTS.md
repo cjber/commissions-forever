@@ -12,8 +12,8 @@ bash tools/typecheck.sh
 python3 tools/screenshots.py
 python3 tools/check_screenshots.py
 python3 tools/visual_audit.py
-python3 .sift/gate.py --base origin/main
-python3 .sift/agents.py check
+python3 .sloppatrol/gate.py --base origin/main
+python3 .sloppatrol/agents.py check
 ```
 
 ## Workflow
@@ -23,7 +23,7 @@ python3 .sift/agents.py check
 - Read active quests and inventory from client APIs. Re-scan after quest and bag events.
 - Treat each integration as optional. The addon works without QuestieDB, SkillUp Forever, or Shortest Path Forever.
 - Never hook Blizzard methods or call protected functions. Do not save frames, functions, userdata, or client tables.
-- Run `stylua --check .`, `luacheck .`, every `tests/*_spec.lua` under LuaJIT, and `.sift/gate.py --base origin/main` plus `.sift/agents.py check` before proposing changes.
+- Run `stylua --check .`, `luacheck .`, every `tests/*_spec.lua` under LuaJIT, and `.sloppatrol/gate.py --base origin/main` plus `.sloppatrol/agents.py check` before proposing changes.
 - Render every player-facing UI scene and inspect the PNG at full size. Keep the render reproducible and audit its layout.
 - Sign commits with `git commit -S`; do not add `-s` sign-off lines.
 
