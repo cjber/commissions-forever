@@ -12,7 +12,7 @@ end
 
 function ns.Refresh()
 	ns.ActiveObjectives = ns.Questie.ActiveObjectives()
-	ns.Rows = ns.Model.Inventory(ItemCount)
+	ns.Rows = ns.Model.Inventory(ItemCount, ns.ActiveObjectives)
 	if ns.Window and ns.Window.Refresh then
 		ns.Window:Refresh()
 	end

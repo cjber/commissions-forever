@@ -7,7 +7,7 @@ ns.L = {
 	["No tracked materials found"] = true,
 	["Open turn-in route"] = true,
 	["No active commission route is available."] = true,
-	["QuestieDB unavailable"] = true,
+	["Install QuestieDB to see your active turn-ins."] = true,
 	["Have %d"] = "Have %d",
 	["Need %d"] = "Need %d",
 }

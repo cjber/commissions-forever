@@ -1,4 +1,4 @@
--- Every phrase SkillUp shows, with its English text: the template the Locales/<locale>.lua files follow.
+-- Every phrase Commissions Forever shows, with its English text: the template the Locales/<locale>.lua files follow.
 -- Each client language already has its file; to correct a line, edit that file (Locales/README.md).
 local _, ns = ...
 if GetLocale() ~= "deDE" then
@@ -8,6 +8,7 @@ local L = ns.L
 
 L["Commissions Forever"] = "Commissions Forever"
 L["Have %d"] = "Have %d"
+L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
 L["Need %d"] = "Need %d"
 L["No active commission route is available."] = "No active commission route is available."
 L["No tracked materials found"] = "No tracked materials found"

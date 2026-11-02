@@ -12,7 +12,7 @@ from typecheck_coverage import runtime_files
 
 ROOT = Path(__file__).resolve().parent.parent
 HEADER = """\
--- Every phrase SkillUp shows, with its English text: the template the Locales/<locale>.lua files follow.
+-- Every phrase Commissions Forever shows, with its English text: the template the Locales/<locale>.lua files follow.
 -- Each client language already has its file; to correct a line, edit that file (Locales/README.md).
 local _, ns = ...
 if GetLocale() ~= "deDE" then

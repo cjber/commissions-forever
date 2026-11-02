@@ -86,6 +86,33 @@ function Questie.NPC(npcID)
 	return { name = values[1] }
 end
 
+-- QuestieDB is the only source of quest requirements and NPC places, so the window says when it is missing.
+---@return boolean
+function Questie.Available()
+	return Library() ~= nil
+end
+
+-- An item objective's words without its count ("Runecloth: 3/10" reads "Runecloth"), so it can be matched by name.
+---@param text string
+---@return string
+local function ObjectiveLabel(text)
+	return (text:gsub("%s*:?%s*%d+%s*/%s*%d+%s*", ""):gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+-- The quest log's item objectives keyed by the item they ask for, so a QuestieDB objective finds its own entry
+-- whatever order either list is in. An item the client has not cached yet has no name and stays unmatched.
+---@param live table[]
+---@return table<string, table>
+local function LiveItemsByName(live)
+	local byName = {}
+	for _, objective in ipairs(live) do
+		if objective.type == "item" and type(objective.text) == "string" then
+			byName[ObjectiveLabel(objective.text)] = objective
+		end
+	end
+	return byName
+end
+
 ---@return table[] active quest item objectives and finisher NPC IDs
 function Questie.ActiveObjectives()
 	local db = Library()
@@ -101,24 +128,20 @@ function Questie.ActiveObjectives()
 		if questID then
 			local ok, values = pcall(db.Quest.GetAll, questID, fields)
 			if ok and type(values) == "table" and type(values[2]) == "table" then
-				local objectiveGroups = values[2]
-				local itemObjectives = objectiveGroups[3] or {}
+				local itemObjectives = values[2][3] or {}
 				local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
-				local liveItems = {}
-				for _, objective in ipairs(live) do
-					if objective.type == "item" then
-						liveItems[#liveItems + 1] = objective
-					end
-				end
+				local liveItems = LiveItemsByName(live)
 				for _, itemObjective in ipairs(itemObjectives) do
 					local itemID = tonumber(itemObjective[1])
 					if itemID then
+						local name = C_Item.GetItemNameByID(itemID)
+						local objective = name and liveItems[name]
 						rows[#rows + 1] = {
 							questID = questID,
 							questName = values[1] or info.name or ("Quest " .. questID),
 							itemID = itemID,
-							required = liveItems[_] and liveItems[_].numRequired or 0,
-							finished = liveItems[_] and liveItems[_].finished or false,
+							required = objective and objective.numRequired,
+							finished = objective and objective.finished or false,
 							npcIDs = type(values[3]) == "table" and values[3][1] or {},
 						}
 					end

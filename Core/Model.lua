@@ -21,8 +21,9 @@ function Model.IsCommissionQuest(questName)
 end
 
 ---@param getCount fun(itemID: integer): integer
----@return {turnIn: table, itemID: integer, count: integer}[]
-function Model.Inventory(getCount)
+---@param objectives table[] the active quest item objectives (ns.Questie.ActiveObjectives)
+---@return {turnIn: table, itemID: integer, count: integer, need: integer?, questID: integer?}[]
+function Model.Inventory(getCount, objectives)
 	local rows = {}
 	for _, turnIn in ipairs(ns.TurnIns) do
 		for _, itemID in ipairs(turnIn.items) do
@@ -32,7 +33,7 @@ function Model.Inventory(getCount)
 			end
 		end
 	end
-	for _, objective in ipairs(ns.ActiveObjectives or {}) do
+	for _, objective in ipairs(objectives) do
 		if Model.IsCommissionQuest(objective.questName) then
 			rows[#rows + 1] = {
 				turnIn = { key = "active:" .. objective.questID, faction = objective.questName },
