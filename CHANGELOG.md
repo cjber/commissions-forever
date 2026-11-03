@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-03
 
 - **Controls use the Forever asset set.** Buttons use the native gold-bordered family, and CI rejects legacy loose chrome in runtime UI and screenshot renderers.
 
