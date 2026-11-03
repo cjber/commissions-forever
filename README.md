@@ -44,7 +44,7 @@ Use `/commissions` or `/cf` to open its page in the Professions window. Choose *
 
 Turn-in materials are listed by item ID. Active quest requirements and NPC locations come from the current quest log and QuestieDB at runtime. Variable logistics assignments and writs are not guessed from their names.
 
-Other addons can call `CommissionsForever.API.RequiredMaterials(recipeID, crafts)` to ask SkillUp Forever for raw recipe inputs, or use `ActiveObjectives()` and `NavigateActiveAssignments()` for current commission objectives and route guidance.
+Other addons can call `CommissionsForever.API.RequiredMaterials(recipeID, crafts)` to ask SkillUp Forever for raw recipe inputs. `ActiveObjectives()` returns item objectives from all quests in the current log; `NavigateActiveAssignments()` filters commission quests and sends their finishers to Shortest Path Forever.
 
 ## Works alongside
 

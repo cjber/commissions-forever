@@ -122,7 +122,7 @@ _G.C_Item = {
 		requested[id] = true
 	end,
 	GetItemNameByID = function(id)
-		return cached and ("Item " .. id) or nil
+		return cached and ("Cached item " .. id) or nil
 	end,
 	GetItemIconByID = function(id)
 		return id
@@ -163,10 +163,10 @@ assert(window.tab.point[2] == secondTab, "commissions leaves both existing addon
 assert(firstTab.shown and secondTab.shown, "placing commissions does not hide other addon tabs")
 window.Refresh()
 assert(Visible() == 30 and window.list.height == 30 * 30, "all rows remain reachable through scrolling")
-assert(window.rows[30].name.text == "Item 30", "the final row is not lost")
-window.search:SetText("Item 30")
+assert(window.rows[30].name.text == "Cached item 30", "the final row is not lost")
+window.search:SetText("Cached item 30")
 window.search.hooks.OnTextChanged[1]()
-assert(Visible() == 1 and window.rows[1].name.text == "Item 30", "search filters without losing the final row")
+assert(Visible() == 1 and window.rows[1].name.text == "Cached item 30", "search filters without losing the final row")
 window.search:SetText("missing")
 window.Refresh()
 assert(Visible() == 0 and window.empty.shown, "empty search is explicit")
@@ -197,4 +197,6 @@ cached = false
 window.Refresh()
 assert(requested[1] and window.rows[1].name.text == "Item 1", "uncached items request data and keep a usable fallback")
 cached = true
+window.Refresh()
+assert(window.rows[1].name.text == "Cached item 1", "cached names replace the item-ID fallback")
 print("Commissions Forever window specs passed")
