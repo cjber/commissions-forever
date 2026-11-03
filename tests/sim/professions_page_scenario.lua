@@ -429,3 +429,63 @@ scenario("slash opens the ledger after a previously selected profession without 
 	check(casts == 0, "/cf recast the old profession, whose TRADE_SKILL_SHOW would replace the ledger")
 	expectCommissionsPage(sim, "/cf after closing a previously selected profession")
 end)
+
+scenario("completion controls preserve the ledger and count only supported turn-in events", function(sim)
+	world(sim)
+	-- Synthetic public-contract fixture. No quest-log title or inventory change establishes completion.
+	sim:runAs(
+		"QuestieDB",
+		[[
+		LibQuestieDB = {
+			RequireContract = function() return true end,
+			Meta = { QuestMeta = { questKeys = {
+				specialFlags = 1, finishedBy = 2, reputationReward = 3,
+				objectives = 4, sourceItemId = 5, startedBy = 6,
+			} } },
+			Enum = { factionIDs = { THORIUM_BROTHERHOOD = 59 } },
+			Quest = { GetAll = function(id)
+				if id == 123 then
+					return { 1, { { 42 } }, { { 59, 10 } }, { [3] = { { 11370, "Ore", 10 } } } }
+				end
+			end },
+		}
+	]]
+	)
+	sim:login()
+	slash(sim)
+	local share, board
+	for _, child in ipairs({ page(sim):GetChildren() }) do
+		if child.Text and child.Text.GetText and child.Text:GetText() == "Share totals with guild and group" then
+			share = child
+		elseif child.GetText and child:GetText() == "Leaderboard" then
+			board = child
+		end
+	end
+	check(share and board, "completion controls are missing from the native page")
+	check(share:GetChecked(), "participation should default on")
+	local height = page(sim):GetHeight()
+	sim:click(share)
+	check(sim:savedState().CommissionsForeverDB.statsShare == false, "the checkbox did not save explicit opt-out")
+	check(not share:GetChecked(), "the checkbox stayed checked after opt-out")
+	check(not sim.G.CommissionsForever.API.Leaderboard().sharing, "opt-out left the shared view enabled")
+	sim:event("QUEST_TURNED_IN", 123, 0, 0)
+	sim:event("QUEST_TURNED_IN", 123, 0, 0)
+	sim:event("QUEST_TURNED_IN", 124, 0, 0)
+	check(sim.G.CommissionsForever.API.Stats()[1].value == 2, "repeat hand-ins were lost or an unrelated quest counted")
+	sim:click(board)
+	check(page(sim):IsShown() and page(sim):GetHeight() == height, "the leaderboard changed the ledger layout")
+	sim:enterCombat()
+	sim:hoverUnit({ name = "Guard", level = 55, friendly = false })
+	sim:unhoverUnit()
+	sim:hover(share)
+	check(sim.G.GameTooltip:IsShown(), "the sharing explanation did not show after a secret tooltip")
+	sim:leave()
+	sim:input(function()
+		sim.G.SlashCmdList.COMMISSIONSFOREVER("share on")
+	end)
+	check(share:GetChecked(), "slash participation did not refresh the visible checkbox")
+	sim:leaveCombat()
+	sim:setGamepad(true)
+	sim:gamepadNavigate()
+	sim:expectNoGamepadTaint(ADDON)
+end)

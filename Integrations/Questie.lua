@@ -158,4 +158,104 @@ function Questie.ActiveObjectives()
 	return rows
 end
 
+-- Classify the completed ID after it has left the quest log. Titles never establish a completion.
+local function Contains(values, wanted)
+	for _, value in ipairs(type(values) == "table" and values or {}) do
+		if value == wanted then
+			return true
+		end
+	end
+	return false
+end
+
+local function PositiveReputation(db, category, rewards)
+	local factions = db.Enum and db.Enum.factionIDs
+	if type(factions) ~= "table" or type(rewards) ~= "table" then
+		return false
+	end
+	for _, name in ipairs(category.reputationFactions or {}) do
+		local factionID = factions[name]
+		for _, reward in ipairs(rewards) do
+			if
+				type(reward) == "table"
+				and factionID
+				and reward[1] == factionID
+				and type(reward[2]) == "number"
+				and reward[2] > 0
+			then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+---@param questID integer
+---@return string? category
+function Questie.CommissionCategory(questID)
+	if type(questID) ~= "number" or questID <= 0 or questID % 1 ~= 0 then
+		return nil
+	end
+	local db = Library()
+	local fields = db
+		and Fields(db, "Quest", {
+			"specialFlags",
+			"finishedBy",
+			"reputationReward",
+			"objectives",
+			"sourceItemId",
+			"startedBy",
+		})
+	if not db or not fields then
+		return nil
+	end
+	local ok, values = pcall(db.Quest.GetAll, questID, fields)
+	if not ok or type(values) ~= "table" then
+		return nil
+	end
+	local flags, finishers = values[1], values[2]
+	if type(flags) ~= "number" or flags < 0 or flags % 2 ~= 1 or type(finishers) ~= "table" then
+		return nil
+	end
+	local hasFinisher = false
+	for _, ids in pairs(finishers) do
+		if type(ids) == "table" and #ids > 0 then
+			hasFinisher = true
+		end
+	end
+	if not hasFinisher then
+		return nil
+	end
+	local objectives = type(values[4]) == "table" and values[4][3]
+	local starters = type(values[6]) == "table" and values[6][3]
+	local matched
+	for _, category in ipairs(ns.TurnIns) do
+		if PositiveReputation(db, category, values[3]) then
+			local starterMatch = false
+			if
+				Contains(category.sourceItems, values[5])
+				and Contains(starters, values[5])
+				and db.Item
+				and type(db.Item.startQuest) == "function"
+			then
+				local itemOK, startedQuest = pcall(db.Item.startQuest, values[5])
+				starterMatch = itemOK and startedQuest == questID
+			end
+			local objectiveMatch = type(objectives) == "table" and #objectives > 0
+			for _, objective in ipairs(type(objectives) == "table" and objectives or {}) do
+				if type(objective) ~= "table" or not Contains(category.items, objective[1]) then
+					objectiveMatch = false
+				end
+			end
+			if starterMatch or objectiveMatch then
+				if matched then
+					return nil
+				end
+				matched = category.key
+			end
+		end
+	end
+	return matched
+end
+
 return Questie

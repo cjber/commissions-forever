@@ -48,7 +48,17 @@ addon:SetScript("OnEvent", function(_, event)
 		CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
 		_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
 		_G.SLASH_COMMISSIONSFOREVER2 = "/cf"
-		SlashCmdList.COMMISSIONSFOREVER = ns.Toggle
+		SlashCmdList.COMMISSIONSFOREVER = function(message)
+			local command = (message or ""):lower():match("^%s*(.-)%s*$")
+			if command == "leaderboard" or command == "stats" then
+				ns.Stats.Print()
+			elseif command == "share on" or command == "share off" then
+				ns.Stats.SetEnabled(command == "share on")
+				ns.Stats.Print()
+			else
+				ns.Toggle()
+			end
+		end
 	end
 	ns.Refresh()
 end)

@@ -96,6 +96,7 @@ local frames = {}
 _G.CreateFrame = function(_, _, parent)
 	local frame = Region()
 	frame.Icon = Region()
+	frame.Text = Region()
 	if parent then
 		table.insert(parent.children, frame)
 	end
@@ -129,11 +130,18 @@ _G.C_Item = {
 	end,
 }
 local available = true
-local ns = { Questie = {
-	Available = function()
-		return available
-	end,
-} }
+local ns = {
+	Stats = {
+		Participating = function()
+			return true
+		end,
+	},
+	Questie = {
+		Available = function()
+			return available
+		end,
+	},
+}
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 local function Visible()

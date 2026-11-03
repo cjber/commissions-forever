@@ -42,7 +42,7 @@ end""",
     return [line.split("\t") for line in result.stdout.splitlines()]
 
 
-def window(ui):
+def window(ui, *, sharing=True, empty=False, available=True):
     canvas = ui.canvas(765, 642)
     canvas.draw(ui.atlas("Profession-Background-Overview"), X + 2, Y + 21, WIDTH - 4, HEIGHT - 23)
     canvas.draw(ui.atlas("Profession-Background-Template2"), X + 3, Y + 21)
@@ -51,7 +51,16 @@ def window(ui):
     wowmock.side_tab(canvas, X + WIDTH, Y + 116, "interface/icons/inv_misc_note_01.blp", selected=True)
     px, py = X + 4, Y + 28  # page TOPLEFT
     canvas.text(px + 74, py + 12, "Commissions Forever", wowmock.FONTS["GameFontNormalLarge"])
+    wowmock.ui_panel_button(canvas, px + WIDTH - 8 - 14 - 132, py + 8, 132, 24, "Leaderboard")
     wowmock.search_box(canvas, px + 22, py + 48, 250)
+    if not available:
+        canvas.text(
+            px + 288,
+            py + 52,
+            "Install QuestieDB to see your active turn-ins.",
+            wowmock.FONTS["GameFontDisableSmall"],
+            width=350,
+        )
     ix, iy = px + 14, py + 78
     iw, ih = WIDTH - 8 - 28, HEIGHT - 32 - 78 - 44
     canvas.draw(ui.atlas("Professions-background-summarylist"), ix + 2, iy + 2, iw - 4, ih - 4)
@@ -59,7 +68,9 @@ def window(ui):
     columns = re.findall(r'\{ "(Material|Turn-in|Have|Need)", (\d+), (\d+) \}', SOURCE)
     for label, offset, width in columns:
         canvas.text(ix + int(offset), iy + 10, label, wowmock.FONTS["GameFontNormalSmall"], width=int(width))
-    for index, (item_id, count, source) in enumerate(sample_rows()):
+    if empty:
+        canvas.text(ix + 12, iy + 42, "No tracked materials found", wowmock.FONTS["GameFontDisableSmall"], width=560)
+    for index, (item_id, count, source) in enumerate([] if empty else sample_rows()):
         # Scroll content TOPLEFT (4,-32), each row TOPLEFT (4,-index*ROW_HEIGHT).
         rx, ry = ix + 8, iy + 32 + index * ROW_HEIGHT
         item = ui.item(int(item_id))
@@ -74,9 +85,14 @@ def window(ui):
     wowmock.minimal_scrollbar(canvas, ix + iw - 22, iy + 32, ih - 36)
     bx, by = px + WIDTH - 8 - 14 - 190, Y + HEIGHT - 4 - 10 - 24
     wowmock.ui_panel_button(canvas, bx, by, 190, 24, "Open turn-in route")
+    wowmock.minimal_checkbox(
+        canvas, px + 14, Y + HEIGHT - 4 - 9 - 26, "Share totals with guild and group", size=26, checked=sharing
+    )
     layout = {
         "frame": {"x": X, "y": Y, "w": WIDTH, "h": HEIGHT},
         "widgets": [
+            {"name": "leaderboard", "role": "button", "x": px + WIDTH - 8 - 14 - 132, "y": py + 8, "w": 132, "h": 24},
+            {"name": "sharing", "role": "input", "x": px + 14, "y": Y + HEIGHT - 4 - 9 - 26, "w": 329, "h": 26},
             {"name": "search", "role": "input", "x": px + 22, "y": py + 48, "w": 250, "h": 20},
             {"name": "ledger", "role": "list", "x": ix, "y": iy, "w": iw, "h": ih},
             {"name": "route", "role": "button", "x": bx, "y": by, "w": 190, "h": 24},
@@ -87,12 +103,19 @@ def window(ui):
 
 def main():
     ui = wowmock.Ui(scale=2)
-    canvas, layout = window(ui)
     output = ROOT / "docs" / "screenshots"
     output.mkdir(parents=True, exist_ok=True)
-    wowmock.scene(ui, [(canvas, 0, 0)]).save(output / "window.png")
+    variants = {
+        "window.png": {},
+        "sharing-off.png": {"sharing": False},
+        "empty.png": {"empty": True},
+        "questiedb-missing.png": {"available": False},
+    }
+    for name, state in variants.items():
+        canvas, layout = window(ui, **state)
+        wowmock.scene(ui, [(canvas, 0, 0)]).save(output / name)
+        print(output / name)
     (output / "layout.json").write_text(json.dumps(layout, indent=2) + "\n")
-    print(output / "window.png")
 
 
 if __name__ == "__main__":

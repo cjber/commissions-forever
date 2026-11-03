@@ -7,9 +7,10 @@ from forever_tools.screens import files, main
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENES = {
-    "window.png": lambda: files(
+    name: lambda: files(
         ROOT, ["tools/screenshots.py", "UI/Window.lua", "Data/TurnIns.lua", "Core/Model.lua", "Locales/enUS.lua"]
-    ),
+    )
+    for name in ("window.png", "sharing-off.png", "empty.png", "questiedb-missing.png")
 }
 
 if __name__ == "__main__":

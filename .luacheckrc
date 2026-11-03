@@ -47,3 +47,7 @@ read_globals[#read_globals + 1] = "EditModeManagerFrame"
 read_globals[#read_globals + 1] = "AuctionHouseFrame"
 
 read_globals[#read_globals + 1] = "MinimalSliderWithSteppersMixin"
+
+for _, name in ipairs({ "GetServerTime", "GetTime", "GetRealmName", "IsInGuild", "IsInGroup", "IsInRaid", "GetNumGroupMembers", "LE_PARTY_CATEGORY_HOME", "LE_PARTY_CATEGORY_INSTANCE", "C_ChatInfo", "C_GameRules", "ForeverPeerStats" }) do
+	read_globals[#read_globals + 1] = name
+end

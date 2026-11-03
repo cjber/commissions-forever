@@ -7,6 +7,22 @@
   },
   "widgets": [
     {
+      "name": "leaderboard",
+      "role": "button",
+      "x": 547,
+      "y": 60,
+      "w": 132,
+      "h": 24
+    },
+    {
+      "name": "sharing",
+      "role": "input",
+      "x": 42,
+      "y": 579,
+      "w": 329,
+      "h": 26
+    },
+    {
       "name": "search",
       "role": "input",
       "x": 50,
