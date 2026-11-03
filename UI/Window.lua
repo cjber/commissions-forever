@@ -187,7 +187,7 @@ local function Attach()
 	Window.rows = {}
 	Window.empty = Text(inset, "GameFontDisableSmall", 12, -42, 560)
 	Window.empty:SetText(L["No tracked materials found"])
-	local route = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+	local route = CreateFrame("Button", nil, page, "SharedButtonSmallTemplate")
 	route:SetSize(190, 24)
 	route:SetPoint("BOTTOMRIGHT", -14, 10)
 	route:SetText(L["Open turn-in route"])
