@@ -344,6 +344,7 @@ scenario("closing on the Commissions page reopens the native window on its own p
 	expectCommissionsPage(sim, "the Commissions tab after reopening")
 	sim:closeProfessions()
 	check(not page(sim):IsVisible(), "the Commissions page is visible with the window closed")
+	check(not pf.BookPage:IsShown(), "closing on the Commissions page showed the native book page")
 
 	sim:openProfessions(164)
 	expectNativePage(sim, "CraftingPage", "reopened from the Commissions page")
