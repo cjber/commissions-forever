@@ -75,14 +75,17 @@ local function Region()
 				SetCustomOnMouseUpHandler = function(self, fn)
 					self.click = fn
 				end,
-				GetLeft = function()
-					return 10
+				SetPoint = function(self, ...)
+					self.point = { ... }
 				end,
-				GetBottom = function()
-					return 100
+				GetLeft = function(self)
+					return rawget(self, "left") or 10
 				end,
-				GetTop = function()
-					return 500
+				GetBottom = function(self)
+					return rawget(self, "bottom") or 100
+				end,
+				GetTop = function(self)
+					return rawget(self, "top") or 500
 				end,
 			}
 			return methods[key] or function() end
@@ -119,7 +122,7 @@ _G.C_Item = {
 		requested[id] = true
 	end,
 	GetItemNameByID = function(id)
-		return cached and ("Item " .. id) or nil
+		return cached and ("Cached item " .. id) or nil
 	end,
 	GetItemIconByID = function(id)
 		return id
@@ -142,18 +145,28 @@ local function Visible()
 	end
 	return count
 end
+-- Two other addon tabs occupy consecutive slots outside the native profession array.
+local firstTab, secondTab = Region(), Region()
+firstTab.top, firstTab.bottom = 98, 60
+secondTab.top, secondTab.bottom = 58, 20
+firstTab:Show()
+secondTab:Show()
+host.children[#host.children + 1] = firstTab
+host.children[#host.children + 1] = secondTab
 ns.Rows = {}
 for index = 1, 30 do
 	ns.Rows[index] = { turnIn = { faction = "Thorium Brotherhood" }, itemID = index, count = index }
 end
 window.Toggle()
 assert(window.page.shown and ProfessionsFrame.shown, "slash command opens the native host and commissions page")
+assert(window.tab.point[2] == secondTab, "commissions leaves both existing addon tabs visible and uses the next slot")
+assert(firstTab.shown and secondTab.shown, "placing commissions does not hide other addon tabs")
 window.Refresh()
 assert(Visible() == 30 and window.list.height == 30 * 30, "all rows remain reachable through scrolling")
-assert(window.rows[30].name.text == "Item 30", "the final row is not lost")
-window.search:SetText("Item 30")
+assert(window.rows[30].name.text == "Cached item 30", "the final row is not lost")
+window.search:SetText("Cached item 30")
 window.search.hooks.OnTextChanged[1]()
-assert(Visible() == 1 and window.rows[1].name.text == "Item 30", "search filters without losing the final row")
+assert(Visible() == 1 and window.rows[1].name.text == "Cached item 30", "search filters without losing the final row")
 window.search:SetText("missing")
 window.Refresh()
 assert(Visible() == 0 and window.empty.shown, "empty search is explicit")
@@ -184,4 +197,6 @@ cached = false
 window.Refresh()
 assert(requested[1] and window.rows[1].name.text == "Item 1", "uncached items request data and keep a usable fallback")
 cached = true
+window.Refresh()
+assert(window.rows[1].name.text == "Cached item 1", "cached names replace the item-ID fallback")
 print("Commissions Forever window specs passed")
