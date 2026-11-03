@@ -12,9 +12,15 @@ bash tools/typecheck.sh
 python3 tools/screenshots.py
 python3 tools/check_screenshots.py
 python3 tools/visual_audit.py
+python3 tools/deadcode.py --check
+python3 tools/changelog.py --check
 python3 .sloppatrol/gate.py --base origin/main
 python3 .sloppatrol/agents.py check
 ```
+
+CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `project-rules` (changelog and the
+Sloppatrol gate), `workflows`, `secrets` and `package`, each on every pull request. `tools/deadcode.py` and
+`tools/deadcode-allow.txt` are copied from forever-core: change them there.
 
 ## Workflow
 

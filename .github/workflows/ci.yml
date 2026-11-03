@@ -10,8 +10,16 @@ permissions:
   contents: read
 
 jobs:
+  deadcode:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: python3 tools/deadcode.py --check
+
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -29,7 +37,7 @@ jobs:
       - run: python3 tools/visual_audit.py
 
   python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -39,7 +47,7 @@ jobs:
       - run: uvx ruff@0.16.8 format --check tools
 
   typecheck:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -55,29 +63,21 @@ jobs:
       - run: bash tools/typecheck.sh
 
   project-rules:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+      # A release publishes its changelog entry, so every tagged version needs one.
+      - run: python3 tools/changelog.py --check
       - env:
           BASE: ${{ github.base_ref || github.event.repository.default_branch }}
         run: python3 .sloppatrol/gate.py --base "origin/$BASE"
       - run: python3 .sloppatrol/agents.py check
 
-  changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # Every v* tag is a released version that needs its own CHANGELOG.md section.
-          fetch-depth: 0
-          persist-credentials: false
-      - run: python3 tools/changelog.py --check
-
   workflows:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -88,7 +88,7 @@ jobs:
 
   # Secret scan over the whole history, exactly as the released suite does it.
   secrets:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -104,7 +104,7 @@ jobs:
   # What a tag would ship, checked before it ships: the release workflow's packager without uploading or zipping,
   # then tools/check_package.py on .release/ (every file the TOC loads, no development folders).
   package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
