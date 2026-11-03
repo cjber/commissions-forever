@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-03
+
 - **Opening Commissions keeps the ledger selected.** A previously used profession is not recast when `/cf` opens the window.
 - **Commissions lives in the Professions window.** A native side tab opens a compact, searchable materials ledger with separate Have and Need columns. Native profession pages and other addon pages share the host cleanly.
 - **Logistics assignments match their briefing items.** Quests such as Bandages for the Field now appear with their live requirements. Timbermaw deliveries match their quest titles.
