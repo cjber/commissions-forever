@@ -12,6 +12,16 @@ ns.L = {
 	["Have"] = true,
 	["Need"] = true,
 	["Item %d"] = true,
+	["Observed commission turn-ins: guild and group"] = true,
+	["Current client ruleset only. Other players' totals are player-reported."] = true,
+	["%d. %s: %d (you)"] = true,
+	["%d. %s: %d (player-reported)"] = true,
+	["Ruleset unavailable. Only your personal record is shown."] = true,
+	["Sharing is off. Only your personal record is shown."] = true,
+	["Install QuestieDB to record supported commission turn-ins."] = true,
+	["Leaderboard"] = true,
+	["Share totals with guild and group"] = true,
+	["Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."] = true,
 }
 
 -- `true` marks a phrase that reads as its own English key.

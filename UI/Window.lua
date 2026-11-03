@@ -143,6 +143,7 @@ function Window.Refresh()
 	Window.list:SetHeight(math.max(1, shown * ROW_HEIGHT))
 	Window.empty:SetShown(shown == 0)
 	Window.notice:SetShown(not ns.Questie.Available())
+	Window.share:SetChecked(ns.Stats.Participating())
 end
 
 local function Attach()
@@ -154,7 +155,38 @@ local function Attach()
 	page:SetPoint("BOTTOMRIGHT", -4, 4)
 	page:Hide()
 	Window.page = page
-	Text(page, "GameFontNormalLarge", 74, -12, 400):SetText(L["Commissions Forever"])
+	Text(page, "GameFontNormalLarge", 74, -12, 350):SetText(L["Commissions Forever"])
+	Window.leaderboard = CreateFrame("Button", nil, page, "SharedButtonSmallTemplate")
+	Window.leaderboard:SetSize(132, 24)
+	Window.leaderboard:SetPoint("TOPRIGHT", -14, -8)
+	Window.leaderboard:SetText(L["Leaderboard"])
+	Window.leaderboard:SetScript("OnClick", function()
+		ns.Stats.Print()
+	end)
+	Window.share = CreateFrame("CheckButton", nil, page, "CheckboxWithLabelTemplate")
+	Window.share:SetSize(26, 26)
+	Window.share:SetPoint("BOTTOMLEFT", 14, 9)
+	Window.share.Text:SetText(L["Share totals with guild and group"])
+	Window.share.Text:SetWidth(300)
+	Window.share.Text:SetJustifyH("LEFT")
+	Window.share:SetScript("OnClick", function(self)
+		ns.Stats.SetEnabled(self:GetChecked() == true)
+	end)
+	Window.share:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText(L["Share totals with guild and group"])
+		GameTooltip:AddLine(
+			L["Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."],
+			nil,
+			nil,
+			nil,
+			true
+		)
+		GameTooltip:Show()
+	end)
+	Window.share:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 	Window.search = CreateFrame("EditBox", nil, page, "SearchBoxTemplate")
 	Window.search:SetSize(250, 20)
 	Window.search:SetPoint("TOPLEFT", 22, -48)

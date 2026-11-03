@@ -1,6 +1,6 @@
 local _, ns = ...
 
-local API = { version = 1, minor = 1 }
+local API = { version = 1, minor = 2 }
 
 ---@param recipeID integer SkillUp Forever recipe ID.
 ---@param crafts? integer Number of outputs to plan for.
@@ -17,6 +17,15 @@ end
 ---@return boolean
 function API.NavigateActiveAssignments()
 	return ns.NavigateActiveAssignments()
+end
+
+-- Fresh local observations and a bounded, current-ruleset guild/group view.
+function API.Stats()
+	return ns.Stats.Activity()
+end
+
+function API.Leaderboard(limit)
+	return ns.Stats.Leaderboard(limit)
 end
 
 _G.CommissionsForever = _G.CommissionsForever or {}

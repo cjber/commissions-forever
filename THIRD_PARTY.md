@@ -16,6 +16,6 @@ Credit for the ideas and reports behind the addon.
 
 | Who | What | Notes |
 |---|---|---|
-| cjber | Asked for the turn-in tracker and the suite-wide setup | |
+| cjber | Asked for the turn-in tracker, observed completion rankings ([#37](https://github.com/cjber/commissions-forever/issues/37)) and the suite-wide setup | |
 
 Thanks also to everyone else who reported a bug or asked for a feature, here or on CurseForge.

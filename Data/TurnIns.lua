@@ -5,6 +5,33 @@ local _, ns = ...
 ns.TurnIns = {
 	{
 		key = "argentDawn",
+		reputationFactions = { "ARGENT_DAWN" },
+		sourceItems = {
+			22600,
+			22601,
+			22602,
+			22603,
+			22604,
+			22605,
+			22606,
+			22607,
+			22608,
+			22609,
+			22610,
+			22611,
+			22612,
+			22613,
+			22614,
+			22615,
+			22616,
+			22617,
+			22618,
+			22620,
+			22621,
+			22622,
+			22623,
+			22624,
+		},
 		faction = "Argent Dawn",
 		place = "Light's Hope Chapel",
 		items = { 12844 }, -- Argent Dawn Valor Token, used to obtain a Craftsman's Writ.
@@ -12,6 +39,7 @@ ns.TurnIns = {
 	},
 	{
 		key = "cenarionCircle",
+		reputationFactions = { "CENARION_CIRCLE" },
 		faction = "Cenarion Circle",
 		place = "Cenarion Hold",
 		items = {}, -- Logistics assignments come from the active quest log, not a guessed briefing item.
@@ -43,6 +71,7 @@ ns.TurnIns = {
 	},
 	{
 		key = "thoriumBrotherhood",
+		reputationFactions = { "THORIUM_BROTHERHOOD" },
 		faction = "Thorium Brotherhood",
 		place = "The Grim Guzzler",
 		items = { 11370, 17012, 11382, 17010, 17011 },
@@ -50,6 +79,7 @@ ns.TurnIns = {
 	},
 	{
 		key = "timbermawHold",
+		reputationFactions = { "TIMBERMAW_HOLD" },
 		faction = "Timbermaw Hold",
 		place = "Timbermaw Hold",
 		items = { 21377, 21383, 20741, 20742 }, -- Headdress Feather, Spirit Beads, Deadwood and Winterfall Ritual Totems.
@@ -58,6 +88,7 @@ ns.TurnIns = {
 	},
 	{
 		key = "morrowgrain",
+		reputationFactions = { "DARNASSUS", "THUNDER_BLUFF" },
 		faction = "Morrowgrain research",
 		place = "Darnassus or Thunder Bluff",
 		items = { 11040, 11018 }, -- Morrowgrain and Un'Goro Soil.

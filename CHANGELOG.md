@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- **Compare observed commission turn-ins with your guild and group.** The Professions page has a leaderboard button and a sharing switch. Supported repeat hand-ins count from the game event, while switching sharing off keeps your local history. Thanks to cjber for the idea.
+
+### For addon authors
+
+- API v1 minor 2 adds `Stats()` and `Leaderboard(limit)` for fresh local observations and the current client ruleset's bounded guild/group rankings. Other players' totals are player-reported.
+
 ## [0.2.2] - 2026-11-03
 
 - **Controls use the Forever asset set.** Buttons use the native gold-bordered family, and CI rejects legacy loose chrome in runtime UI and screenshot renderers.

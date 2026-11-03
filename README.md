@@ -11,6 +11,7 @@ Track materials for repeatable WoW: Forever turn-ins. Open its Professions page 
 - **Repeatable turn-ins.** One list covers Argent Dawn writs, Cenarion Circle Logistics, Thorium Brotherhood, Timbermaw Hold, and Morrowgrain research.
 - **Live assignment objectives.** QuestieDB adds item objectives and finishers from active commission quests; the quest log supplies the required count.
 - **Bag counts.** Item totals refresh after your bags or quest log change.
+- **Observed turn-in totals.** Compare supported completions with your guild and group, separated by the client ruleset. Sharing starts on and can be switched off on the Professions page.
 - **Travel guidance.** If Shortest Path Forever is installed, send the remaining commission finishers as one route.
 
 <p><img src="docs/screenshots/window.png" alt="Commissions Forever lists turn-in materials and bag counts"></p>
@@ -40,11 +41,15 @@ Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever 
 
 Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
+Choose **Leaderboard**, or use `/cf leaderboard`, to print the ranked totals. `/cf share off` stops sending and receiving totals while keeping your personal history; `/cf share on` resumes. Already shared totals cannot be recalled.
+
 ## Data
 
 Turn-in materials are listed by item ID. Active quest requirements and NPC locations come from the current quest log and QuestieDB at runtime. Variable logistics assignments and writs are not guessed from their names.
 
 Other addons can call `CommissionsForever.API.RequiredMaterials(recipeID, crafts)` to ask SkillUp Forever for raw recipe inputs. `ActiveObjectives()` returns item objectives from all quests in the current log; `NavigateActiveAssignments()` filters commission quests and sends their finishers to Shortest Path Forever.
+
+Completions are recorded from `QUEST_TURNED_IN`, beginning when this version is installed. QuestieDB must identify a repeatable commission with a finisher, matching materials or starter item, and the expected reputation reward. Bag changes, quest titles and route clicks never count. Each actual repeat hand-in counts again. One-time tasks, Forever commerce work orders without repeatable metadata, and missing classification fields are unsupported. Nothing is backfilled from earlier play. See [completion records](docs/completions.md) for scope and API details.
 
 ## Works alongside
 

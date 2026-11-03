@@ -17,3 +17,23 @@ L["Turn-in"] = "Turn-in"
 L["Have"] = "Have"
 L["Need"] = "Need"
 L["Item %d"] = "Item %d"
+
+L["Observed commission turn-ins: guild and group"] = "Observed commission turn-ins: guild and group"
+
+L["Current client ruleset only. Other players' totals are player-reported."] = "Current client ruleset only. Other players' totals are player-reported."
+
+L["%d. %s: %d (you)"] = "%d. %s: %d (you)"
+
+L["%d. %s: %d (player-reported)"] = "%d. %s: %d (player-reported)"
+
+L["Ruleset unavailable. Only your personal record is shown."] = "Ruleset unavailable. Only your personal record is shown."
+
+L["Sharing is off. Only your personal record is shown."] = "Sharing is off. Only your personal record is shown."
+
+L["Install QuestieDB to record supported commission turn-ins."] = "Install QuestieDB to record supported commission turn-ins."
+
+L["Leaderboard"] = "Leaderboard"
+
+L["Share totals with guild and group"] = "Share totals with guild and group"
+
+L["Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."] = "Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."

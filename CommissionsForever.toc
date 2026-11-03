@@ -18,5 +18,7 @@ Integrations\Questie.lua
 Integrations\SkillUp.lua
 Integrations\ShortestPath.lua
 Core\Core.lua
+Core\PeerStats.lua
+Core\Stats.lua
 Core\API.lua
 UI\Window.lua
