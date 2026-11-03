@@ -31,4 +31,18 @@ assert(
 	#rows == 1 and rows[1].questID == 13 and rows[1].count == 3 and rows[1].need == 6,
 	"an item an active commission asks for is listed once, on its Have / Need row"
 )
+-- Real catalogue matching: briefings identify Logistics quests with different titles.
+local catalogue = {}
+assert(loadfile("Data/TurnIns.lua"))("CommissionsForever", catalogue)
+assert(loadfile("Core/Model.lua"))("CommissionsForever", catalogue)
+assert(catalogue.Model.IsCommissionQuest("Bandages for the Field", 20806), "briefing identifies Logistics quest")
+assert(catalogue.Model.IsCommissionQuest("Beads for Salfa"), "Timbermaw matches the quest rather than its item name")
+assert(catalogue.Model.IsCommissionQuest("Feathers for Grazle"), "both feather delivery NPCs are supported")
+assert(not catalogue.Model.IsCommissionQuest("The Missing Diplomat", 21105), "Draconic for Dummies is not a briefing")
+rows = catalogue.Model.Inventory(function()
+	return 0
+end, {
+	{ questID = 8496, questName = "Bandages for the Field", sourceItemID = 20806, itemID = 14529, required = 30 },
+})
+assert(#rows == 1 and rows[1].need == 30, "Logistics objectives retain their live requirements")
 print("Commissions Forever model specs passed")

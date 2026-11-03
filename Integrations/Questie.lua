@@ -120,6 +120,11 @@ function Questie.ActiveObjectives()
 	if not (db and fields and C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo) then
 		return {}
 	end
+	-- Older compatible contracts may omit this optional field.
+	local questMeta = db.Meta and db.Meta.QuestMeta
+	if questMeta and questMeta.questKeys and questMeta.questKeys.sourceItemId then
+		fields[#fields + 1] = "sourceItemId"
+	end
 	local shown = C_QuestLog.GetNumQuestLogEntries()
 	local rows = {}
 	for index = 1, shown do
@@ -138,6 +143,7 @@ function Questie.ActiveObjectives()
 						local objective = name and liveItems[name]
 						rows[#rows + 1] = {
 							questID = questID,
+							sourceItemID = values[4],
 							questName = values[1] or info.title or ("Quest " .. questID),
 							itemID = itemID,
 							required = objective and objective.numRequired,

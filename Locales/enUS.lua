@@ -10,6 +10,11 @@ ns.L = {
 	["Install QuestieDB to see your active turn-ins."] = true,
 	["Have %d"] = "Have %d",
 	["Need %d"] = "Need %d",
+	["Material"] = true,
+	["Turn-in"] = true,
+	["Have"] = true,
+	["Need"] = true,
+	["Item %d"] = true,
 }
 
 -- `true` marks a phrase that reads as its own English key.

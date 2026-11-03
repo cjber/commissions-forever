@@ -4,10 +4,16 @@ local Model = {}
 ns.Model = Model
 
 ---@param questName string
+---@param sourceItemID integer?
 ---@return boolean
-function Model.IsCommissionQuest(questName)
+function Model.IsCommissionQuest(questName, sourceItemID)
 	local lowerName = string.lower(questName)
 	for _, turnIn in ipairs(ns.TurnIns) do
+		for _, itemID in ipairs(turnIn.sourceItems or {}) do
+			if sourceItemID == itemID then
+				return true
+			end
+		end
 		if string.find(lowerName, string.lower(turnIn.quest), 1, true) then
 			return true
 		end
@@ -26,7 +32,7 @@ end
 function Model.Inventory(getCount, objectives)
 	local rows, active = {}, {}
 	for _, objective in ipairs(objectives) do
-		if Model.IsCommissionQuest(objective.questName) then
+		if Model.IsCommissionQuest(objective.questName, objective.sourceItemID) then
 			active[objective.itemID] = true
 			rows[#rows + 1] = {
 				turnIn = { key = "active:" .. objective.questID, faction = objective.questName },

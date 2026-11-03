@@ -2,7 +2,7 @@
 
 <h1 align="center">Commissions Forever</h1>
 
-Track materials for repeatable WoW: Forever turn-ins. Open the list with `/commissions` or `/cf`.
+Track materials for repeatable WoW: Forever turn-ins. Open its Professions page with `/commissions` or `/cf`.
 
 [![Tests](https://github.com/cjber/commissions-forever/actions/workflows/test.yml/badge.svg)](https://github.com/cjber/commissions-forever/actions/workflows/test.yml)
 
@@ -35,11 +35,11 @@ Each one works on its own, and they work together when you install more than one
 
 ## Install
 
-Install Commissions Forever from GitHub, CurseForge or Wago. QuestieDB, SkillUp Forever and Shortest Path Forever are optional.
+Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever and Shortest Path Forever are optional.
 
 ## Usage
 
-Use `/commissions` or `/cf` to open the window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
+Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
 ## Data
 
@@ -62,7 +62,3 @@ Thanks to Cillian Berragan for the idea; Blizzard for the client APIs; and the Q
 ## Licence
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).
-
-## Development
-
-Run `stylua --check .`, `luacheck .`, and `luajit tests/model_spec.lua`. Before release, run the complete project-rules gate and visual audit, render screenshots, and check the packaged TOC.
