@@ -12,7 +12,7 @@ Track materials for repeatable WoW: Forever turn-ins. Open its Professions page 
 - **Live assignment objectives.** QuestieDB adds item objectives and finishers from active commission quests; the quest log supplies the required count.
 - **Bag counts.** Item totals refresh after your bags or quest log change.
 - **Travel guidance.** If Shortest Path Forever is installed, send the remaining commission finishers as one route.
-- **Craft breakdowns.** If SkillUp Forever is installed, integrations can read raw recipe materials through its public API.
+- **Raw materials on request.** Other addons read the finisher list through the public API, so SkillUp Forever can show what a turn-in costs to craft. Nothing is drawn for it here.
 
 <p><img src="docs/screenshots/window.png" alt="Commissions Forever lists turn-in materials and bag counts"></p>
 The list groups your held materials and offers a route to active commission turn-ins.
