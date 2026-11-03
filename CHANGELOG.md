@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **The Commissions ledger closes cleanly beside native profession pages.** Item names and active quest requirements refresh when their client data arrives, and Timbermaw turn-ins include both ritual totems.
+
 ## [0.2.0] - 2026-11-03
 
 - **Opening Commissions keeps the ledger selected.** A previously used profession is not recast when `/cf` opens the window.

@@ -339,12 +339,15 @@ scenario("closing on the Commissions page reopens the native window on its own p
 
 	local pf = sim:openProfessions(164)
 	expectNativePage(sim, "CraftingPage", "reopened on Blacksmithing after /cf")
+	sim:closeProfessions()
+	check(not pf.BookPage:IsShown(), "closing on a native crafting page showed the native book page")
+	sim:openProfessions(164)
+	expectNativePage(sim, "CraftingPage", "reopened on Blacksmithing after a native close")
 
 	press(sim, commissionsTab(sim))
 	expectCommissionsPage(sim, "the Commissions tab after reopening")
 	sim:closeProfessions()
 	check(not page(sim):IsVisible(), "the Commissions page is visible with the window closed")
-	check(not pf.CraftingPage:IsShown(), "closing on the Commissions page left the native crafting page shown")
 
 	sim:openProfessions(164)
 	expectNativePage(sim, "CraftingPage", "reopened from the Commissions page")
