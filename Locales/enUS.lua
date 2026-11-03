@@ -1,15 +1,12 @@
 local _, ns = ...
 
+---@type table<string, string | boolean>
 ns.L = {
 	["Commissions Forever"] = true,
-	["Turn-ins"] = true,
-	["Materials in bags"] = true,
 	["No tracked materials found"] = true,
 	["Open turn-in route"] = true,
 	["No active commission route is available."] = true,
 	["Install QuestieDB to see your active turn-ins."] = true,
-	["Have %d"] = "Have %d",
-	["Need %d"] = "Need %d",
 	["Material"] = true,
 	["Turn-in"] = true,
 	["Have"] = true,
