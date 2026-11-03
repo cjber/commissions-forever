@@ -21,10 +21,11 @@ function ns.Toggle()
 	end
 end
 
+-- Every active commission's finishers, finished objectives included: those are the quests ready to hand in.
 function ns.NavigateActiveAssignments()
 	local stops, seen = {}, {}
 	for _, row in ipairs(ns.ActiveObjectives or {}) do
-		if not row.finished and ns.Model.IsCommissionQuest(row.questName) then
+		if ns.Model.IsCommissionQuest(row.questName) then
 			for _, npcID in ipairs(row.npcIDs or {}) do
 				if not seen[npcID] then
 					local npc = ns.Questie.NPC(npcID)

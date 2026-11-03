@@ -79,4 +79,81 @@ assert(ns.Questie.Available(), "QuestieDB is available")
 local npc = ns.Questie.NPC(42)
 assert(npc and npc.name == "Quartermaster" and npc.map == 1, "reads a finisher's map from QuestieDB")
 assert(math.abs(npc.x - 0.43) < 0.001 and math.abs(npc.y - 0.61) < 0.001, "converts QuestieDB coordinates")
+
+local db = rawget(_G, "LibQuestieDB")
+local function ZoneDB(areaMaps, parents)
+	return function()
+		return { private = { areaIdToUiMapId = areaMaps, subZoneToParentZone = parents } }
+	end
+end
+local function Npc(spawns)
+	return function()
+		return { "Quartermaster", spawns, 120 }
+	end
+end
+local NAME_ONLY = { name = "Quartermaster" }
+local npcCases = {
+	{
+		name = "the lowest numeric area wins",
+		getAll = Npc({ [130] = { { 10, 20 } }, [120] = { { 43, 61 } } }),
+		support = ZoneDB("return {[120] = 1, [130] = 2}", "return {}"),
+		want = { name = "Quartermaster", map = 1, x = 0.43, y = 0.61 },
+	},
+	{
+		name = "a subzone falls back to its parent zone's map",
+		getAll = Npc({ [121] = { { 50, 25 } } }),
+		support = ZoneDB("return {[120] = 1}", "return {[121] = 120}"),
+		want = { name = "Quartermaster", map = 1, x = 0.5, y = 0.25 },
+	},
+	{
+		name = "a coordinate above 100 keeps the name only",
+		getAll = Npc({ [120] = { { 101, 50 } } }),
+		want = NAME_ONLY,
+	},
+	{ name = "a negative coordinate keeps the name only", getAll = Npc({ [120] = { { 50, -1 } } }), want = NAME_ONLY },
+	{ name = "no spawns keeps the name only", getAll = Npc(nil), want = NAME_ONLY },
+	{
+		name = "an unparsable area map keeps the name only",
+		getAll = Npc({ [120] = { { 43, 61 } } }),
+		support = ZoneDB("not lua", "return {}"),
+		want = NAME_ONLY,
+	},
+	{
+		name = "a non-string name is no NPC",
+		getAll = function()
+			return { 7, { [120] = { { 43, 61 } } }, 120 }
+		end,
+	},
+	{
+		name = "an erroring reader is no NPC",
+		getAll = function()
+			error("broken")
+		end,
+	},
+	{ name = "a contract without the spawns field is no NPC", npcKeys = { name = 1, zoneID = 3 } },
+}
+for _, case in ipairs(npcCases) do
+	local getAll, support, npcKeys = db.Npc.GetAll, db.Support.Get, db.Meta.NpcMeta.npcKeys
+	db.Npc.GetAll = case.getAll or getAll
+	db.Support.Get = case.support or support
+	db.Meta.NpcMeta.npcKeys = case.npcKeys or npcKeys
+	local got = ns.Questie.NPC(42)
+	db.Npc.GetAll, db.Support.Get, db.Meta.NpcMeta.npcKeys = getAll, support, npcKeys
+	local want = case.want
+	if want == nil then
+		assert(got == nil, case.name)
+	else
+		assert(got and got.name == want.name and got.map == want.map, case.name)
+		assert((got.x == nil) == (want.x == nil) and (got.y == nil) == (want.y == nil), case.name)
+		if want.x then
+			assert(math.abs(got.x - want.x) < 0.001 and math.abs(got.y - want.y) < 0.001, case.name)
+		end
+	end
+end
+
+rawset(_G, "LibQuestieDB", nil)
+assert(not ns.Questie.Available(), "QuestieDB is unavailable without the library")
+assert(next(ns.Questie.ActiveObjectives()) == nil, "no library lists no objectives")
+assert(ns.Questie.NPC(42) == nil, "no library finds no NPC")
+rawset(_G, "LibQuestieDB", db)
 print("Commissions Forever Questie specs passed")

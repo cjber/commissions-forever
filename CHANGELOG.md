@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- **The turn-in route includes commissions ready to hand in.** Open turn-in route left out every quest whose item objectives were complete, so with everything collected it said no route was available. Finished commissions now route to their turn-in NPC like the rest.
+- **A material an active commission asks for is listed once.** It showed twice, as the commission's Have / Need line and again as a plain bag count; only the Have / Need line remains.
+
 ## [0.1.6] - 2026-11-02
 
 - **A quest QuestieDB has no name for still counts as a commission.** The addon read the quest log's title from a field the client does not have, so such a quest showed as "Quest" and its number and was left out of the turn-in list. It now uses the quest log's own title.

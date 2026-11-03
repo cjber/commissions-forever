@@ -24,4 +24,11 @@ rows = ns.Model.Inventory(function(itemID)
 	return itemID == 50 and 3 or 0
 end, objectives)
 assert(#rows == 1 and rows[1].questID == 10 and rows[1].need == 8, "adds the given active commission requirements only")
+rows = ns.Model.Inventory(function(itemID)
+	return itemID == 3 and 3 or 0
+end, { { questID = 13, questName = "Logistics Task Briefing V", itemID = 3, required = 6 } })
+assert(
+	#rows == 1 and rows[1].questID == 13 and rows[1].count == 3 and rows[1].need == 6,
+	"an item an active commission asks for is listed once, on its Have / Need row"
+)
 print("Commissions Forever model specs passed")
