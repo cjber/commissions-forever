@@ -24,17 +24,10 @@ end
 ---@param objectives table[] the active quest item objectives (ns.Questie.ActiveObjectives)
 ---@return {turnIn: table, itemID: integer, count: integer, need: integer?, questID: integer?}[]
 function Model.Inventory(getCount, objectives)
-	local rows = {}
-	for _, turnIn in ipairs(ns.TurnIns) do
-		for _, itemID in ipairs(turnIn.items) do
-			local count = getCount(itemID) or 0
-			if count > 0 then
-				rows[#rows + 1] = { turnIn = turnIn, itemID = itemID, count = count }
-			end
-		end
-	end
+	local rows, active = {}, {}
 	for _, objective in ipairs(objectives) do
 		if Model.IsCommissionQuest(objective.questName) then
+			active[objective.itemID] = true
 			rows[#rows + 1] = {
 				turnIn = { key = "active:" .. objective.questID, faction = objective.questName },
 				itemID = objective.itemID,
@@ -42,6 +35,15 @@ function Model.Inventory(getCount, objectives)
 				need = objective.required,
 				questID = objective.questID,
 			}
+		end
+	end
+	-- An item an active commission asks for shows once, on its Have / Need row.
+	for _, turnIn in ipairs(ns.TurnIns) do
+		for _, itemID in ipairs(turnIn.items) do
+			local count = not active[itemID] and getCount(itemID) or 0
+			if count > 0 then
+				rows[#rows + 1] = { turnIn = turnIn, itemID = itemID, count = count }
+			end
 		end
 	end
 	table.sort(rows, function(a, b)
