@@ -1,8 +1,8 @@
 {
   "package": "forever_tools",
   "source": {
-    "repository": "https://github.com/cjber/skills",
-    "path": "wow-forever-addon/tooling/forever_tools",
+    "repository": "https://github.com/cjber/forever-core",
+    "path": ".agents/skills/wow-forever-addon/tooling/forever_tools",
     "revision": "0aafa3cd391a9b613c106a7a2cd763d743847066"
   },
   "files": {

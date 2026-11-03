@@ -47,6 +47,6 @@ Sloppatrol gate), `workflows`, `secrets` and `package`, each on every pull reque
 
 ## Standards
 
-- `wow-forever-addon`: https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9abafb5dd0/.agents/skills/wow-forever-addon
+- `wow-forever-addon`: https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9dabafb5dd0/.agents/skills/wow-forever-addon
 
 - For window, widget and asset changes, read [wow-retail-ui-style](https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9dabafb5dd0/.agents/skills/wow-retail-ui-style), including its asset registry and blacklist.
