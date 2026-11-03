@@ -9,6 +9,8 @@ stylua --check .
 luacheck .
 for spec in tests/*_spec.lua; do luajit "$spec" || exit 1; done
 bash tools/typecheck.sh
+python3 tools/forever_sim/fetch.py
+luajit tools/forever_sim/run.lua
 python3 tools/screenshots.py
 python3 tools/check_screenshots.py
 python3 tools/visual_audit.py
@@ -35,7 +37,7 @@ Sloppatrol gate), `workflows`, `secrets` and `package`, each on every pull reque
 
 ## Rules
 
-- Extend Blizzard UI using its frame templates and fonts. Keep the standalone window opaque and movable; use native buttons and text.
+- Extend Blizzard UI using its frame templates and fonts. Attach the materials ledger to the native Professions window; use native buttons and text.
 - Do not invent quest requirements or NPC coordinates. The active quest log and QuestieDB own those values.
 - Keep inventory scans event-driven. Do not add idle `OnUpdate` handlers.
 
@@ -45,4 +47,6 @@ Sloppatrol gate), `workflows`, `secrets` and `package`, each on every pull reque
 
 ## Standards
 
-- `wow-forever-addon` — https://github.com/cjber/forever-core/tree/3fd1b7fe109e709c4952bb04622e94d05636585e/.agents/skills/wow-forever-addon
+- `wow-forever-addon`: https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9abafb5dd0/.agents/skills/wow-forever-addon
+
+- For window, widget and asset changes, read [wow-retail-ui-style](https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9dabafb5dd0/.agents/skills/wow-retail-ui-style), including its asset registry and blacklist.

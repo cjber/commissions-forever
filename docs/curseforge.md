@@ -23,6 +23,6 @@ Each one works on its own, and they work together when you install more than one
 
 <!-- forever-family:end -->
 
-Use `/commissions` or `/cf` to open the window. QuestieDB, SkillUp Forever, and Shortest Path Forever are optional.
+Use `/commissions` or `/cf` to open its page in the Professions window. QuestieDB, SkillUp Forever, and Shortest Path Forever are optional.
 
 Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data. Licensed GPL-3.0-or-later.

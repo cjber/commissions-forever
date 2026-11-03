@@ -14,8 +14,32 @@ ns.TurnIns = {
 		key = "cenarionCircle",
 		faction = "Cenarion Circle",
 		place = "Cenarion Hold",
-		items = { 21105 }, -- Logistics Task Briefing; the requested goods vary by assignment.
+		items = {}, -- Logistics assignments come from the active quest log, not a guessed briefing item.
 		quest = "Logistics Task Briefing",
+		-- Client briefing items identify assignments whose quest titles differ from the briefing.
+		sourceItems = {
+			20806,
+			20807,
+			20939,
+			20940,
+			21257,
+			21258,
+			21259,
+			21260,
+			21261,
+			21262,
+			21263,
+			21264,
+			21265,
+			21378,
+			21379,
+			21380,
+			21381,
+			21382,
+			21384,
+			21385,
+			21514,
+		},
 	},
 	{
 		key = "thoriumBrotherhood",
@@ -28,9 +52,9 @@ ns.TurnIns = {
 		key = "timbermawHold",
 		faction = "Timbermaw Hold",
 		place = "Timbermaw Hold",
-		items = { 21377, 21383, 21384 }, -- Headdress Feather, Spirit Beads, Ritual Totem.
+		items = { 21377, 21383, 20741 }, -- Headdress Feather, Spirit Beads, Ritual Totem.
 		quest = "Feathers for Nafien",
-		questAliases = { "Winterfall Spirit Beads", "Deadwood Headdress Feather" },
+		questAliases = { "Beads for Salfa", "Feathers for Grazle", "Deadwood Ritual Totem", "Winterfall Ritual Totem" },
 	},
 	{
 		key = "morrowgrain",

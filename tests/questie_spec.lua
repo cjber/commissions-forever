@@ -75,6 +75,17 @@ assert(
 	"the quest log's title fills a name QuestieDB lacks"
 )
 questDB.GetAll = questieGetAll
+local questKeys = rawget(_G, "LibQuestieDB").Meta.QuestMeta.questKeys
+questKeys.sourceItemId = 11
+questDB.GetAll = function(_, fields)
+	assert(fields[4] == "sourceItemId", "requests optional source item through the public reader")
+	local values = questieGetAll()
+	values[4] = 20806
+	return values
+end
+assert(ns.Questie.ActiveObjectives()[1].sourceItemID == 20806, "briefing source reaches the model")
+questKeys.sourceItemId = nil
+questDB.GetAll = questieGetAll
 assert(ns.Questie.Available(), "QuestieDB is available")
 local npc = ns.Questie.NPC(42)
 assert(npc and npc.name == "Quartermaster" and npc.map == 1, "reads a finisher's map from QuestieDB")

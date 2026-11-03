@@ -11,13 +11,13 @@ function ns.Refresh()
 	ns.ActiveObjectives = ns.Questie.ActiveObjectives()
 	ns.Rows = ns.Model.Inventory(ItemCount, ns.ActiveObjectives)
 	if ns.Window and ns.Window.Refresh then
-		ns.Window:Refresh()
+		ns.Window.Refresh()
 	end
 end
 
 function ns.Toggle()
 	if ns.Window then
-		ns.Window:SetShown(not ns.Window:IsShown())
+		ns.Window.Toggle()
 	end
 end
 
@@ -25,7 +25,7 @@ end
 function ns.NavigateActiveAssignments()
 	local stops, seen = {}, {}
 	for _, row in ipairs(ns.ActiveObjectives or {}) do
-		if ns.Model.IsCommissionQuest(row.questName) then
+		if ns.Model.IsCommissionQuest(row.questName, row.sourceItemID) then
 			for _, npcID in ipairs(row.npcIDs or {}) do
 				if not seen[npcID] then
 					local npc = ns.Questie.NPC(npcID)

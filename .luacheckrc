@@ -15,7 +15,7 @@ globals = { "ForeverFamily", "ForeverTrackerHost",
 	"SlashCmdList",
 }
 
-read_globals = { "CreateFramePoolCollection", "C_XMLUtil",
+read_globals = { "ShowProfessionsFrame", "HideUIPanel", "CreateFramePoolCollection", "C_XMLUtil",
 	"C_TradeSkillUI", "CreateColor", "CreateFrame", "CreateTreeDataProvider", "ScrollBoxConstants", "strcmputf8i", "DEFAULT_CHAT_FRAME", "Enum", "EventRegistry", "EventUtil",
 	"GameTooltip", "GameTooltip_AddColoredLine", "GameTooltip_AddDisabledLine", "GameTooltip_InsertFrame",
 	"GameTooltip_SetTitle", "hooksecurefunc", "Professions", "ProfessionsFrame", "ScrollUtil",

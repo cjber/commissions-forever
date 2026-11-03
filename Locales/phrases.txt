@@ -7,9 +7,13 @@ end
 local L = ns.L
 
 L["Commissions Forever"] = "Commissions Forever"
-L["Have %d"] = "Have %d"
 L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
-L["Need %d"] = "Need %d"
 L["No active commission route is available."] = "No active commission route is available."
 L["No tracked materials found"] = "No tracked materials found"
 L["Open turn-in route"] = "Open turn-in route"
+
+L["Material"] = "Material"
+L["Turn-in"] = "Turn-in"
+L["Have"] = "Have"
+L["Need"] = "Need"
+L["Item %d"] = "Item %d"

@@ -1,12 +1,34 @@
 {
-  "frame": {"x": 6, "y": 1, "w": 460, "h": 390},
-  "scenes": ["window.png"],
+  "frame": {
+    "x": 24,
+    "y": 24,
+    "w": 673,
+    "h": 594
+  },
   "widgets": [
-    {"name": "material list heading", "role": "text", "x": 24, "y": 53, "w": 240, "h": 18},
-    {"name": "Dark Iron Ore row", "role": "text", "x": 24, "y": 79, "w": 300, "h": 18},
-    {"name": "Core Leather row", "role": "text", "x": 24, "y": 101, "w": 300, "h": 18},
-    {"name": "Fiery Core row", "role": "text", "x": 24, "y": 123, "w": 300, "h": 18},
-    {"name": "Morrowgrain row", "role": "text", "x": 24, "y": 145, "w": 300, "h": 18},
-    {"name": "Open turn-in route", "role": "button", "x": 156, "y": 347, "w": 160, "h": 24}
+    {
+      "name": "search",
+      "role": "input",
+      "x": 50,
+      "y": 100,
+      "w": 250,
+      "h": 20
+    },
+    {
+      "name": "ledger",
+      "role": "list",
+      "x": 42,
+      "y": 130,
+      "w": 637,
+      "h": 440
+    },
+    {
+      "name": "route",
+      "role": "button",
+      "x": 489,
+      "y": 580,
+      "w": 190,
+      "h": 24
+    }
   ]
 }
