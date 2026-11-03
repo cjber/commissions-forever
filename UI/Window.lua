@@ -7,6 +7,15 @@ local ROW_HEIGHT = 30
 local page, tab
 local requestedItems = {}
 
+local function IsTrackedItem(itemID)
+	for _, row in ipairs(ns.Rows or {}) do
+		if row.itemID == itemID then
+			return true
+		end
+	end
+	return false
+end
+
 local function Deselect()
 	if page then
 		page:Hide()
@@ -234,7 +243,7 @@ events:RegisterEvent("SKILL_LINES_CHANGED")
 events:SetScript("OnEvent", function(_, event, name)
 	if event == "ADDON_LOADED" and name == "Blizzard_Professions" then
 		Attach()
-	elseif event == "GET_ITEM_INFO_RECEIVED" and requestedItems[name] then
+	elseif event == "GET_ITEM_INFO_RECEIVED" and (requestedItems[name] or IsTrackedItem(name)) then
 		ns.Refresh()
 	elseif event == "SKILL_LINES_CHANGED" and page then
 		PlaceTab()
