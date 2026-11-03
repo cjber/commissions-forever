@@ -10,13 +10,29 @@ permissions:
   contents: read
 
 jobs:
+  deadcode:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: python3 tools/deadcode.py --check
+
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - run: sudo apt-get update && sudo apt-get install -y luajit lua-check
+      # Ubuntu 24.04's release-pocket builds, which the archive never replaces.
+      - name: Install LuaJIT and luacheck
+        env:
+          LUAJIT: 2.1.0+git20231223.c525bcb+dfsg-1
+          LUACHECK: 1.1.2-1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends --allow-downgrades \
+            "luajit=$LUAJIT" "libluajit-5.1-2=$LUAJIT" "libluajit-5.1-common=$LUAJIT" "lua-check=$LUACHECK"
       - run: luacheck .
       - run: for spec in tests/*_spec.lua; do luajit "$spec" || exit 1; done
       - uses: JohnnyMorganz/stylua-action@76fd70c03e6340ceaf673366712db9b20560b402 # v5.0.0
@@ -29,7 +45,7 @@ jobs:
       - run: python3 tools/visual_audit.py
 
   python:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -39,12 +55,19 @@ jobs:
       - run: uvx ruff@0.16.8 format --check tools
 
   typecheck:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - run: sudo apt-get update && sudo apt-get install -y luajit
+      # Ubuntu 24.04's release-pocket builds, which the archive never replaces.
+      - name: Install LuaJIT
+        env:
+          LUAJIT: 2.1.0+git20231223.c525bcb+dfsg-1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends --allow-downgrades \
+            "luajit=$LUAJIT" "libluajit-5.1-2=$LUAJIT" "libluajit-5.1-common=$LUAJIT"
       - name: Install LuaLS 3.19.1
         run: |
           curl -sSfL -o "$RUNNER_TEMP/luals.tar.gz" https://github.com/LuaLS/lua-language-server/releases/download/3.19.1/lua-language-server-3.19.1-linux-x64.tar.gz
@@ -55,29 +78,21 @@ jobs:
       - run: bash tools/typecheck.sh
 
   project-rules:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+      # A release publishes its changelog entry, so every tagged version needs one.
+      - run: python3 tools/changelog.py --check
       - env:
           BASE: ${{ github.base_ref || github.event.repository.default_branch }}
         run: python3 .sloppatrol/gate.py --base "origin/$BASE"
       - run: python3 .sloppatrol/agents.py check
 
-  changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # Every v* tag is a released version that needs its own CHANGELOG.md section.
-          fetch-depth: 0
-          persist-credentials: false
-      - run: python3 tools/changelog.py --check
-
   workflows:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -88,7 +103,7 @@ jobs:
 
   # Secret scan over the whole history, exactly as the released suite does it.
   secrets:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -104,7 +119,7 @@ jobs:
   # What a tag would ship, checked before it ships: the release workflow's packager without uploading or zipping,
   # then tools/check_package.py on .release/ (every file the TOC loads, no development folders).
   package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -112,7 +127,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       # check_package.py runs each spec over the packaged files, so the job needs the interpreter.
-      - run: sudo apt-get update && sudo apt-get install -y luajit
+      # Ubuntu 24.04's release-pocket builds, which the archive never replaces.
+      - name: Install LuaJIT
+        env:
+          LUAJIT: 2.1.0+git20231223.c525bcb+dfsg-1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends --allow-downgrades \
+            "luajit=$LUAJIT" "libluajit-5.1-2=$LUAJIT" "libluajit-5.1-common=$LUAJIT"
       - run: printf 'Package check\n' > .release-notes.md
       - name: Package this commit as an untagged build
         run: git tag --points-at HEAD | xargs -r git tag --delete
