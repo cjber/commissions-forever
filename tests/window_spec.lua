@@ -75,14 +75,17 @@ local function Region()
 				SetCustomOnMouseUpHandler = function(self, fn)
 					self.click = fn
 				end,
-				GetLeft = function()
-					return 10
+				SetPoint = function(self, ...)
+					self.point = { ... }
 				end,
-				GetBottom = function()
-					return 100
+				GetLeft = function(self)
+					return rawget(self, "left") or 10
 				end,
-				GetTop = function()
-					return 500
+				GetBottom = function(self)
+					return rawget(self, "bottom") or 100
+				end,
+				GetTop = function(self)
+					return rawget(self, "top") or 500
 				end,
 			}
 			return methods[key] or function() end
@@ -142,12 +145,22 @@ local function Visible()
 	end
 	return count
 end
+-- Two other addon tabs occupy consecutive slots outside the native profession array.
+local firstTab, secondTab = Region(), Region()
+firstTab.top, firstTab.bottom = 98, 60
+secondTab.top, secondTab.bottom = 58, 20
+firstTab:Show()
+secondTab:Show()
+host.children[#host.children + 1] = firstTab
+host.children[#host.children + 1] = secondTab
 ns.Rows = {}
 for index = 1, 30 do
 	ns.Rows[index] = { turnIn = { faction = "Thorium Brotherhood" }, itemID = index, count = index }
 end
 window.Toggle()
 assert(window.page.shown and ProfessionsFrame.shown, "slash command opens the native host and commissions page")
+assert(window.tab.point[2] == secondTab, "commissions leaves both existing addon tabs visible and uses the next slot")
+assert(firstTab.shown and secondTab.shown, "placing commissions does not hide other addon tabs")
 window.Refresh()
 assert(Visible() == 30 and window.list.height == 30 * 30, "all rows remain reachable through scrolling")
 assert(window.rows[30].name.text == "Item 30", "the final row is not lost")
