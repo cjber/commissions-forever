@@ -52,7 +52,7 @@ ns.TurnIns = {
 		key = "timbermawHold",
 		faction = "Timbermaw Hold",
 		place = "Timbermaw Hold",
-		items = { 21377, 21383, 20741 }, -- Headdress Feather, Spirit Beads, Ritual Totem.
+		items = { 21377, 21383, 20741, 20742 }, -- Headdress Feather, Spirit Beads, Deadwood and Winterfall Ritual Totems.
 		quest = "Feathers for Nafien",
 		questAliases = { "Beads for Salfa", "Feathers for Grazle", "Deadwood Ritual Totem", "Winterfall Ritual Totem" },
 	},
