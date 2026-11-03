@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-03
+
 - **The Commissions ledger closes cleanly beside native profession pages.** Item names and active quest requirements refresh when their client data arrives, and Timbermaw turn-ins include both ritual totems.
 
 ## [0.2.0] - 2026-11-03
