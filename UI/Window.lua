@@ -203,8 +203,10 @@ local function Attach()
 	ProfessionsFrame.CraftingPage:HookScript("OnShow", Deselect)
 	ProfessionsFrame.BookPage:HookScript("OnShow", Deselect)
 	ProfessionsFrame:HookScript("OnHide", function()
-		Deselect()
-		ProfessionsFrame.BookPage:Show()
+		if page and page:IsShown() then
+			Deselect()
+			ProfessionsFrame:SelectBookPage()
+		end
 	end)
 	Window.Refresh()
 end
@@ -232,7 +234,7 @@ events:RegisterEvent("SKILL_LINES_CHANGED")
 events:SetScript("OnEvent", function(_, event, name)
 	if event == "ADDON_LOADED" and name == "Blizzard_Professions" then
 		Attach()
-	elseif event == "GET_ITEM_INFO_RECEIVED" then
+	elseif event == "GET_ITEM_INFO_RECEIVED" and requestedItems[name] then
 		ns.Refresh()
 	elseif event == "SKILL_LINES_CHANGED" and page then
 		PlaceTab()
