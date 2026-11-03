@@ -410,3 +410,18 @@ scenario("Questie's tracker and an old saved file", { stubs = { Questie = {} } }
 	expectCommissionsPage(sim, "/cf with Questie's tracker")
 	check(rows(sim) == "Dark Iron Ore, Fiery Core, Lava Core", "rows with Questie: " .. rows(sim))
 end)
+
+scenario("slash opens the ledger after a previously selected profession without recasting it", function(sim)
+	world(sim)
+	sim:login()
+	local host = sim:openProfessions(164)
+	check(host.selectedSkillLine == 164, "the native window did not remember Blacksmithing")
+	sim:closeProfessions()
+	local casts = 0
+	sim.impl["C_SpellBook.CastSpellBookItem"] = function()
+		casts = casts + 1
+	end
+	slash(sim)
+	check(casts == 0, "/cf recast the old profession, whose TRADE_SKILL_SHOW would replace the ledger")
+	expectCommissionsPage(sim, "/cf after closing a previously selected profession")
+end)

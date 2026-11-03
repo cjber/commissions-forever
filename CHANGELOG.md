@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- **Opening Commissions keeps the ledger selected.** A previously used profession is not recast when `/cf` opens the window.
 - **Commissions lives in the Professions window.** A native side tab opens a compact, searchable materials ledger with separate Have and Need columns. Native profession pages and other addon pages share the host cleanly.
 - **Logistics assignments match their briefing items.** Quests such as Bandages for the Field now appear with their live requirements. Timbermaw deliveries match their quest titles.
 - **The Timbermaw catalogue uses Deadwood Ritual Totem.** Logistics briefing documents are no longer mistaken for turn-in materials. Uncached item names refresh when the client receives their data.

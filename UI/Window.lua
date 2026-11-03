@@ -214,6 +214,10 @@ function Window.Toggle()
 		HideUIPanel(ProfessionsFrame)
 		return
 	end
+	-- Clear the host's remembered profession through its native API before OnShow can recast it.
+	if ProfessionsFrame then
+		ProfessionsFrame:SelectBookPage()
+	end
 	ShowProfessionsFrame()
 	Attach()
 	if page then

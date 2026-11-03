@@ -14,6 +14,7 @@ UISpecialFrames = {}
 ---@class CommissionsSideTab : Frame
 ---@field SetChecked fun(self: CommissionsSideTab, checked: boolean)
 ---@class CommissionsProfessionsFrame : Frame
+---@field SelectBookPage fun(self: CommissionsProfessionsFrame)
 ---@field CraftingPage Frame
 ---@field BookPage Frame
 ---@field ProfessionsOverviewTab CommissionsSideTab
