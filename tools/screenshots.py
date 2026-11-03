@@ -101,8 +101,11 @@ def window(ui, *, sharing=True, empty=False, available=True):
     return canvas, layout
 
 
+UI_ART_BUILD = "1.60.1.70124"
+
+
 def main():
-    ui = wowmock.Ui(scale=2)
+    ui = wowmock.Ui(build=UI_ART_BUILD, scale=2)
     output = ROOT / "docs" / "screenshots"
     output.mkdir(parents=True, exist_ok=True)
     variants = {
