@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-11-04
+
+- **Suite tooling stays in step with Forever Core.** The vendored shared-file drift check picks up Forever Core's newest rules, so this addon's gate now rejects what the rest of the suite rejects. Nothing a player sees changes.
+
+
 ## [0.2.5] - 2026-11-04
 
 - **The shared asset scanner reads XML too.** Adopted from Forever Core: backdrop file attributes, inline script handlers and texture markup in XML text are checked against the same asset blacklist as Lua.
