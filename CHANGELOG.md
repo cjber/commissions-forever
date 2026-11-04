@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-11-04
+
+- **The shared asset scanner reads XML too.** Adopted from Forever Core: backdrop file attributes, inline script handlers and texture markup in XML text are checked against the same asset blacklist as Lua.
+
 ## [0.2.4] - 2026-11-04
 
 - **Screenshot art keeps its reviewed build.** The renderer records its UI-art pin independently of shared tooling updates, and changing it requires fresh screenshots.
