@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-11-05
+
+- **Suite tooling stays in step with Forever Core.** The vendored client load gate picks up Forever Core's newest rules, so this addon refuses a font object the client does not define and a TOC that lists Bindings.xml, the same as the rest of the suite. Nothing a player sees changes.
+
 ## [0.2.7] - 2026-11-05
 
 - **The retired merge bot's workflow is gone.** The MergeLoop workflow, its config and its agent skill were removed from the repo, so nothing here waits on a bot that no longer runs. Nothing a player sees changes.
