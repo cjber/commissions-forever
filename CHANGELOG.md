@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-11-05
+
+- **Suite tooling stays in step with Forever Core.** The vendored menu-scroll check now runs in the required shared job, and the addon's own context menu caps its height and scrolls, so a long list of commissions stays reachable on any screen. The unused dropdown helper is gone from the shared settings page.
+
 ## [0.2.8] - 2026-11-05
 
 - **Suite tooling stays in step with Forever Core.** The vendored client load gate picks up Forever Core's newest rules, so this addon refuses a font object the client does not define and a TOC that lists Bindings.xml, the same as the rest of the suite. Nothing a player sees changes.
