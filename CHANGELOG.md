@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- **Suite tooling stays in step with Forever Core.** The vendored shared-file check knows about the new tracker header menu spec. Nothing a player sees changes.
+## [0.2.10] - 2026-11-05
+
+- **Suite tooling stays in step with Forever Core.** The vendored shared-file check knows about the new tracker header menu spec, and the vendored changelog check is current. Nothing a player sees changes.
 
 ## [0.2.9] - 2026-11-05
 
