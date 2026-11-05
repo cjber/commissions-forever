@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Suite tooling stays in step with Forever Core.** The vendored shared-file check knows about the new tracker header menu spec. Nothing a player sees changes.
+
 ## [0.2.9] - 2026-11-05
 
 - **Suite tooling stays in step with Forever Core.** The vendored menu-scroll check now runs in the required shared job, and the addon's own context menu caps its height and scrolls, so a long list of commissions stays reachable on any screen. The unused dropdown helper is gone from the shared settings page.
