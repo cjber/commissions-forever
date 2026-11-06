@@ -33,7 +33,7 @@
 
 ## [0.2.3] - 2026-11-03
 
-- **Compare observed commission turn-ins with your guild and group.** The Professions page has a leaderboard button and a sharing switch. Supported repeat hand-ins count from the game event, while switching sharing off keeps your local history. Thanks to cjber for the idea.
+- **Compare observed commission turn-ins with your guild and group.** The Professions page has a leaderboard button and a sharing switch. Supported repeat hand-ins count from the game event, while switching sharing off keeps your local history.
 
 ### For addon authors
 
