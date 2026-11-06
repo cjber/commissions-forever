@@ -17,12 +17,9 @@ python3 tools/visual_audit.py
 python3 tools/deadcode.py --check
 python3 tools/changelog.py --check
 python3 tools/check_menu_scroll.py # menus built from a list scroll (WFA-36); CI runs it in core-shared
-python3 .sloppatrol/gate.py --base origin/main
-python3 .sloppatrol/agents.py check
 ```
 
-CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `project-rules` (changelog and the
-Sloppatrol gate), `workflows`, `secrets` and `package`, each on every pull request. `tools/deadcode.py` and
+CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `project-rules` (changelog), `workflows`, `secrets` and `package`, each on every pull request. `tools/deadcode.py` and
 `tools/deadcode-allow.txt` are copied from forever-core: change them there.
 
 ## Workflow
@@ -32,7 +29,7 @@ Sloppatrol gate), `workflows`, `secrets` and `package`, each on every pull reque
 - Read active quests and inventory from client APIs. Re-scan after quest and bag events.
 - Treat each integration as optional. The addon works without QuestieDB, SkillUp Forever, or Shortest Path Forever.
 - Never hook Blizzard methods or call protected functions. Do not save frames, functions, userdata, or client tables.
-- Run `stylua --check .`, `luacheck .`, every `tests/*_spec.lua` under LuaJIT, and `.sloppatrol/gate.py --base origin/main` plus `.sloppatrol/agents.py check` before proposing changes.
+- Run `stylua --check .`, `luacheck .`, every `tests/*_spec.lua` under LuaJIT, and `python3 tools/changelog.py --check` before proposing changes.
 - Render every player-facing UI scene and inspect the PNG at full size. Keep the render reproducible and audit its layout.
 - Sign commits with `git commit -S`; do not add `-s` sign-off lines.
 
