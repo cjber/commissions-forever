@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- **You appear once on leaderboards with a two-part name.** A Forever name like Hel Io no longer shows twice, once as you and once as a reported player with the same value.
 
 ## [0.2.11] - 2026-11-06
 - **The materials ledger uses the game's own list art.** Its border, rows and row highlight are the client's common list pieces rather than a professions recipe panel, so the page reads as part of the Professions window.
