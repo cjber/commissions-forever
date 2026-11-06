@@ -7,8 +7,10 @@ local function Region()
 				CreateFontString = function()
 					return Region()
 				end,
-				CreateTexture = function()
-					return Region()
+				CreateTexture = function(_, _, layer)
+					local texture = Region()
+					texture.layer = layer
+					return texture
 				end,
 				SetText = function(self, value)
 					self.text = tostring(value)
@@ -19,8 +21,26 @@ local function Region()
 				SetSize = function(self, width, height)
 					self.width, self.height = width, height
 				end,
+				SetScale = function(self, scale)
+					self.scale = scale
+				end,
+				GetScale = function(self)
+					return self.scale or 1
+				end,
+				SetBlendMode = function(self, blend)
+					self.blend = blend
+				end,
+				SetAtlas = function(self, atlas)
+					self.atlas = atlas
+				end,
+				SetHighlightTexture = function(self, texture, blendMode)
+					self.highlightTexture, self.highlightBlend = texture, blendMode
+				end,
 				SetHeight = function(self, height)
 					self.height = height
+				end,
+				GetHeight = function(self)
+					return self.height
 				end,
 				GetWidth = function(self)
 					return self.width
@@ -143,6 +163,7 @@ local ns = {
 	},
 }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
+assert(loadfile("UI/Art.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 local function Visible()
 	local count = 0
@@ -172,6 +193,41 @@ assert(firstTab.shown and secondTab.shown, "placing commissions does not hide ot
 window.Refresh()
 assert(Visible() == 30 and window.list.height == 30 * 30, "all rows remain reachable through scrolling")
 assert(window.rows[30].name.text == "Cached item 30", "the final row is not lost")
+assert(window.inset.background.atlas == "common-insideframe", "the ledger inset uses the native common-insideframe")
+local row = window.rows[1]
+local scale = 30 / 69
+assert(row.background.atlas == "common-button-list-large", "row background uses the native list row atlas")
+assert(row.selected.atlas == "common-button-list-large-selected", "row selected state uses the native list row atlas")
+assert(row.hover.atlas == "common-button-list-large-hover", "row hover uses the native list row atlas")
+assert(
+	row.background.height == 69 and row.selected.height == 69 and row.hover.height == 69,
+	"row art keeps the list atlases' native 69 height"
+)
+assert(
+	math.abs(row.background:GetScale() - scale) < 1e-9
+		and math.abs(row.selected:GetScale() - scale) < 1e-9
+		and math.abs(row.hover:GetScale() - scale) < 1e-9,
+	"row art scales uniformly to the 30-high row"
+)
+assert(math.abs(row.hover.width - row:GetWidth() / scale) < 1e-9, "row art fills the row before it is scaled")
+assert(
+	row.hover.layer == "HIGHLIGHT" and row.hover.blend == "ADD",
+	"row hover is a highlight texture added like the Who list"
+)
+assert(row.highlightTexture == row.hover and row.highlightBlend == "ADD", "row hover is the button's highlight texture")
+assert(not row.selected.shown, "row selected art starts hidden")
+row.height = 46
+for _, hook in ipairs(row.hooks.OnSizeChanged) do
+	hook(row)
+end
+assert(
+	math.abs(row.hover:GetScale() - 46 / 69) < 1e-9 and row.hover.height == 69,
+	"row art is re-laid on OnSizeChanged"
+)
+row.height = 30
+for _, hook in ipairs(row.hooks.OnSizeChanged) do
+	hook(row)
+end
 window.search:SetText("Cached item 30")
 window.search.hooks.OnTextChanged[1]()
 assert(Visible() == 1 and window.rows[1].name.text == "Cached item 30", "search filters without losing the final row")

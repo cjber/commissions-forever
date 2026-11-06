@@ -89,7 +89,11 @@ local function Row(index)
 		row:SetPoint("TOPLEFT", 4, -(index - 1) * ROW_HEIGHT)
 		row:SetPoint("TOPRIGHT", -4, -(index - 1) * ROW_HEIGHT)
 		row:SetHeight(ROW_HEIGHT)
-		row:SetHighlightAtlas("Professions_Recipe_Hover")
+		row.background = ns.Art.RowAtlas(row, "common-button-list-large", "BACKGROUND")
+		row.selected = ns.Art.RowAtlas(row, "common-button-list-large-selected", "BACKGROUND")
+		row.selected:Hide()
+		row.hover = ns.Art.RowAtlas(row, "common-button-list-large-hover", "HIGHLIGHT", "ADD")
+		row:SetHighlightTexture(row.hover, "ADD")
 		row.icon = row:CreateTexture(nil, "ARTWORK")
 		row.icon:SetSize(24, 24)
 		row.icon:SetPoint("LEFT", 4, 0)
@@ -194,13 +198,16 @@ local function Attach()
 	Window.search:HookScript("OnTextChanged", Window.Refresh)
 	Window.notice = Text(page, "GameFontDisableSmall", 288, -52, 350)
 	Window.notice:SetText(L["Install QuestieDB to see your active turn-ins."])
-	local inset = CreateFrame("Frame", nil, page, "InsetFrameTemplate")
+	local inset = CreateFrame("Frame", nil, page)
 	inset:SetPoint("TOPLEFT", 14, -78)
 	inset:SetPoint("BOTTOMRIGHT", -14, 44)
+	Window.inset = inset
 	local background = inset:CreateTexture(nil, "BACKGROUND")
+	inset.background = background
 	background:SetPoint("TOPLEFT", 2, -2)
 	background:SetPoint("BOTTOMRIGHT", -2, 2)
-	background:SetAtlas("Professions-background-summarylist")
+	-- art-ok: common-insideframe is a nine-slice, so the client keeps its 53px corners (WhoList.xml:86).
+	background:SetAtlas("common-insideframe")
 	for _, column in ipairs({
 		{ "Material", 40, 218 },
 		{ "Turn-in", 264, 170 },

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **The materials ledger uses the game's own list art.** Its border, rows and row highlight are the client's common list pieces rather than a professions recipe panel, so the page reads as part of the Professions window.
+
 ## [0.2.10] - 2026-11-05
 
 - **Suite tooling stays in step with Forever Core.** The vendored shared-file check knows about the new tracker header menu spec, and the vendored changelog check is current. Nothing a player sees changes.
