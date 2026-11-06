@@ -8,7 +8,15 @@ from forever_tools.screens import files, main
 ROOT = Path(__file__).resolve().parents[1]
 SCENES = {
     name: lambda: files(
-        ROOT, ["tools/screenshots.py", "UI/Window.lua", "Data/TurnIns.lua", "Core/Model.lua", "Locales/enUS.lua"]
+        ROOT,
+        [
+            "tools/screenshots.py",
+            "UI/Art.lua",
+            "UI/Window.lua",
+            "Data/TurnIns.lua",
+            "Core/Model.lua",
+            "Locales/enUS.lua",
+        ],
     )
     for name in ("window.png", "sharing-off.png", "empty.png", "questiedb-missing.png")
 }

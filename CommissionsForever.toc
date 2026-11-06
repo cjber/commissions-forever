@@ -21,4 +21,5 @@ Core\Core.lua
 Core\PeerStats.lua
 Core\Stats.lua
 Core\API.lua
+UI\Art.lua
 UI\Window.lua

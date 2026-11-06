@@ -14,9 +14,35 @@ sys.path.insert(0, str(CORE / "tools" / "wowmock"))
 import wowmock  # noqa: E402
 
 SOURCE = (ROOT / "UI" / "Window.lua").read_text()
+ART = (ROOT / "UI" / "Art.lua").read_text()
 ROW_HEIGHT = int(re.search(r"local ROW_HEIGHT = (\d+)", SOURCE)[1])
+ROW_WIDTH = 576  # Window.list is 584 wide, minus the row's 4-unit left and right insets.
+NATIVE_ROW_HEIGHT = int(re.search(r"local NATIVE_HEIGHT = (\d+)", ART)[1])  # WhoList.xml draws these on a 69-high row.
 WIDTH, HEIGHT = 673, 594  # Blizzard_Professions/Camelot/Blizzard_ProfessionsFrame.xml
 X, Y = 24, 24
+
+
+def row_atlas(canvas, ui, name, x, y, width, height):
+    """Draw a Who list row piece at native height, scaled uniformly, with only its ends kept out of the stretch."""
+    atlas = ui.atlas(name)
+    scale = height / NATIVE_ROW_HEIGHT
+    density = atlas.image.width / atlas.width
+    left, _, right, _ = atlas.slice
+    left_px, right_px = round(left * density), round(right * density)
+    for source, offset, piece_width in (
+        (atlas.image.crop((0, 0, left_px, atlas.image.height)), 0, left * scale),
+        (
+            atlas.image.crop((left_px, 0, atlas.image.width - right_px, atlas.image.height)),
+            left * scale,
+            width - (left + right) * scale,
+        ),
+        (
+            atlas.image.crop((atlas.image.width - right_px, 0, atlas.image.width, atlas.image.height)),
+            width - right * scale,
+            right * scale,
+        ),
+    ):
+        canvas.draw(source, x + offset, y, piece_width, height)
 
 
 def sample_rows():
@@ -63,8 +89,7 @@ def window(ui, *, sharing=True, empty=False, available=True):
         )
     ix, iy = px + 14, py + 78
     iw, ih = WIDTH - 8 - 28, HEIGHT - 32 - 78 - 44
-    canvas.draw(ui.atlas("Professions-background-summarylist"), ix + 2, iy + 2, iw - 4, ih - 4)
-    canvas.nine_slice(wowmock.INSET_FRAME_LAYOUT, ix, iy, iw, ih)
+    canvas.draw(ui.atlas("common-insideframe"), ix + 2, iy + 2, iw - 4, ih - 4)
     columns = re.findall(r'\{ "(Material|Turn-in|Have|Need)", (\d+), (\d+) \}', SOURCE)
     for label, offset, width in columns:
         canvas.text(ix + int(offset), iy + 10, label, wowmock.FONTS["GameFontNormalSmall"], width=int(width))
@@ -73,6 +98,7 @@ def window(ui, *, sharing=True, empty=False, available=True):
     for index, (item_id, count, source) in enumerate([] if empty else sample_rows()):
         # Scroll content TOPLEFT (4,-32), each row TOPLEFT (4,-index*ROW_HEIGHT).
         rx, ry = ix + 8, iy + 32 + index * ROW_HEIGHT
+        row_atlas(canvas, ui, "common-button-list-large", rx, ry, ROW_WIDTH, ROW_HEIGHT)
         item = ui.item(int(item_id))
         canvas.draw(ui.texture(item.icon), rx + 4, ry + 3, 24, 24)
         for offset, text, font, width in [
