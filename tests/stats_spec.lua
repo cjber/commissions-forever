@@ -162,7 +162,7 @@ check(type(leaderboards) == "table" and type(leaderboards.boards.commissions) ==
 local spec = leaderboards.boards.commissions
 check(spec.title == "Commissions Forever", "the tab carries the addon's title")
 check(spec.metric == "Commission turn-ins", "the board names its metric")
-check(spec.icon == "Interface\\AddOns\\CommissionsForever\\media\\Icon", "the tab carries the shipped icon")
+check(spec.icon == "Interface\\Icons\\INV_Letter_15", "the tab carries the game's letter icon")
 check(type(spec.revision) == "function" and spec.revision() >= 0, "the board has a revision callback")
 check(spec.sharing(), "sharing reads the saved switch")
 local allRows = spec.board("all")

@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- **The Forever Leaderboards tab wears a game icon.** Its tab uses the client's `INV_Letter_15` letter icon instead of the addon's own logo, so it matches the game's tab set (cjber/forever-core#180).
 
 ## [0.2.15] - 2026-11-07
 - **Leaderboards show full names.** The Forever Leaderboards rows and tooltips show a player's first name and surname, such as "Dirtyjoke Lovetties", instead of one run-together word or the first name alone. (cjber/forever-core#179)
