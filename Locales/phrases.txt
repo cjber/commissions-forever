@@ -6,34 +6,45 @@ if GetLocale() ~= "deDE" then
 end
 local L = ns.L
 
+L["(you)"] = "(you)"
+L[", "] = ", "
+L["1st"] = "1st"
+L["2nd"] = "2nd"
+L["3rd"] = "3rd"
+L["4th"] = "4th"
+L["5th"] = "5th"
+L["6th"] = "6th"
+L["7th"] = "7th"
+L["8th"] = "8th"
+L["All time"] = "All time"
+L["Already shared totals cannot be recalled."] = "Already shared totals cannot be recalled."
+L["Commission turn-ins"] = "Commission turn-ins"
 L["Commissions Forever"] = "Commissions Forever"
-L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
-L["No active commission route is available."] = "No active commission route is available."
-L["No tracked materials found"] = "No tracked materials found"
-L["Open turn-in route"] = "Open turn-in route"
-
-L["Material"] = "Material"
-L["Turn-in"] = "Turn-in"
+L["Forever Leaderboards"] = "Forever Leaderboards"
+L["Forever standing"] = "Forever standing"
+L["Forever: %s overall"] = "Forever: %s overall"
+L["Forever: %s overall this week"] = "Forever: %s overall this week"
 L["Have"] = "Have"
-L["Need"] = "Need"
+L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
 L["Item %d"] = "Item %d"
-
-L["Observed commission turn-ins: guild and group"] = "Observed commission turn-ins: guild and group"
-
-L["Current client ruleset only. Other players' totals are player-reported."] = "Current client ruleset only. Other players' totals are player-reported."
-
-L["%d. %s: %d (you)"] = "%d. %s: %d (you)"
-
-L["%d. %s: %d (player-reported)"] = "%d. %s: %d (player-reported)"
-
-L["Ruleset unavailable. Only your personal record is shown."] = "Ruleset unavailable. Only your personal record is shown."
-
-L["Sharing is off. Only your personal record is shown."] = "Sharing is off. Only your personal record is shown."
-
-L["Install QuestieDB to record supported commission turn-ins."] = "Install QuestieDB to record supported commission turn-ins."
-
 L["Leaderboard"] = "Leaderboard"
-
-L["Share totals with guild and group"] = "Share totals with guild and group"
-
-L["Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."] = "Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."
+L["Material"] = "Material"
+L["Need"] = "Need"
+L["No active commission route is available."] = "No active commission route is available."
+L["No one has reported yet."] = "No one has reported yet."
+L["No tracked materials found"] = "No tracked materials found"
+L["On unless you turn it off. Shares commission totals and puts you on Forever Leaderboards."] = "On unless you turn it off. Shares commission totals and puts you on Forever Leaderboards."
+L["Open turn-in route"] = "Open turn-in route"
+L["Others' values are player-reported."] = "Others' values are player-reported."
+L["Overall"] = "Overall"
+L["Player"] = "Player"
+L["Points for placing on each addon's board."] = "Points for placing on each addon's board."
+L["Rank"] = "Rank"
+L["Share my progress"] = "Share my progress"
+L["This week"] = "This week"
+L["Turn-in"] = "Turn-in"
+L["Uses Forever addons"] = "Uses Forever addons"
+L["Your guild and group"] = "Your guild and group"
+L["board"] = "board"
+L["boards"] = "boards"
+L["total"] = "total"

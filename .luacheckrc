@@ -3,12 +3,14 @@ max_line_length = 120
 exclude_files = { "tools/.cache/**", "tools/forever_tools/**", ".release/**", ".types/**", "types/**", ".claude/**", ".agents/**" , ".bugpatrol/runs/**", ".speedpatrol/runs/**", ".sloppatrol/runs/**"}
 ignore = { "212/_.*" } -- unused args prefixed with _
 
-globals = { "ForeverFamily", "ForeverTrackerHost",
+globals = { "ForeverFamily", "ForeverLeaderboards", "ForeverTrackerHost",
 	"CommissionsForeverDB",
 	"CommissionsForeverWindow",
 	"CommissionsForever",
 	"SLASH_COMMISSIONSFOREVER1",
 	"SLASH_COMMISSIONSFOREVER2",
+	"SLASH_FOREVERLEADERBOARDS1",
+	"SLASH_FOREVERLEADERBOARDS2",
 	"CommissionsForever_OnAddonCompartmentClick",
 	"CommissionsForever",
 	"SlashCmdList",
@@ -16,6 +18,7 @@ globals = { "ForeverFamily", "ForeverTrackerHost",
 }
 
 read_globals = { "ShowProfessionsFrame", "HideUIPanel", "CreateFramePoolCollection", "C_XMLUtil",
+	"C_DateAndTime", "RAID_CLASS_COLORS", "GREEN_FONT_COLOR", "tContains", "UISpecialFrames",
 	"C_TradeSkillUI", "CreateColor", "CreateFrame", "CreateTreeDataProvider", "ScrollBoxConstants", "strcmputf8i", "DEFAULT_CHAT_FRAME", "Enum", "EventRegistry", "EventUtil",
 	"GameTooltip", "GameTooltip_AddColoredLine", "GameTooltip_AddDisabledLine", "GameTooltip_InsertFrame",
 	"GameTooltip_SetTitle", "hooksecurefunc", "Professions", "ProfessionsFrame", "ScrollUtil",
@@ -48,6 +51,6 @@ read_globals[#read_globals + 1] = "AuctionHouseFrame"
 
 read_globals[#read_globals + 1] = "MinimalSliderWithSteppersMixin"
 
-for _, name in ipairs({ "GetServerTime", "GetTime", "GetRealmName", "IsInGuild", "IsInGroup", "IsInRaid", "GetNumGroupMembers", "LE_PARTY_CATEGORY_HOME", "LE_PARTY_CATEGORY_INSTANCE", "C_ChatInfo", "C_GameRules", "ForeverPeerStats" }) do
+for _, name in ipairs({ "GetServerTime", "GetTime", "GetRealmName", "IsInGuild", "IsInGroup", "IsInRaid", "GetNumGroupMembers", "GetGuildRosterInfo", "GetNumGuildMembers", "LE_PARTY_CATEGORY_HOME", "LE_PARTY_CATEGORY_INSTANCE", "C_ChatInfo", "C_GameRules", "ForeverPeerStats" }) do
 	read_globals[#read_globals + 1] = name
 end

@@ -6,7 +6,7 @@ QuestieDB is required for classification. Through its public contract, the addon
 
 Supported categories are Argent Dawn writs, Cenarion Circle logistics assignments, the listed Thorium Brotherhood deliveries, repeatable Timbermaw deliveries, and repeatable Morrowgrain hand-ins. One-time research, soil and ritual-totem quests do not count. Forever commerce work orders lack the required repeatable metadata and are unsupported. QuestieDB objective quantities may be zero or absent. They are not used to classify a completed quest or to estimate how many materials were delivered. Argent Dawn includes the repeatable valor-token hand-in used to obtain a writ.
 
-Sharing defaults on. The page checkbox or `/cf share off` stops sending and receiving, cancels queued sends, and shows only the personal row. Personal recording continues. Received totals already held by another player cannot be recalled. `/cf share on` resumes guild/group sharing. There is no public server or global ranking.
+Sharing is on unless you turn it off. The page checkbox, the window's **Share my progress** box, or `/cf share off` stops sending and receiving, cancels queued sends, and shows only the personal row. Personal recording continues. Received totals already held by another player cannot be recalled. `/cf share on` resumes guild/group sharing. There is no public server or global ranking.
 
 Rankings separate the client's game-mode record ID and Hardcore flag. An unavailable classification keeps the personal view and sends nothing. No game-mode name is guessed from its numeric ID; Self Found is not treated as Ironman. Peer totals are player-reported and are not proof of completion.
 
@@ -22,8 +22,8 @@ Guild/group transport is Forever Core's bounded `WFAStats` protocol. It sends th
 
 ## Client checks before merge
 
-With QuestieDB installed, run `/etrace`, hand in a supported repeatable quest twice, and confirm each `QUEST_TURNED_IN` carries its quest ID and increases `/cf leaderboard` by one. Reload and confirm the total survives. Complete a one-time or unrelated quest and confirm it adds nothing.
+With QuestieDB installed, run `/etrace`, hand in a supported repeatable quest twice, and confirm each `QUEST_TURNED_IN` carries its quest ID and increases the all-time total on `/cf leaderboard` by one. Reload and confirm the total survives. Complete a one-time or unrelated quest and confirm it adds nothing.
 
-Open `/cf`, toggle sharing off, and confirm the checkbox and `/cf leaderboard` agree. Hand in another supported quest: the personal total should rise without sending `WFAStats` messages. With two guild/group characters on the same client ruleset, enable sharing and compare their views; disable one and confirm its view returns to its own row. Check another ruleset does not appear.
+Open `/cf`, toggle sharing off, and confirm the Professions checkbox and the window's **Share my progress** box agree. Hand in another supported quest: the personal total should rise without sending `WFAStats` messages. With two guild/group characters on the same client ruleset, enable sharing and compare their views; disable one and confirm its view returns to its own row. Check another ruleset does not appear.
 
 Check the leaderboard button, checkbox tooltip, native profession tabs, scrolling and gamepad navigation at the UI scales you use. No live turn-in or live cross-client transport is claimed by the headless tests.

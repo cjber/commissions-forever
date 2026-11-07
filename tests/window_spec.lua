@@ -150,10 +150,14 @@ _G.C_Item = {
 	end,
 }
 local available = true
+local opened = false
 local ns = {
 	Stats = {
 		Participating = function()
 			return true
+		end,
+		Open = function()
+			opened = true
 		end,
 	},
 	Questie = {
@@ -263,4 +267,7 @@ assert(requested[1] and window.rows[1].name.text == "Item 1", "uncached items re
 cached = true
 window.Refresh()
 assert(window.rows[1].name.text == "Cached item 1", "cached names replace the item-ID fallback")
+window.leaderboard.scripts.OnClick()
+assert(opened, "the Leaderboard button opens the shared window on this addon's tab")
+assert(window.share.Text.text == "Share my progress", "the share switch names the opt-out setting")
 print("Commissions Forever window specs passed")

@@ -6,6 +6,7 @@ Commissions Forever keeps repeatable turn-ins in view. Check the materials in yo
 - **Live counts.** Bag and quest-log changes refresh the list.
 - **Optional route guidance.** QuestieDB supplies active quest finishers and their locations; Shortest Path Forever guides you between them.
 - **Recipe materials.** When SkillUp Forever is installed, other addons can ask its public API for the raw reagents behind a recipe.
+- **Shared leaderboards.** `/cf leaderboard` opens Forever Leaderboards on the Commissions tab, with this week's progress, the all-time total and peer values marked as player-reported. Sharing is on unless you turn it off with `/cf share off` or the window's **Share my progress** box.
 
 <!-- forever-family:start -->
 

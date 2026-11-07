@@ -19,6 +19,8 @@ Integrations\SkillUp.lua
 Integrations\ShortestPath.lua
 Core\Core.lua
 Core\PeerStats.lua
+Core\LeaderboardsData.lua
+UI\Leaderboards.lua
 Core\Stats.lua
 Core\API.lua
 UI\Art.lua

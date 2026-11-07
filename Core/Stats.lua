@@ -1,10 +1,13 @@
 local _, ns = ...
 
+local L = ns.L
+
 -- Only game-authored turn-in events with a stable, supported QuestieDB quest ID advance this record.
 local Stats = {}
 ns.Stats = Stats
 local DEFAULTS = { statsShare = true }
 local METRIC = "commission_turnin"
+local ICON = "Interface\\AddOns\\CommissionsForever\\media\\Icon"
 local MAX_VALUE, MAX_LIMIT = 1e9, 25
 
 local function DB()
@@ -138,26 +141,60 @@ function Stats.Activity()
 	return { { addon = "CommissionsForever", metric = METRIC, subject = "all", value = total, eventUnix = eventUnix } }
 end
 
-function Stats.Print()
-	local L = ns.L
-	local board = Stats.Leaderboard()
-	if not board then
-		return
+-- One row per ranked player, in the shared window's shape. The all-time board keeps the cumulative total in the
+-- value column; the weekly board draws the progress since the reset there and the cumulative total in grey.
+---@param scope ForeverLeaderboardsScope
+---@return ForeverLeaderboardsRow[]
+local function Board(scope)
+	local subject = Ruleset() or "unknown"
+	local value, eventUnix = Totals()
+	local weekly = scope == "week"
+	local ranked
+	local totals
+	if weekly then
+		ranked = peer:WeekBoard(METRIC, subject, value, eventUnix)
+		totals = {}
+		for _, row in ipairs(peer:Board(METRIC, subject, value, eventUnix)) do
+			totals[row.identity] = row.value
+			totals[row.name:lower()] = row.value
+		end
+	else
+		ranked = peer:Board(METRIC, subject, value, eventUnix)
 	end
-	DEFAULT_CHAT_FRAME:AddMessage(L["Observed commission turn-ins: guild and group"])
-	DEFAULT_CHAT_FRAME:AddMessage(L["Current client ruleset only. Other players' totals are player-reported."])
-	for _, row in ipairs(board.rows) do
-		local text = row.self and L["%d. %s: %d (you)"] or L["%d. %s: %d (player-reported)"]
-		DEFAULT_CHAT_FRAME:AddMessage(text:format(row.rank, row.name, row.value))
+	local rows = {}
+	for _, row in ipairs(ranked) do
+		local total = totals and (totals[row.identity] or totals[row.name:lower()])
+		rows[#rows + 1] = {
+			name = row.name,
+			value = row.value,
+			extra = total and (total .. " " .. L["total"]) or nil,
+			you = row.self == true,
+		}
 	end
-	if not board.ruleset then
-		DEFAULT_CHAT_FRAME:AddMessage(L["Ruleset unavailable. Only your personal record is shown."])
-	elseif not board.sharing then
-		DEFAULT_CHAT_FRAME:AddMessage(L["Sharing is off. Only your personal record is shown."])
+	return rows
+end
+
+--- Open Forever Leaderboards on this addon's tab.
+function Stats.Open()
+	if ns.Leaderboards then
+		ns.Leaderboards:Open("commissions")
 	end
-	if not ns.Questie.Available() then
-		DEFAULT_CHAT_FRAME:AddMessage(L["Install QuestieDB to record supported commission turn-ins."])
-	end
+end
+
+if ns.Leaderboards then
+	ns.Leaderboards:Register("commissions", {
+		title = L["Commissions Forever"],
+		icon = ICON,
+		metric = L["Commission turn-ins"],
+		board = Board,
+		revision = function()
+			return peer:Revision()
+		end,
+		sharing = Stats.Participating,
+		setSharing = function(shared)
+			Stats.SetEnabled(shared == true)
+		end,
+	})
 end
 
 local events = CreateFrame("Frame")

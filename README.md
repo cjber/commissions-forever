@@ -11,7 +11,7 @@ Track materials for repeatable WoW: Forever turn-ins. Open its Professions page 
 - **Repeatable turn-ins.** One list covers Argent Dawn writs, Cenarion Circle Logistics, Thorium Brotherhood, Timbermaw Hold, and Morrowgrain research.
 - **Live assignment objectives.** QuestieDB adds item objectives and finishers from active commission quests; the quest log supplies the required count.
 - **Bag counts.** Item totals refresh after your bags or quest log change.
-- **Observed turn-in totals.** Compare supported completions with your guild and group, separated by the client ruleset. Sharing starts on and can be switched off on the Professions page.
+- **Observed turn-in totals.** Compare supported completions with your guild and group, separated by the client ruleset. Sharing is on unless you turn it off on the Professions page or in the window.
 - **Travel guidance.** If Shortest Path Forever is installed, send the remaining commission finishers as one route.
 
 <p><img src="docs/screenshots/window.png" alt="Commissions Forever lists turn-in materials and bag counts"></p>
@@ -43,7 +43,7 @@ Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever 
 
 Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
-Choose **Leaderboard**, or use `/cf leaderboard`, to print the ranked totals. `/cf share off` stops sending and receiving totals while keeping your personal history; `/cf share on` resumes. Already shared totals cannot be recalled.
+Choose **Leaderboard**, or use `/cf leaderboard` or `/cf stats`, to open Forever Leaderboards on the Commissions tab. Switch between this week's progress and the all-time total, find your own row pinned in place, and read peer totals marked as player-reported. `/cf share off` stops sending and receiving totals while keeping your personal history; `/cf share on` resumes. Sharing is on unless you turn it off, and the window's **Share my progress** box does the same. Already shared totals cannot be recalled.
 
 ## Data
 

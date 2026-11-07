@@ -51,10 +51,9 @@ addon:SetScript("OnEvent", function(_, event)
 		SlashCmdList.COMMISSIONSFOREVER = function(message)
 			local command = (message or ""):lower():match("^%s*(.-)%s*$")
 			if command == "leaderboard" or command == "stats" then
-				ns.Stats.Print()
+				ns.Stats.Open()
 			elseif command == "share on" or command == "share off" then
 				ns.Stats.SetEnabled(command == "share on")
-				ns.Stats.Print()
 			else
 				ns.Toggle()
 			end
