@@ -24,6 +24,8 @@ Each one works on its own, and they work together when you install more than one
 
 Bug reports, feature requests and pull requests are welcome on each addon's GitHub. Everyone whose report or idea ships is thanked by name in the addon's credits and changelog.
 
+For help, ideas and each day's release notes, join [cjber's Workshop on Discord](https://discord.gg/FpHugGxRJY).
+
 <!-- forever-family:end -->
 
 Use `/commissions` or `/cf` to open its page in the Professions window. QuestieDB, SkillUp Forever, and Shortest Path Forever are optional.
