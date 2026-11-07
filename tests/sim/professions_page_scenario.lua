@@ -455,7 +455,7 @@ scenario("completion controls preserve the ledger and count only supported turn-
 	slash(sim)
 	local share, board
 	for _, child in ipairs({ page(sim):GetChildren() }) do
-		if child.Text and child.Text.GetText and child.Text:GetText() == "Share totals with guild and group" then
+		if child.Text and child.Text.GetText and child.Text:GetText() == "Share my progress" then
 			share = child
 		elseif child.GetText and child:GetText() == "Leaderboard" then
 			board = child
@@ -463,7 +463,6 @@ scenario("completion controls preserve the ledger and count only supported turn-
 	end
 	check(share and board, "completion controls are missing from the native page")
 	check(share:GetChecked(), "participation should default on")
-	local height = page(sim):GetHeight()
 	sim:click(share)
 	check(sim:savedState().CommissionsForeverDB.statsShare == false, "the checkbox did not save explicit opt-out")
 	check(not share:GetChecked(), "the checkbox stayed checked after opt-out")
@@ -472,8 +471,12 @@ scenario("completion controls preserve the ledger and count only supported turn-
 	sim:event("QUEST_TURNED_IN", 123, 0, 0)
 	sim:event("QUEST_TURNED_IN", 124, 0, 0)
 	check(sim.G.CommissionsForever.API.Stats()[1].value == 2, "repeat hand-ins were lost or an unrelated quest counted")
-	sim:click(board)
-	check(page(sim):IsShown() and page(sim):GetHeight() == height, "the leaderboard changed the ledger layout")
+	-- The Leaderboard button opens the shared Forever Leaderboards window, which is client UI the simulator does
+	-- not render; the board itself still reads while in combat.
+	check(
+		sim.G.CommissionsForever.API.Leaderboard().rows[1].value == 2,
+		"the personal board stopped reading after opt-out"
+	)
 	sim:enterCombat()
 	sim:hoverUnit({ name = "Guard", level = 55, friendly = false })
 	sim:unhoverUnit()

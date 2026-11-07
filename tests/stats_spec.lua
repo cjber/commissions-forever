@@ -20,6 +20,9 @@ local function boot(saved, mode, hardcore, guid)
 	env.UnitName = function()
 		return "Me"
 	end
+	env.UnitClass = function()
+		return "Me", "WARRIOR"
+	end
 	env.UnitGUID = function()
 		if guid == false then
 			return nil
@@ -73,6 +76,8 @@ local function boot(saved, mode, hardcore, guid)
 	for _, path in ipairs({
 		"Locales/enUS.lua",
 		"Core/PeerStats.lua",
+		"Core/LeaderboardsData.lua",
+		"UI/Leaderboards.lua",
 	}) do
 		setfenv(assert(loadfile(path)), env)("CommissionsForever", ns)
 	end
@@ -150,8 +155,42 @@ check(
 board.rows[1].value = 999
 check(stats.Leaderboard().rows[1].value == 8, "public reads return fresh copies")
 check(stats.Leaderboard(-1) == nil and stats.Leaderboard("1") == nil, "invalid limits fail explicitly")
+
+-- The shared Forever Leaderboards registration.
+local leaderboards = kit.ns.Leaderboards
+check(type(leaderboards) == "table" and type(leaderboards.boards.commissions) == "table", "shares a board")
+local spec = leaderboards.boards.commissions
+check(spec.title == "Commissions Forever", "the tab carries the addon's title")
+check(spec.metric == "Commission turn-ins", "the board names its metric")
+check(spec.icon == "Interface\\AddOns\\CommissionsForever\\media\\Icon", "the tab carries the shipped icon")
+check(type(spec.revision) == "function" and spec.revision() >= 0, "the board has a revision callback")
+check(spec.sharing(), "sharing reads the saved switch")
+local allRows = spec.board("all")
+check(allRows[1].name == "Alice" and allRows[1].value == 8, "the all-time board ranks the peers")
+check(allRows[1].class == nil, "a peer's class stays unknown")
+check(
+	allRows[3].you == true and allRows[3].class == nil,
+	"the player's own row is marked and left for the shared window"
+)
+kit.hear("Bob-Home", "1_0", 12, 1500)
+local weeklyRows = spec.board("week")
+local bobRow
+for _, row in ipairs(weeklyRows) do
+	if row.name == "Bob" then
+		bobRow = row
+	end
+end
+check(bobRow and bobRow.value == 4 and bobRow.extra == "12 total", "the weekly board shows progress and the total")
+local opened
+leaderboards.Open = function(_, key)
+	opened = key
+end
+stats.Open()
+check(opened == "commissions", "the addon opens the shared window on its own tab")
+
 check(not stats.SetEnabled("false"), "switch accepts booleans only")
 check(stats.SetEnabled(false) and not stats.Participating(), "saved false stays false")
+check(not spec.sharing(), "the shared board reads the saved opt-out")
 kit.flush()
 local sent = #kit.sent
 kit.fire("QUEST_TURNED_IN", 123)
@@ -196,6 +235,5 @@ noClock.env.GetServerTime = function()
 end
 noClock.fire("QUEST_TURNED_IN", 123)
 check(noClock.ns.Stats.Activity()[1].value == 0, "an unavailable event timestamp is not invented")
-stats.Print()
-check(#kit.lines > 0, "ranked view is printable")
+check(#kit.lines == 0, "the shared board writes nothing to chat")
 print(("Commissions stats adapter: %d checks passed"):format(checks))
