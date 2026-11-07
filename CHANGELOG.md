@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+
+
+## [0.2.16] - 2026-11-07
+
 - **The Forever Leaderboards tab wears a game icon.** Its tab uses the client's `INV_Letter_15` letter icon instead of the addon's own logo, so it matches the game's tab set (cjber/forever-core#180).
 
 ## [0.2.15] - 2026-11-07
