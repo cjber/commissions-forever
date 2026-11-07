@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- **The Forever Leaderboards window opens.** `/flb` and `/forever` no longer raise a Lua error on first open: the list's rows now have a fixed height (cjber/forever-core#174).
 
 ## [0.2.13] - 2026-11-07
 - **The commission leaderboard is part of the shared Forever Leaderboards window.** `/cf leaderboard` and `/cf stats` open that window on the Commissions tab, where you can switch between this week's progress and the all-time total, see your own row pinned in place and read player-reported values without a line of chat. `/flb` opens the window too, and the unit tooltip shows the player's overall place across every installed Forever addon. Sharing is on unless you turn it off, through the window's Share my progress box, `/cf share off` or the Professions page.
