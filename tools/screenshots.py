@@ -111,9 +111,7 @@ def window(ui, *, sharing=True, empty=False, available=True):
     wowmock.minimal_scrollbar(canvas, ix + iw - 22, iy + 32, ih - 36)
     bx, by = px + WIDTH - 8 - 14 - 190, Y + HEIGHT - 4 - 10 - 24
     wowmock.ui_panel_button(canvas, bx, by, 190, 24, "Open turn-in route")
-    wowmock.minimal_checkbox(
-        canvas, px + 14, Y + HEIGHT - 4 - 9 - 26, "Share totals with guild and group", size=26, checked=sharing
-    )
+    wowmock.minimal_checkbox(canvas, px + 14, Y + HEIGHT - 4 - 9 - 26, "Share my progress", size=26, checked=sharing)
     layout = {
         "frame": {"x": X, "y": Y, "w": WIDTH, "h": HEIGHT},
         "widgets": [

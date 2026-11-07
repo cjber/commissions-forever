@@ -165,12 +165,12 @@ local function Attach()
 	Window.leaderboard:SetPoint("TOPRIGHT", -14, -8)
 	Window.leaderboard:SetText(L["Leaderboard"])
 	Window.leaderboard:SetScript("OnClick", function()
-		ns.Stats.Print()
+		ns.Stats.Open()
 	end)
 	Window.share = CreateFrame("CheckButton", nil, page, "CheckboxWithLabelTemplate")
 	Window.share:SetSize(26, 26)
 	Window.share:SetPoint("BOTTOMLEFT", 14, 9)
-	Window.share.Text:SetText(L["Share totals with guild and group"])
+	Window.share.Text:SetText(L["Share my progress"])
 	Window.share.Text:SetWidth(300)
 	Window.share.Text:SetJustifyH("LEFT")
 	Window.share:SetScript("OnClick", function(self)
@@ -178,14 +178,15 @@ local function Attach()
 	end)
 	Window.share:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(L["Share totals with guild and group"])
+		GameTooltip:SetText(L["Share my progress"])
 		GameTooltip:AddLine(
-			L["Stop sending and receiving totals. Keep your history. Already shared totals cannot be recalled."],
+			L["On unless you turn it off. Shares commission totals and puts you on Forever Leaderboards."],
 			nil,
 			nil,
 			nil,
 			true
 		)
+		GameTooltip:AddLine(L["Already shared totals cannot be recalled."], nil, nil, nil, true)
 		GameTooltip:Show()
 	end)
 	Window.share:SetScript("OnLeave", function()
@@ -209,12 +210,12 @@ local function Attach()
 	-- art-ok: common-insideframe is a nine-slice, so the client keeps its 53px corners (WhoList.xml:86).
 	background:SetAtlas("common-insideframe")
 	for _, column in ipairs({
-		{ "Material", 40, 218 },
-		{ "Turn-in", 264, 170 },
-		{ "Have", 444, 64 },
-		{ "Need", 514, 64 },
+		{ L["Material"], 40, 218 },
+		{ L["Turn-in"], 264, 170 },
+		{ L["Have"], 444, 64 },
+		{ L["Need"], 514, 64 },
 	}) do
-		Text(inset, "GameFontNormalSmall", column[2], -10, column[3]):SetText(L[column[1]])
+		Text(inset, "GameFontNormalSmall", column[2], -10, column[3]):SetText(column[1])
 	end
 	Window.scroll = CreateFrame("ScrollFrame", nil, inset, "UIPanelScrollFrameTemplate")
 	Window.scroll.scrollBarHideable = true
