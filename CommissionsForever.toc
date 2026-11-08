@@ -13,6 +13,8 @@
 
 Locales\enUS.lua
 Data\TurnIns.lua
+Core\SafeCall.lua
+Core\Log.lua
 Core\Model.lua
 Integrations\Questie.lua
 Integrations\SkillUp.lua
@@ -23,5 +25,7 @@ Core\LeaderboardsData.lua
 UI\Leaderboards.lua
 Core\Stats.lua
 Core\API.lua
+Core\Report.lua
 UI\Art.lua
+UI\Report.lua
 UI\Window.lua
