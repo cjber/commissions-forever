@@ -5,6 +5,7 @@ ns.Window = Window
 
 local ROW_HEIGHT = 30
 local page, tab
+local pendingOpen = false
 local requestedItems = {}
 
 local function IsTrackedItem(itemID)
@@ -260,11 +261,7 @@ local function Attach()
 	Window.Refresh()
 end
 
-function Window.Toggle()
-	if page and page:IsShown() and ProfessionsFrame:IsShown() then
-		HideUIPanel(ProfessionsFrame)
-		return
-	end
+local function Open()
 	-- Clear the host's remembered profession through its native API before OnShow can recast it.
 	if ProfessionsFrame then
 		ProfessionsFrame:SelectBookPage()
@@ -276,15 +273,33 @@ function Window.Toggle()
 	end
 end
 
+function Window.Toggle()
+	-- The panel manager refuses ShowUIPanel and HideUIPanel in combat, so wait for the player to leave it.
+	if InCombatLockdown() then
+		pendingOpen = true
+		UIErrorsFrame:AddMessage(L["Commissions opens when combat ends."], NORMAL_FONT_COLOR:GetRGB())
+		return
+	end
+	if page and page:IsShown() and ProfessionsFrame:IsShown() then
+		HideUIPanel(ProfessionsFrame)
+		return
+	end
+	Open()
+end
+
 local events = CreateFrame("Frame")
 events:RegisterEvent("ADDON_LOADED")
 events:RegisterEvent("GET_ITEM_INFO_RECEIVED")
 events:RegisterEvent("SKILL_LINES_CHANGED")
+events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:SetScript("OnEvent", function(_, event, name)
 	if event == "ADDON_LOADED" and name == "Blizzard_Professions" then
 		Attach()
 	elseif event == "GET_ITEM_INFO_RECEIVED" and (requestedItems[name] or IsTrackedItem(name)) then
 		ns.Refresh()
+	elseif event == "PLAYER_REGEN_ENABLED" and pendingOpen then
+		pendingOpen = false
+		Open()
 	elseif event == "SKILL_LINES_CHANGED" and page then
 		PlaceTab()
 	end

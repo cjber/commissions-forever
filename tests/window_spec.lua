@@ -129,13 +129,37 @@ host.CraftingPage = Region()
 host.BookPage = Region()
 host.ProfessionsOverviewTab = Region()
 host.rightProfessionTabs = {}
+local shown, hidden = 0, 0
 _G.ShowProfessionsFrame = function()
+	shown = shown + 1
 	ProfessionsFrame:Show()
 end
 _G.HideUIPanel = function(frame)
+	hidden = hidden + 1
 	frame:Hide()
 end
 _G.GameTooltip = Region()
+local inCombat = false
+_G.InCombatLockdown = function()
+	return inCombat
+end
+_G.NORMAL_FONT_COLOR = {
+	GetRGB = function()
+		return 1, 0.82, 0
+	end,
+}
+local messages = {}
+_G.UIErrorsFrame = {
+	AddMessage = function(_, text)
+		messages[#messages + 1] = text
+	end,
+}
+local chat = {}
+_G.DEFAULT_CHAT_FRAME = {
+	AddMessage = function(_, text)
+		chat[#chat + 1] = text
+	end,
+}
 local requested = {}
 local cached = true
 _G.C_Item = {
@@ -270,4 +294,54 @@ assert(window.rows[1].name.text == "Cached item 1", "cached names replace the it
 window.leaderboard.scripts.OnClick()
 assert(opened, "the Leaderboard button opens the shared window on this addon's tab")
 assert(window.share.Text.text == "Share my progress", "the share switch names the opt-out setting")
+
+local function Fire(event)
+	for _, frame in ipairs(frames) do
+		if frame.scripts.OnEvent then
+			frame.scripts.OnEvent(frame, event)
+		end
+	end
+end
+
+-- In combat the panel manager refuses panel changes, so the toggle waits and tells the player on screen only.
+assert(not ProfessionsFrame.shown, "the window is closed before the combat toggle")
+shown, hidden = 0, 0
+local printed = 0
+local realPrint = print
+rawset(_G, "print", function()
+	printed = printed + 1
+end)
+inCombat = true
+local before = #messages
+window.Toggle()
+assert(shown == 0 and hidden == 0, "a combat toggle called a panel API or touched the Professions frame")
+assert(not ProfessionsFrame.shown and not window.page.shown, "a combat toggle opened the window")
+assert(#messages == before + 1, "a combat toggle did not add exactly one UIErrorsFrame message")
+assert(messages[#messages] == ns.L["Commissions opens when combat ends."], "the on-screen message is not the phrase")
+assert(#chat == 0, "a combat toggle wrote to chat")
+assert(printed == 0, "a combat toggle printed to chat")
+
+-- Leaving combat opens the one pending window, and the event cannot open it again.
+inCombat = false
+Fire("PLAYER_REGEN_ENABLED")
+assert(shown == 1, "the pending open did not run once when combat ended")
+assert(ProfessionsFrame.shown and window.page.shown and window.tab.checked, "the pending open left the ledger closed")
+Fire("PLAYER_REGEN_ENABLED")
+assert(shown == 1, "the pending open ran again after it was consumed")
+rawset(_G, "print", realPrint)
+
+-- Two toggles in combat share one pending open, which runs once.
+window.Toggle()
+assert(hidden == 1 and not ProfessionsFrame.shown, "an out-of-combat toggle no longer closes the window")
+inCombat = true
+window.Toggle()
+window.Toggle()
+assert(shown == 1 and hidden == 1, "combat toggles called a panel API")
+inCombat = false
+Fire("PLAYER_REGEN_ENABLED")
+assert(shown == 2, "two combat toggles did not open the window exactly once")
+assert(window.page.shown and window.tab.checked, "the pending open did not select the Commissions page")
+window.Toggle()
+assert(hidden == 2 and not ProfessionsFrame.shown, "an out-of-combat toggle no longer closes the window")
+
 print("Commissions Forever window specs passed")

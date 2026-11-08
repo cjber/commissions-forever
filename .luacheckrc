@@ -34,7 +34,7 @@ read_globals = { "ShowProfessionsFrame", "HideUIPanel", "CreateFramePoolCollecti
 	"GameTooltip_AddHighlightLine", "GameTooltip_AddInstructionLine", "IsModifiedClick", "ChatEdit_InsertLink",
 	"HandleModifiedItemClick", "IsShiftKeyDown", "CreateScrollBoxListLinearView", "CreateDataProvider", "CreateSettingsButtonInitializer",
 	"GetTrainerTradeskillRankValues", "C_SpellBook", "issecretvalue", "Item", "NORMAL_FONT_COLOR",
-	"TooltipDataProcessor", "UnitName", "UnitGUID", "BuyMerchantItem", "GetMerchantItemMaxStack", "MerchantFrame", "MenuUtil", "Mixin", "ObjectiveTrackerFrame", "OBJECTIVE_TRACKER_COLOR", "OBJECTIVE_DASH_STYLE_HIDE",
+	"TooltipDataProcessor", "UnitName", "UnitGUID", "BuyMerchantItem", "GetMerchantItemMaxStack", "MerchantFrame", "MenuUtil", "Mixin", "ObjectiveTrackerFrame", "OBJECTIVE_TRACKER_COLOR", "OBJECTIVE_DASH_STYLE_HIDE", "UIErrorsFrame",
 	"C_Map", "C_SuperTrack", "CreateVector2D", "TomTom", "UiMapPoint", "UnitPosition", "Syndicator", "tContains",
 	"ShortestPathForever", "SkillUpForever", "InCombatLockdown", "GetLocale", "C_AddOns",
 	"C_QuestLog", "GetItemCount",
