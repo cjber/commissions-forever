@@ -430,6 +430,40 @@ scenario("slash opens the ledger after a previously selected profession without 
 	expectCommissionsPage(sim, "/cf after closing a previously selected profession")
 end)
 
+scenario("in combat, /cf waits for combat to end and then opens the ledger", function(sim)
+	world(sim)
+	sim:login()
+	local messages = {}
+	sim.G.UIErrorsFrame = {
+		AddMessage = function(_, text)
+			messages[#messages + 1] = text
+		end,
+	}
+	sim:enterCombat()
+	local chat = #sim.chat
+	slash(sim)
+	sim:expectNoErrors(ADDON)
+	check(
+		not sim.G.ProfessionsFrame or not sim.G.ProfessionsFrame:IsShown(),
+		"combat /cf opened the Professions window"
+	)
+	check(#messages == 1, "combat /cf did not tell the player on screen")
+	check(messages[1] == "Commissions opens when combat ends.", "the on-screen message is not the phrase")
+	check(#sim.chat == chat, "combat /cf wrote to chat")
+	sim:leaveCombat()
+	sim:expectNoErrors(ADDON)
+	expectCommissionsPage(sim, "after combat ended")
+
+	-- Two toggles in combat share one pending open, which runs when combat ends.
+	sim:closeProfessions()
+	sim:enterCombat()
+	slash(sim)
+	slash(sim)
+	sim:expectNoErrors(ADDON)
+	sim:leaveCombat()
+	expectCommissionsPage(sim, "two /cf in combat")
+end)
+
 scenario("completion controls preserve the ledger and count only supported turn-in events", function(sim)
 	world(sim)
 	-- Synthetic public-contract fixture. No quest-log title or inventory change establishes completion.

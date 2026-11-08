@@ -6,6 +6,11 @@
 SlashCmdList = {}
 ---@type MessageFrame
 DEFAULT_CHAT_FRAME = nil
+-- UI/Window.lua tells the player in combat through the client's error frame.
+---@class CommissionsErrorFrame : Frame
+---@field AddMessage fun(self: CommissionsErrorFrame, message: string, red?: number, green?: number, blue?: number, alpha?: number, holdTime?: number)
+---@type CommissionsErrorFrame
+UIErrorsFrame = nil
 -- Frames Escape closes, by name.
 ---@type string[]
 UISpecialFrames = {}

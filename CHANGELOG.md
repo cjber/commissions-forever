@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- **`/cf` in combat opens the window when combat ends.** The game refuses to open a window from an addon in combat, so `/cf` failed with "Interface action failed because of an AddOn". It now says on screen that Commissions opens when combat ends, and opens it then (cjber/commissions-forever#104).
 
 ## [0.2.16] - 2026-11-07
 
