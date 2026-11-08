@@ -32,4 +32,15 @@ function Art.RowAtlas(row, atlas, layer, blend, x, y)
 	return texture
 end
 
+-- A file icon, square as every one is, `size` across and whole: a texture that drew an atlas before keeps that
+-- atlas's crop until it is reset.
+---@param texture Texture
+---@param file string|integer
+---@param size number
+function Art.Icon(texture, file, size)
+	texture:SetTexCoord(0, 1, 0, 1)
+	texture:SetTexture(file)
+	texture:SetSize(size, size)
+end
+
 return Art

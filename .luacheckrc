@@ -39,7 +39,7 @@ read_globals = { "ShowProfessionsFrame", "HideUIPanel", "CreateFramePoolCollecti
 	"ShortestPathForever", "SkillUpForever", "InCombatLockdown", "GetLocale", "C_AddOns",
 	"C_QuestLog", "GetItemCount",
 	"LibQuestieDB", "Questie", "AtlasLoot", "bit", "debugprofilestop", "loadstring", "setfenv",
-	"UNKNOWN", "UNIT_SKINNABLE_LEATHER", "UNIT_SKINNABLE_HERB", "UNIT_SKINNABLE_ROCK", "UnitRace", "geterrorhandler", "debugstack", "ChatFontNormal", "UISpecialFrames", "APPRENTICE", "JOURNEYMAN", "EXPERT", "ARTISAN", "DEFAULT", "OFF", "TOTAL",
+	"UNKNOWN", "UNIT_SKINNABLE_LEATHER", "UNIT_SKINNABLE_HERB", "UNIT_SKINNABLE_ROCK", "UnitRace", "geterrorhandler", "debugstack", "ChatFontNormal", "UISpecialFrames", "APPRENTICE", "JOURNEYMAN", "EXPERT", "ARTISAN", "DEFAULT", "OFF", "TOTAL", "seterrorhandler", "date",
 }
 
 files["Data/Thresholds.lua"] = { max_line_length = false }

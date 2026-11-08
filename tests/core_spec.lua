@@ -32,6 +32,8 @@ local ns = {
 			return true
 		end,
 	},
+	AttachErrorJournal = function() end,
+	AttachLog = function() end,
 }
 assert(loadfile("Core/Core.lua"))("CommissionsForever", ns)
 

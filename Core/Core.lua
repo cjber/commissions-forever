@@ -46,10 +46,21 @@ addon:RegisterEvent("QUEST_LOG_UPDATE")
 addon:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGIN" then
 		CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
+		if type(CommissionsForeverDB.errors) ~= "table" then
+			CommissionsForeverDB.errors = {}
+		end
+		if type(CommissionsForeverDB.log) ~= "table" then
+			CommissionsForeverDB.log = { lines = {}, pinned = false }
+		end
+		ns.AttachErrorJournal(CommissionsForeverDB.errors)
+		ns.AttachLog(CommissionsForeverDB.log)
 		_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
 		_G.SLASH_COMMISSIONSFOREVER2 = "/cf"
 		SlashCmdList.COMMISSIONSFOREVER = function(message)
 			local command = (message or ""):lower():match("^%s*(.-)%s*$")
+			if ns.Report and ns.Report.Command and ns.Report.Command(command) then
+				return
+			end
 			if command == "leaderboard" or command == "stats" then
 				ns.Stats.Open()
 			elseif command == "share on" or command == "share off" then
