@@ -28,7 +28,10 @@ CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `p
 - Use only QuestieDB's public `LibQuestieDB` contract for NPC and quest data; never copy its database into this repository.
 - Read active quests and inventory from client APIs. Re-scan after quest and bag events.
 - Treat each integration as optional. The addon works without QuestieDB, SkillUp Forever, or Shortest Path Forever.
-- Never hook Blizzard methods or call protected functions. Do not save frames, functions, userdata, or client tables.
+- Never call protected functions.
+- Never touch Blizzard's Lua state: WFA-38 in `wow-forever-addon` lists what addon code may do to Blizzard's
+  frames, how to restyle one by drawing on top, and when a `taint-ok` exception holds.
+- Do not save frames, functions, userdata, or client tables.
 - Run `stylua --check .`, `luacheck .`, every `tests/*_spec.lua` under LuaJIT, and `python3 tools/changelog.py --check` before proposing changes.
 - Render every player-facing UI scene and inspect the PNG at full size. Keep the render reproducible and audit its layout.
 - Sign commits with `git commit -S`; do not add `-s` sign-off lines.
@@ -45,6 +48,6 @@ CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `p
 
 ## Standards
 
-- `wow-forever-addon`: https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9dabafb5dd0/.agents/skills/wow-forever-addon
+- `wow-forever-addon`: https://github.com/cjber/forever-core/tree/main/.agents/skills/wow-forever-addon
 
-- For window, widget and asset changes, read [wow-retail-ui-style](https://github.com/cjber/forever-core/tree/af94fd89610c9128bc11ec07354bd9dabafb5dd0/.agents/skills/wow-retail-ui-style), including its asset registry and blacklist.
+- For window, widget and asset changes, read [wow-retail-ui-style](https://github.com/cjber/forever-core/tree/main/.agents/skills/wow-retail-ui-style), including its asset registry and blacklist.
