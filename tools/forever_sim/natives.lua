@@ -73,7 +73,7 @@ function M.build(sim)
 		for i = 1, select("#", ...) do
 			out[i] = Secret.unwrap(out[i])
 		end
-		return unpack(out, 1, select("#", ...))
+		return unpack(out, 1, (select("#", ...)))
 	end
 	sim.impl.dropsecretaccess = function()
 		if not Taint.current then
@@ -181,12 +181,27 @@ function M.build(sim)
 			end,
 		})
 	G.addframetext = function() end
+	-- Empty quest fixtures still use the native quest-map refresh and sorting entry points.
+	G.SortQuestSortTypes = function() end
+	G.SortQuests = function() end
+	G.QuestMapUpdateAllQuests = function()
+		return 0
+	end
+	G.QuestPOIUpdateIcons = function() end
 	G.SpellCanTargetQuest = function()
 		return false
 	end
 	G.SpellIsTargeting = function()
 		return false
 	end
+	-- Undocumented legacy native the client's bag frames read: the sim's player carries no profession bags.
+	G.IsInventoryItemProfessionBag = function()
+		return false
+	end
+	G.SpellCanTargetItem = function()
+		return false
+	end
+	G.SpellStopTargeting = function() end
 	G.debuglocals = function()
 		return ""
 	end
