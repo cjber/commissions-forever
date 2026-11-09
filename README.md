@@ -6,6 +6,8 @@ Track materials for repeatable WoW: Forever turn-ins. Open its Professions page 
 
 [![Tests](https://github.com/cjber/commissions-forever/actions/workflows/test.yml/badge.svg)](https://github.com/cjber/commissions-forever/actions/workflows/test.yml)
 
+[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/cjber)
+
 ## Features
 
 - **Repeatable turn-ins.** One list covers Argent Dawn writs, Cenarion Circle Logistics, Thorium Brotherhood, Timbermaw Hold, and Morrowgrain research.
@@ -71,3 +73,5 @@ Thanks to Blizzard for the client APIs, and to the QuestieDB, SkillUp Forever an
 ## Licence
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).
+
+The addon is free and stays GPL-3.0. If it saves you time, you can [buy me a coffee on Ko-fi](https://ko-fi.com/cjber); nothing is locked behind it and there is no paid version.

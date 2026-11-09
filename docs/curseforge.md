@@ -1,5 +1,9 @@
 Commissions Forever keeps repeatable turn-ins in view. Check the materials in your bags, see the item objectives for active assignments, and send the remaining assignment route to Shortest Path Forever.
 
+Free, with nothing locked behind it. If it saves you time, you can [buy me a coffee on Ko-fi](https://ko-fi.com/cjber).
+
+[![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
+
 ## Features
 
 - **One list for turn-ins.** Argent Dawn writs, Cenarion Circle logistics, Thorium Brotherhood materials, Timbermaw Hold items, and Morrowgrain research appear together.
