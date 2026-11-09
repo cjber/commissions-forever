@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [0.2.18] - 2026-11-09
+
+- **Commissions Forever is on CurseForge and Wago.** Install and update it from either store, or with any addon manager that reads them.
 
 ## [0.2.17] - 2026-11-09
 
