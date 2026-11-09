@@ -9,6 +9,8 @@
 | WoW Forever shared UI mock renderer | `cjber/forever-core/tools/wowmock`, pinned by `tools/forever_tools/MANIFEST.json`. | MIT | No |
 | Recipe materials and multi-stop routes | Read at runtime from the public APIs of SkillUp Forever and Shortest Path Forever, when they are installed; nothing is copied. | Their own, GPL-3.0-or-later | No |
 | Commissions Forever icon | `media/icon.svg`, rendered from the Forever family icon template. | Commissions Forever, GPL-3.0-or-later | Yes |
+| Ko-fi's Support me on Ko-fi button | The support button in the README (`ko-fi.com/img/githubbutton_sm.svg`) and its PNG render, `docs/kofi-button.png`, in the store description; pin: None: the README links Ko-fi's live file; the PNG is rendered from it | Ko-fi's brand asset, used as Ko-fi provides it for linking to a Ko-fi page | No |
+| `docs/github-sponsors-button.png` | The GitHub Sponsors button in the README and store description; drawn here to match the Ko-fi button, with the heart from GitHub's [Octicons](https://github.com/primer/octicons) and the Adwaita Sans font; pin: None | Octicons: MIT; Adwaita Sans: SIL OFL 1.1 | No |
 
 ## Ideas and contributors
 

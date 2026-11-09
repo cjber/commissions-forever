@@ -6,7 +6,7 @@ Track materials for repeatable WoW: Forever turn-ins. Open its Professions page 
 
 [![Tests](https://github.com/cjber/commissions-forever/actions/workflows/test.yml/badge.svg)](https://github.com/cjber/commissions-forever/actions/workflows/test.yml)
 
-[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/cjber)
+<a href="https://github.com/sponsors/cjber"><img src="docs/github-sponsors-button.png" width="223" alt="Sponsor me on GitHub"></a> <a href="https://ko-fi.com/cjber"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi"></a>
 
 ## Features
 
@@ -74,4 +74,4 @@ Thanks to Blizzard for the client APIs, and to the QuestieDB, SkillUp Forever an
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).
 
-The addon is free and stays GPL-3.0. If it saves you time, you can [buy me a coffee on Ko-fi](https://ko-fi.com/cjber); nothing is locked behind it and there is no paid version.
+The addon is free and stays GPL-3.0. If it saves you time, you can [sponsor me on GitHub](https://github.com/sponsors/cjber), which takes no fees, or [buy me a coffee on Ko-fi](https://ko-fi.com/cjber); nothing is locked behind it and there is no paid version.
