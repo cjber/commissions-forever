@@ -171,13 +171,29 @@ local function rows(sim)
 	return table.concat(list, ", ")
 end
 
-local function expectCommissionsPage(sim, why)
+local function expectCommissionsPage(sim, why, inCombat)
 	local pf = sim.G.ProfessionsFrame
 	local tab = commissionsTab(sim)
 	check(pf:IsShown(), why .. ": the Professions window is closed")
 	check(page(sim):IsVisible(), why .. ": the Commissions page is not shown")
-	check(not pf.CraftingPage:IsShown(), why .. ": the crafting page is still shown under the Commissions page")
-	check(not pf.BookPage:IsShown(), why .. ": the book page is still shown under the Commissions page")
+	if inCombat then
+		-- The client refuses an addon Hide on BookPage in combat: BookPage:Hide is a protected function
+		-- (SimpleFrameAPIDocumentation.lua:686-688) and the BookPage contains profession buttons that inherit
+		-- SecureFrameTemplate (ProfessionsBookTemplates.xml:4, protected in SecureTemplatesBase.xml:4). The
+		-- native page therefore stays shown under this page until combat ends.
+		for _, nativePage in ipairs({ "CraftingPage", "BookPage" }) do
+			if pf[nativePage]:IsShown() then
+				check(
+					page(sim):GetFrameLevel() > pf[nativePage]:GetFrameLevel(),
+					why .. ": the Commissions page is not above " .. nativePage
+				)
+			end
+		end
+		check(page(sim):IsMouseEnabled(), why .. ": the Commissions page does not take input over the native page")
+	else
+		check(not pf.CraftingPage:IsShown(), why .. ": the crafting page is still shown under the Commissions page")
+		check(not pf.BookPage:IsShown(), why .. ": the book page is still shown under the Commissions page")
+	end
 	check(checked(tab), why .. ": the Commissions tab is not selected")
 	check(not checked(pf.ProfessionsOverviewTab), why .. ": the overview tab is still selected")
 	for i, nativeTab in ipairs(pf.rightProfessionTabs) do
@@ -385,8 +401,14 @@ scenario("in combat, after a secret unit tooltip, a material row's tooltip still
 	press(sim, sim.G.ProfessionsFrame.ProfessionsOverviewTab)
 	expectNativePage(sim, "BookPage", "the overview tab in combat")
 	press(sim, commissionsTab(sim))
-	expectCommissionsPage(sim, "the Commissions tab in combat")
+	expectCommissionsPage(sim, "the Commissions tab in combat", true)
+	check(
+		sim.G.ProfessionsFrame.BookPage:IsShown(),
+		"the book page should stay shown under the Commissions page in combat"
+	)
 	sim:leaveCombat()
+	expectCommissionsPage(sim, "the Commissions tab after combat")
+	check(not sim.G.ProfessionsFrame.BookPage:IsShown(), "the book page was not hidden when combat ended")
 end)
 
 scenario("the gamepad interface walks the window with the Commissions page open", function(sim)
