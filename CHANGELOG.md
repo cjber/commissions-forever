@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+
+## [0.2.17] - 2026-11-09
+
 - **The Commissions tab opens in combat without touching the protected book page.** The client refuses an addon Hide on the Professions book page because the profession buttons inside it are protected, so the ledger now covers that page and finishes the swap when combat ends (cjber/commissions-forever#114).
 - **`/cf` in combat opens the window when combat ends.** The game refuses to open a window from an addon in combat, so `/cf` failed with "Interface action failed because of an AddOn". It now says on screen that Commissions opens when combat ends, and opens it then (cjber/commissions-forever#104).
 - **Errors stay with you across reloads.** Errors Commissions Forever catches, blocked actions and Lua warnings are now kept across reloads, and `/cf report` shows a report to copy into a bug report (cjber/commissions-forever#103).
