@@ -27,6 +27,15 @@ local function Region()
 				GetScale = function(self)
 					return self.scale or 1
 				end,
+				SetFrameLevel = function(self, level)
+					self.level = level
+				end,
+				GetFrameLevel = function(self)
+					return rawget(self, "level") or 0
+				end,
+				GetHighestFrameLevel = function(self)
+					return rawget(self, "level") or 0
+				end,
 				SetBlendMode = function(self, blend)
 					self.blend = blend
 				end,

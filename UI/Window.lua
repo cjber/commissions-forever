@@ -6,6 +6,7 @@ ns.Window = Window
 local ROW_HEIGHT = 30
 local page, tab
 local pendingOpen = false
+local pendingNativePage = false
 local requestedItems = {}
 
 local function IsTrackedItem(itemID)
@@ -19,9 +20,18 @@ end
 
 local function Deselect()
 	if page then
+		pendingNativePage = false
 		page:Hide()
 		tab:SetChecked(false)
 	end
+end
+
+-- The highest level in either native page's tree, so this page can sit above both and take their input.
+local function NativePagesLevel()
+	return math.max(
+		ProfessionsFrame.CraftingPage:GetHighestFrameLevel(true),
+		ProfessionsFrame.BookPage:GetHighestFrameLevel(true)
+	)
 end
 
 local function PlaceTab()
@@ -60,10 +70,17 @@ local function PlaceTab()
 end
 
 local function SelectPage()
-	-- Hand the host back to its native page first, so another addon's page can deselect itself.
-	ProfessionsFrame.CraftingPage:Show()
-	ProfessionsFrame.CraftingPage:Hide()
-	ProfessionsFrame.BookPage:Hide()
+	if InCombatLockdown() then
+		-- The book page is protected through the profession buttons inside it, so the client refuses an addon
+		-- Hide on it in combat. Keep it shown under this page and finish the native swap when combat ends.
+		pendingNativePage = true
+	else
+		pendingNativePage = false
+		-- Hand the host back to its native page first, so another addon's page can deselect itself.
+		ProfessionsFrame.CraftingPage:Show()
+		ProfessionsFrame.CraftingPage:Hide()
+		ProfessionsFrame.BookPage:Hide()
+	end
 	page:Show()
 	tab:SetChecked(true)
 	ProfessionsFrame.ProfessionsOverviewTab:SetChecked(false)
@@ -158,6 +175,9 @@ local function Attach()
 	page = CreateFrame("Frame", nil, ProfessionsFrame)
 	page:SetPoint("TOPLEFT", 4, -28)
 	page:SetPoint("BOTTOMRIGHT", -4, 4)
+	-- A combat tab press cannot hide the protected native page, so sit above both pages and take their input.
+	page:SetFrameLevel(NativePagesLevel() + 1)
+	page:EnableMouse(true)
 	page:Hide()
 	Window.page = page
 	Text(page, "GameFontNormalLarge", 74, -12, 350):SetText(L["Commissions Forever"])
@@ -255,7 +275,11 @@ local function Attach()
 	ProfessionsFrame:HookScript("OnHide", function()
 		if page and page:IsShown() then
 			Deselect()
-			ProfessionsFrame:SelectBookPage()
+			-- Selecting the book page hides the crafting page and shows the protected book page. In combat the
+			-- client refuses that, and every way of opening the window selects a page again before showing it.
+			if not InCombatLockdown() then
+				ProfessionsFrame:SelectBookPage()
+			end
 		end
 	end)
 	Window.Refresh()
@@ -297,9 +321,14 @@ events:SetScript("OnEvent", function(_, event, name)
 		Attach()
 	elseif event == "GET_ITEM_INFO_RECEIVED" and (requestedItems[name] or IsTrackedItem(name)) then
 		ns.Refresh()
-	elseif event == "PLAYER_REGEN_ENABLED" and pendingOpen then
-		pendingOpen = false
-		Open()
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		if pendingNativePage then
+			SelectPage()
+		end
+		if pendingOpen then
+			pendingOpen = false
+			Open()
+		end
 	elseif event == "SKILL_LINES_CHANGED" and page then
 		PlaceTab()
 	end
