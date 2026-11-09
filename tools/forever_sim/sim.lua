@@ -33,7 +33,6 @@ Sim.CORE = {
 	"Blizzard_SharedXMLGame",
 	"Blizzard_FrameXMLBase",
 	"Blizzard_UIParent",
-	"Blizzard_UIErrorsFrame",
 	"Blizzard_StaticPopup",
 	"Blizzard_UIPanelTemplates",
 	"Blizzard_UIParentPanelManager",
@@ -48,22 +47,15 @@ Sim.CORE = {
 	-- Single files from addons too large to boot whole: the templates other UI inherits from them, and the alert
 	-- frames the client loads at startup (AlertFrame is a global addons anchor to).
 	"Blizzard_FrameXML/SecureTemplatesBase.xml",
-	"Blizzard_FrameXML/SecureTemplates.lua",
-	"Blizzard_FrameXML/SecureTemplates.xml",
 	"Blizzard_FrameXML/Mainline/AlertFrames.lua",
 	"Blizzard_FrameXML/Mainline/AlertFrames.xml",
 	"Blizzard_FrameXML/Mainline/NavigationBar.lua",
 	"Blizzard_FrameXML/Mainline/NavigationBar.xml",
-	-- The quest session dialog the quest log updates when it is shown, loaded by the client at startup.
-	"Blizzard_FrameXML/QuestSession.lua",
-	"Blizzard_FrameXML/QuestSession.xml",
 	"Blizzard_ActionBar/Shared/ActionButtonUtil.lua",
 	"Blizzard_ChatFrameBase/Shared/SlashCommands.lua",
-	-- The map, quest log and fog-of-war pieces of Blizzard_UIPanels_Game, in its TOC order, plus the quest frame
-	-- the quest log's OnHide closes the quest portrait through.
+	-- The map, quest log and fog-of-war pieces of Blizzard_UIPanels_Game, in its TOC order.
 	"Blizzard_UIPanels_Game:PlayerInteractionFrameManager|ScrollingFlatPanel|WarCampaignTemplates|WorldMap"
-		.. "|MapLegend|QuestMap|FogOfWar|UnitPosition|CastingBarFrame|ContainerFrame"
-		.. "|QuestFrameTemplates|QuestFrame|QuestInfo",
+		.. "|MapLegend|QuestMap|FogOfWar|UnitPosition|CastingBarFrame|ContainerFrame",
 	-- Loaded at startup by the client, and what most Forever addons draw on.
 	"Blizzard_WorldMap",
 	"Blizzard_ObjectiveTracker",

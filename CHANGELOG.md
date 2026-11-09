@@ -4,7 +4,6 @@
 
 - **`/cf` in combat opens the window when combat ends.** The game refuses to open a window from an addon in combat, so `/cf` failed with "Interface action failed because of an AddOn". It now says on screen that Commissions opens when combat ends, and opens it then (cjber/commissions-forever#104).
 - **Errors stay with you across reloads.** Errors Commissions Forever catches, blocked actions and Lua warnings are now kept across reloads, and `/cf report` shows a report to copy into a bug report (cjber/commissions-forever#103).
-- **The Forever Leaderboards period menu works with a gamepad.** With the gamepad interface on, a press on it steps through this week or all time, for your guild and group or for players you've met, instead of opening a game menu that later had the client block `SetPreferredGamepadInteractTarget()` (cjber/forever-core#267).
 
 ## [0.2.16] - 2026-11-07
 
