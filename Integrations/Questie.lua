@@ -7,6 +7,9 @@ end
 local Questie = {}
 ns.Questie = Questie
 
+-- The contract this file was written against. QuestieDB checks a range, so a newer additive release works.
+local CONTRACT = 2
+
 local function ParseTable(source)
 	if type(source) ~= "string" then
 		return nil
@@ -20,16 +23,68 @@ local function ParseTable(source)
 	return ok and type(value) == "table" and value or nil
 end
 
+-- QuestieDB's ZoneDB as this file reads it: the area and parent tables, and the overrides every Forever addon
+-- applies over them, each run once from the Lua source QuestieDB keeps them as.
+---@class CommissionsQuestieZones
+---@field area table<integer, integer>
+---@field areaOverride table<integer, integer>
+---@field parent table<integer, integer>
+---@field parentOverride table<integer, integer>
+
+---@param db table
+---@return CommissionsQuestieZones?
+local function Zones(db)
+	local support = type(db.Support) == "table" and db.Support
+	local get = support and support.Get
+	local zoneDB = type(get) == "function" and get("ZoneDB")
+	local private = type(zoneDB) == "table" and zoneDB.private
+	if type(private) ~= "table" then
+		return nil
+	end
+	local area, parent = ParseTable(private.areaIdToUiMapId), ParseTable(private.subZoneToParentZone)
+	if not (area and parent) then
+		return nil
+	end
+	return {
+		area = area,
+		areaOverride = ParseTable(private.areaIdToUiMapIdOverride) or {},
+		parent = parent,
+		parentOverride = ParseTable(private.subZoneToParentZoneOverride) or {},
+	}
+end
+
+-- Each quest's row as QuestieDB holds it, kept per quest ID; false is a quest QuestieDB does not have. The
+-- bag and log events re-ask for the same quests, and QuestieDB hands out fresh table copies on every read.
+---@class CommissionsQuestieQuest
+---@field name string?
+---@field objectives table[]
+---@field finishers integer[]
+---@field sourceItemID integer?
+---@type table<integer, CommissionsQuestieQuest|false>
+local quests = {}
+
+-- QuestieDB as this file reads it, fitted once so the contract check and its zone tables cost one pass. A
+-- library that replaces the one held is fitted again, so one that loads later is picked up.
+---@type table?
+local fitted
+---@type table?
+local library
+---@type CommissionsQuestieZones?
+local libraryZones
+
+---@return table?, CommissionsQuestieZones?
 local function Library()
-	local db = LibQuestieDB
-	if type(db) ~= "table" or type(db.RequireContract) ~= "function" then
-		return nil
+	local lib = LibQuestieDB
+	if lib ~= fitted then
+		fitted, library, libraryZones, quests = lib, nil, nil, {}
+		if type(lib) == "table" and type(lib.RequireContract) == "function" then
+			local ok, compatible = pcall(lib.RequireContract, CONTRACT)
+			if ok and compatible and type(lib.Quest) == "table" and type(lib.Quest.GetAll) == "function" then
+				library, libraryZones = lib, Zones(lib)
+			end
+		end
 	end
-	local ok, compatible = pcall(db.RequireContract, 2)
-	if not ok or not compatible or type(db.Quest) ~= "table" or type(db.Quest.GetAll) ~= "function" then
-		return nil
-	end
-	return db
+	return library, libraryZones
 end
 
 local function Fields(db, entity, wanted)
@@ -46,11 +101,28 @@ local function Fields(db, entity, wanted)
 	return wanted
 end
 
+-- An area's zone map, or its parent zone's, with the overrides QuestieDB applies over both. An override of 0
+-- suppresses the area's map, so the NPC keeps its name and no place.
+---@param zones CommissionsQuestieZones?
+---@param area integer?
+---@return integer?
+local function Map(zones, area)
+	if not (zones and area) then
+		return nil
+	end
+	local map = zones.areaOverride[area] or zones.area[area]
+	if map == nil then
+		local parent = zones.parentOverride[area] or zones.parent[area]
+		map = parent and (zones.areaOverride[parent] or zones.area[parent])
+	end
+	return type(map) == "number" and map > 0 and map or nil
+end
+
 -- Access one QuestieDB NPC through the documented reader only. The repository stores no Questie data.
 ---@param npcID integer
 ---@return {name: string, map: integer?, x: number?, y: number?}?
 function Questie.NPC(npcID)
-	local db = Library()
+	local db, zones = Library()
 	if not (db and type(db.Npc) == "table" and type(db.Npc.GetAll) == "function") then
 		return nil
 	end
@@ -73,15 +145,8 @@ function Questie.NPC(npcID)
 		end
 	end
 	local spot = area and spawns[area] and spawns[area][1]
-	local zoneDB = db.Support and db.Support.Get and db.Support.Get("ZoneDB")
-	local private = zoneDB and zoneDB.private
-	local areaMaps = private and ParseTable(private.areaIdToUiMapId)
-	local parents = private and ParseTable(private.subZoneToParentZone)
-	local mapID = area and areaMaps and areaMaps[area]
-	if not mapID and area and parents and areaMaps then
-		mapID = areaMaps[parents[area]]
-	end
-	if type(spot) == "table" and type(mapID) == "number" then
+	local mapID = Map(zones, area)
+	if type(spot) == "table" and mapID then
 		local x, y = tonumber(spot[1]), tonumber(spot[2])
 		if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
 			return { name = values[1], map = mapID, x = x / 100, y = y / 100 }
@@ -117,6 +182,40 @@ local function LiveItemsByName(live)
 	return byName
 end
 
+-- QuestieDB's row for one quest, read once per ID: what a quest needs does not change while its library stays
+-- installed, and GetAll hands out fresh table copies on every call.
+---@param db table
+---@param fields string[]
+---@param questID integer
+---@return CommissionsQuestieQuest?
+local function QuestRow(db, fields, questID)
+	local quest = quests[questID]
+	if quest == nil then
+		local ok, values = pcall(db.Quest.GetAll, questID, fields)
+		if ok and type(values) == "table" and type(values[2]) == "table" then
+			quest = {
+				name = values[1],
+				objectives = values[2][3] or {},
+				finishers = type(values[3]) == "table" and values[3][1] or {},
+				sourceItemID = values[4],
+			}
+		end
+		quests[questID] = quest or false
+	end
+	return quest or nil
+end
+
+-- The cached finisher IDs as a fresh list, so no caller can change what a later refresh reads.
+---@param ids integer[]
+---@return integer[]
+local function Finishers(ids)
+	local copy = {}
+	for index, id in ipairs(ids) do
+		copy[index] = id
+	end
+	return copy
+end
+
 ---@return table[] active quest item objectives and finisher NPC IDs
 function Questie.ActiveObjectives()
 	local db = Library()
@@ -135,24 +234,23 @@ function Questie.ActiveObjectives()
 		local info = C_QuestLog.GetInfo(index)
 		if info and not info.isHeader and info.questID then
 			local questID = info.questID
-			local ok, values = pcall(db.Quest.GetAll, questID, fields)
-			if ok and type(values) == "table" and type(values[2]) == "table" then
-				local itemObjectives = values[2][3] or {}
+			local quest = QuestRow(db, fields, questID)
+			if quest then
 				local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
 				local liveItems = LiveItemsByName(live)
-				for _, itemObjective in ipairs(itemObjectives) do
+				for _, itemObjective in ipairs(quest.objectives) do
 					local itemID = tonumber(itemObjective[1])
 					if itemID then
 						local name = C_Item.GetItemNameByID(itemID)
 						local objective = name and liveItems[name]
 						rows[#rows + 1] = {
 							questID = questID,
-							sourceItemID = values[4],
-							questName = values[1] or info.title or ("Quest " .. questID),
+							sourceItemID = quest.sourceItemID,
+							questName = quest.name or info.title or ("Quest " .. questID),
 							itemID = itemID,
 							required = objective and objective.numRequired,
 							finished = objective and objective.finished or false,
-							npcIDs = type(values[3]) == "table" and values[3][1] or {},
+							npcIDs = Finishers(quest.finishers),
 						}
 					end
 				end
