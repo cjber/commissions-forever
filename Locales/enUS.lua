@@ -8,6 +8,7 @@ ns.L = {
 	["No active commission route is available."] = true,
 	["Install QuestieDB to see your active turn-ins."] = true,
 	["Commissions opens when combat ends."] = true,
+	["Commissions opens in the Professions window. Learn a profession to use it."] = true,
 	["Material"] = true,
 	["Turn-in"] = true,
 	["Have"] = true,

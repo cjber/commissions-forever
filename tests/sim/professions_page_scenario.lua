@@ -27,9 +27,9 @@ end
 -- Thorium Brotherhood materials in the bags, so the page lists rows.
 local function world(sim)
 	-- Client pieces the sim does not boot but the game always has, which Blizzard's Professions pages call:
-	-- the casting bar (crafting page show and hide), the TOC's [Bootstrap] file (ShowProfessionsFrame, for /cf
-	-- before the window has loaded), the action bar grids and the micro menu refresh (book page show). Without
-	-- them Blizzard's own OnShow stops half way and never reaches the hooks after it.
+	-- the casting bar (crafting page show and hide), the TOC's [Bootstrap] file (the game's own open entry
+	-- points), the action bar grids and the micro menu refresh (book page show). Without them Blizzard's own
+	-- OnShow stops half way and never reaches the hooks after it.
 	sim:loadBlizzard("Blizzard_UIPanels_Game:CastingBarFrame")
 	sim:loadBlizzard("Blizzard_Professions/Blizzard_Professions_Bootstrap.lua")
 	sim:loadBlizzard("Blizzard_ActionBar/Shared/MultiActionBars.lua")
@@ -82,6 +82,16 @@ local function world(sim)
 	sim.world.items[11370] = { name = "Dark Iron Ore", count = 12 }
 	sim.world.items[17010] = { name = "Fiery Core", count = 2 }
 	sim.world.items[17011] = { name = "Lava Core", count = 3 }
+	-- The client closes the window from its own trade-skill call, which forever_sim leaves unanswered. Answer it
+	-- the way the client does, through a secure hide, so /cf's close is the same here as in game.
+	sim.impl["C_TradeSkillUI.CloseTradeSkill"] = function()
+		sim.run(function()
+			local frame = sim.G.ProfessionsFrame
+			if frame and frame:IsShown() then
+				frame:Hide()
+			end
+		end)
+	end
 end
 
 local function sideTabs(sim)
@@ -135,12 +145,22 @@ local function checked(tab)
 	return tab.SelectedTexture and tab.SelectedTexture:IsShown() or false
 end
 
--- A left click on a side tab, as the client delivers it.
+-- A left click on the Commissions side tab, as the client delivers it to its custom mouse-up handler.
 local function press(sim, tab)
 	local W = sim.widgets
 	W.dispatch(tab, "OnMouseDown", "LeftButton")
 	W.dispatch(tab, "OnMouseUp", "LeftButton", true)
 	sim.events.flush()
+	sim:advance(0.05)
+end
+
+-- A native tab pressed with the gamepad: the client runs the tab's OnClick with no mouse-up. The tab's own OnClick
+-- switches the native page, then the Commissions post-hook on that script hands the window back.
+local function click(sim, tab)
+	sim:input(function()
+		tab:OnClick()
+		sim.widgets.dispatch(tab, "OnClick")
+	end)
 	sim:advance(0.05)
 end
 
@@ -171,29 +191,22 @@ local function rows(sim)
 	return table.concat(list, ", ")
 end
 
-local function expectCommissionsPage(sim, why, inCombat)
+local function expectCommissionsPage(sim, why)
 	local pf = sim.G.ProfessionsFrame
 	local tab = commissionsTab(sim)
 	check(pf:IsShown(), why .. ": the Professions window is closed")
 	check(page(sim):IsVisible(), why .. ": the Commissions page is not shown")
-	if inCombat then
-		-- The client refuses an addon Hide on BookPage in combat: BookPage:Hide is a protected function
-		-- (SimpleFrameAPIDocumentation.lua:686-688) and the BookPage contains profession buttons that inherit
-		-- SecureFrameTemplate (ProfessionsBookTemplates.xml:4, protected in SecureTemplatesBase.xml:4). The
-		-- native page therefore stays shown under this page until combat ends.
-		for _, nativePage in ipairs({ "CraftingPage", "BookPage" }) do
-			if pf[nativePage]:IsShown() then
-				check(
-					page(sim):GetFrameLevel() > pf[nativePage]:GetFrameLevel(),
-					why .. ": the Commissions page is not above " .. nativePage
-				)
-			end
+	-- The native page stays shown beneath this page; showing or hiding it from addon code would taint the gamepad
+	-- frame manager. The ledger takes its input from above.
+	for _, nativePage in ipairs({ "CraftingPage", "BookPage" }) do
+		if pf[nativePage]:IsShown() then
+			check(
+				page(sim):GetFrameLevel() > pf[nativePage]:GetFrameLevel(),
+				why .. ": the Commissions page is not above " .. nativePage
+			)
 		end
-		check(page(sim):IsMouseEnabled(), why .. ": the Commissions page does not take input over the native page")
-	else
-		check(not pf.CraftingPage:IsShown(), why .. ": the crafting page is still shown under the Commissions page")
-		check(not pf.BookPage:IsShown(), why .. ": the book page is still shown under the Commissions page")
 	end
+	check(page(sim):IsMouseEnabled(), why .. ": the Commissions page does not take input over the native page")
 	check(checked(tab), why .. ": the Commissions tab is not selected")
 	check(not checked(pf.ProfessionsOverviewTab), why .. ": the overview tab is still selected")
 	for i, nativeTab in ipairs(pf.rightProfessionTabs) do
@@ -253,17 +266,40 @@ scenario("the side tab opens the Commissions page and every native tab takes the
 	expectCommissionsPage(sim, "after the Commissions tab")
 	check(rows(sim) == "Dark Iron Ore, Fiery Core, Lava Core", "rows: " .. rows(sim))
 
-	press(sim, pf.ProfessionsOverviewTab)
+	click(sim, pf.ProfessionsOverviewTab)
 	expectNativePage(sim, "BookPage", "after the overview tab")
 	check(checked(pf.ProfessionsOverviewTab), "the overview tab is not selected")
 
 	press(sim, commissionsTab(sim))
 	expectCommissionsPage(sim, "back on the Commissions tab")
 
-	press(sim, pf.rightProfessionTabs[1])
+	click(sim, pf.rightProfessionTabs[1])
 	expectNativePage(sim, "CraftingPage", "after the Blacksmithing tab")
 	check(checked(pf.rightProfessionTabs[1]), "the Blacksmithing tab is not selected")
 	check(not pf.BookPage:IsShown(), "the book page shows under the crafting page")
+end)
+
+scenario("a character with no profession is told on screen and no window opens", function(sim)
+	sim:login()
+	local messages = {}
+	sim.G.UIErrorsFrame = {
+		AddMessage = function(_, text)
+			messages[#messages + 1] = text
+		end,
+	}
+	local chat = #sim.chat
+	slash(sim)
+	sim:expectNoErrors(ADDON)
+	check(
+		not sim.G.ProfessionsFrame or not sim.G.ProfessionsFrame:IsShown(),
+		"a character with no profession opened the Professions window"
+	)
+	check(#messages == 1, "no profession did not tell the player on screen exactly once")
+	check(
+		messages[1] == "Commissions opens in the Professions window. Learn a profession to use it.",
+		"the no-profession message is not the phrase"
+	)
+	check(#sim.chat == chat, "the no-profession message went to chat")
 end)
 
 scenario("the search box keeps every native SearchBoxTemplate handler", function(sim)
@@ -372,7 +408,7 @@ scenario("closing on the Commissions page reopens the native window on its own p
 	press(sim, commissionsTab(sim))
 	sim:closeProfessions()
 	sim:showPanel(pf)
-	expectNativePage(sim, "BookPage", "the professions book reopened from the Commissions page")
+	expectNativePage(sim, "CraftingPage", "the native profession page reopened from the Commissions page")
 
 	slash(sim)
 	expectCommissionsPage(sim, "/cf with the window already open")
@@ -398,17 +434,17 @@ scenario("in combat, after a secret unit tooltip, a material row's tooltip still
 	sim:hover(row)
 	check(sim.G.GameTooltip:IsShown() and sim.G.GameTooltip:GetOwner() == row, "the row's item tooltip did not show")
 	sim:leave()
-	press(sim, sim.G.ProfessionsFrame.ProfessionsOverviewTab)
+	click(sim, sim.G.ProfessionsFrame.ProfessionsOverviewTab)
 	expectNativePage(sim, "BookPage", "the overview tab in combat")
 	press(sim, commissionsTab(sim))
-	expectCommissionsPage(sim, "the Commissions tab in combat", true)
+	expectCommissionsPage(sim, "the Commissions tab in combat")
 	check(
 		sim.G.ProfessionsFrame.BookPage:IsShown(),
 		"the book page should stay shown under the Commissions page in combat"
 	)
 	sim:leaveCombat()
 	expectCommissionsPage(sim, "the Commissions tab after combat")
-	check(not sim.G.ProfessionsFrame.BookPage:IsShown(), "the book page was not hidden when combat ended")
+	check(sim.G.ProfessionsFrame.BookPage:IsShown(), "the book page left the native page under the Commissions page")
 end)
 
 scenario("the gamepad interface walks the window with the Commissions page open", function(sim)
@@ -420,8 +456,35 @@ scenario("the gamepad interface walks the window with the Commissions page open"
 	press(sim, commissionsTab(sim))
 	expectCommissionsPage(sim, "with the gamepad interface")
 	sim:gamepadNavigate()
-	press(sim, pf.rightProfessionTabs[2])
+	click(sim, pf.rightProfessionTabs[2])
 	expectNativePage(sim, "CraftingPage", "the Mining tab with the gamepad interface")
+	sim:gamepadNavigate()
+	sim:expectNoGamepadTaint(ADDON)
+
+	-- The client's own trade-skill call opens the window from /cf under the gamepad interface and owns its
+	-- gamepad bookkeeping, so the tab still works there.
+	sim:closeProfessions()
+	sim:gamepadNavigate()
+	slash(sim)
+	check(pf:IsShown(), "gamepad /cf did not open the Professions window")
+	expectCommissionsPage(sim, "/cf with the gamepad interface")
+	sim:expectNoGamepadTaint(ADDON)
+
+	-- The player opens Professions with the game's own control and presses the tab, then closes with /cf.
+	sim:closeProfessions()
+	sim:openProfessions(164)
+	press(sim, commissionsTab(sim))
+	expectCommissionsPage(sim, "the Commissions tab in a gamepad window")
+	slash(sim)
+	check(not pf:IsShown(), "gamepad /cf did not close the Professions window")
+	sim:gamepadNavigate()
+	sim:expectNoGamepadTaint(ADDON)
+
+	-- Same, closed with the game's own close control: the native hide path must not change its page under our call.
+	sim:openProfessions(164)
+	press(sim, commissionsTab(sim))
+	expectCommissionsPage(sim, "the Commissions tab before a native close")
+	sim:closeProfessions()
 	sim:gamepadNavigate()
 	sim:expectNoGamepadTaint(ADDON)
 end)
