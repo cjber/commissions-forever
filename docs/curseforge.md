@@ -2,10 +2,6 @@ Commissions Forever keeps repeatable turn-ins in view. Check the materials in yo
 
 Free, with nothing locked behind it. If it saves you time, you can [sponsor me on GitHub](https://github.com/sponsors/cjber), which takes no fees, or [buy me a coffee on Ko-fi](https://ko-fi.com/cjber).
 
-[![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber)
-
-Free, open source, and nothing is locked behind it.
-
 ## Features
 
 - **One list for turn-ins.** Argent Dawn writs, Cenarion Circle logistics, Thorium Brotherhood materials, Timbermaw Hold items, and Morrowgrain research appear together.
@@ -39,4 +35,6 @@ Use `/commissions` or `/cf` to open its page in the Professions window. QuestieD
 
 Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data. Licensed GPL-3.0-or-later.
 
-[![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
+Built with AI assistance.
+
+[![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber) [![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
