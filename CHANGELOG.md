@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Opening Commissions no longer causes a blocked-action error.** The game refuses the addon call that opened the Professions window, so the command now tells you on screen to open your profession from your spellbook and shows the Commissions page as soon as you do. (#194)
+
 ## [0.3.2] - 2026-11-10
 
 - **Forever Core now comes in the same download.** This addon needs Forever Core, and until Forever Core has its own CurseForge page every Forever addon's download carries a copy of it, so the addon loads with nothing else to install.

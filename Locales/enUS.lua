@@ -9,6 +9,7 @@ ns.L = {
 	["Install QuestieDB to see your active turn-ins."] = true,
 	["Commissions opens when combat ends."] = true,
 	["Commissions opens in the Professions window. Learn a profession to use it."] = true,
+	["Commissions opens in the Professions window. Open it from your spellbook."] = true,
 	["Material"] = true,
 	["Turn-in"] = true,
 	["Have"] = true,

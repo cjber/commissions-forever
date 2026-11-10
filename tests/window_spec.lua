@@ -187,21 +187,20 @@ host.BookPage.children[#host.BookPage.children + 1] = hiddenDialog
 -- The book page is open beneath, as in the game, with its bars shown.
 host.BookPage.shown = true
 highStatusBar.shown, deepHigh.shown, mediumDeep.shown = true, true, true
-local shown, hidden = 0, 0
-local baseProfession = { professionID = 164 }
+local hidden = 0
 _G.C_TradeSkillUI = {
-	GetBaseProfessionInfo = function()
-		return baseProfession
-	end,
+	-- The client refuses this from addon code (AllowedWhenUntainted); this spec fails if the addon calls it.
 	OpenTradeSkill = function()
-		shown = shown + 1
-		ProfessionsFrame:Show()
+		error("C_TradeSkillUI.OpenTradeSkill is blocked from addon code")
 	end,
 	CloseTradeSkill = function()
 		hidden = hidden + 1
 		ProfessionsFrame:Hide()
 	end,
 }
+_G.GetProfessions = function()
+	return 1
+end
 _G.GameTooltip = Region()
 local inCombat = false
 _G.InCombatLockdown = function()
@@ -279,7 +278,19 @@ for index = 1, 30 do
 	ns.Rows[index] = { turnIn = { faction = "Thorium Brotherhood" }, itemID = index, count = index }
 end
 window.Toggle()
-assert(window.page.shown and ProfessionsFrame.shown, "slash command opens the native host and commissions page")
+assert(not ProfessionsFrame.shown and not window.page.shown, "the slash command opened the native host itself")
+assert(#messages == 1, "the slash command did not tell the player how to open the Professions window")
+assert(
+	messages[1] == ns.L["Commissions opens in the Professions window. Open it from your spellbook."],
+	"the on-screen message is not the phrase"
+)
+assert(#chat == 0, "the slash command wrote to chat")
+-- The player opens the window with their own profession control, and the requested page appears with it. The
+-- client shows the profession's native page as the window opens, after the window's own OnShow.
+ProfessionsFrame:Show()
+ProfessionsFrame.CraftingPage:Show()
+assert(window.page.shown and window.tab.checked, "the page did not appear when the player opened their profession")
+ProfessionsFrame.CraftingPage:Hide()
 assert(
 	window.page.strata == "HIGH" and window.page.level == 8,
 	"the Commissions page did not cover the native page's HIGH strata: "
@@ -396,7 +407,7 @@ end
 
 -- In combat the panel manager refuses panel changes, so the toggle waits and tells the player on screen only.
 assert(not ProfessionsFrame.shown, "the window is closed before the combat toggle")
-shown, hidden = 0, 0
+hidden = 0
 local printed = 0
 local realPrint = print
 rawset(_G, "print", function()
@@ -405,62 +416,75 @@ end)
 inCombat = true
 local before = #messages
 window.Toggle()
-assert(shown == 0 and hidden == 0, "a combat toggle called a panel API or touched the Professions frame")
+assert(hidden == 0, "a combat toggle closed the window")
 assert(not ProfessionsFrame.shown and not window.page.shown, "a combat toggle opened the window")
 assert(#messages == before + 1, "a combat toggle did not add exactly one UIErrorsFrame message")
 assert(messages[#messages] == ns.L["Commissions opens when combat ends."], "the on-screen message is not the phrase")
 assert(#chat == 0, "a combat toggle wrote to chat")
 assert(printed == 0, "a combat toggle printed to chat")
 
--- Leaving combat opens the one pending window, and the event cannot open it again.
+-- Leaving combat hands the one pending request to the player's own profession control, and the event cannot repeat it.
 inCombat = false
+local afterCombat = #messages
 Fire("PLAYER_REGEN_ENABLED")
-assert(shown == 1, "the pending open did not run once when combat ended")
-assert(ProfessionsFrame.shown and window.page.shown and window.tab.checked, "the pending open left the ledger closed")
+assert(not ProfessionsFrame.shown, "the pending open still opened the Professions window itself")
+assert(#messages == afterCombat + 1, "the pending open did not tell the player how to open the window")
+assert(
+	messages[#messages] == ns.L["Commissions opens in the Professions window. Open it from your spellbook."],
+	"the pending open's on-screen message is not the phrase"
+)
+ProfessionsFrame:Show()
+assert(window.page.shown and window.tab.checked, "the pending open left the ledger closed after the profession opened")
+local settled = #messages
 Fire("PLAYER_REGEN_ENABLED")
-assert(shown == 1, "the pending open ran again after it was consumed")
+assert(#messages == settled, "the pending open ran again after it was consumed")
 rawset(_G, "print", realPrint)
 
--- Two toggles in combat share one pending open, which runs once.
+-- Two toggles in combat share one pending request, which waits once.
 window.Toggle()
 assert(hidden == 1 and not ProfessionsFrame.shown, "an out-of-combat toggle no longer closes the window")
 inCombat = true
 window.Toggle()
 window.Toggle()
-assert(shown == 1 and hidden == 1, "combat toggles called a panel API")
+assert(hidden == 1 and not ProfessionsFrame.shown, "combat toggles closed the window")
 inCombat = false
 Fire("PLAYER_REGEN_ENABLED")
-assert(shown == 2, "two combat toggles did not open the window exactly once")
+assert(not ProfessionsFrame.shown, "two combat toggles opened the Professions window itself")
+ProfessionsFrame:Show()
 assert(window.page.shown and window.tab.checked, "the pending open did not select the Commissions page")
 window.Toggle()
 assert(hidden == 2 and not ProfessionsFrame.shown, "an out-of-combat toggle no longer closes the window")
 
--- With no remembered profession, the character's first profession opens the client's own way.
-shown, hidden = 0, 0
-baseProfession = nil
+-- With a profession, the command waits for the player's own profession control and then shows the ledger.
+hidden = 0
 _G.GetProfessions = function()
 	return 1
 end
-_G.GetProfessionInfo = function()
-	return "Blacksmithing", nil, 1, 1, 0, 0, 164
-end
+local beforeProfession = #messages
 window.Toggle()
+assert(not ProfessionsFrame.shown and not window.page.shown, "the command opened the Professions window itself")
 assert(
-	shown == 1 and ProfessionsFrame.shown and window.page.shown,
-	"the character's profession did not open the ledger"
+	#messages == beforeProfession + 1,
+	"the command with a profession did not tell the player how to open the window"
 )
+assert(
+	messages[#messages] == ns.L["Commissions opens in the Professions window. Open it from your spellbook."],
+	"the with-profession message is not the phrase"
+)
+ProfessionsFrame:Show()
+assert(window.page.shown and window.tab.checked, "the ledger did not appear with the profession window")
 window.Toggle()
-assert(hidden == 1 and not ProfessionsFrame.shown and not window.page.shown, "the fallback profession did not close")
+assert(hidden == 1 and not ProfessionsFrame.shown and not window.page.shown, "the open window did not close")
 
--- With no profession at all, nothing opens and the player is told on screen, never in chat.
-shown, hidden = 0, 0
+-- With no profession at all, nothing waits and the player is told on screen, never in chat.
+hidden = 0
 _G.GetProfessions = function()
 	return nil
 end
 local beforeNoProfession = #messages
 local chatBefore = #chat
 window.Toggle()
-assert(shown == 0 and hidden == 0, "a character with no profession called a trade-skill function")
+assert(hidden == 0, "a character with no profession closed the window")
 assert(not ProfessionsFrame.shown and not window.page.shown, "a character with no profession opened the window")
 assert(#messages == beforeNoProfession + 1, "no profession did not add exactly one UIErrorsFrame message")
 assert(
@@ -468,5 +492,7 @@ assert(
 	"the no-profession message is not the phrase"
 )
 assert(#chat == chatBefore, "the no-profession message went to chat")
+ProfessionsFrame:Show()
+assert(not window.page.shown, "a character with no profession got a page waiting for a window that cannot come")
 
 print("Commissions Forever window specs passed")
