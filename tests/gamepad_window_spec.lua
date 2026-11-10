@@ -1,8 +1,9 @@
 -- Run from the repository root: luajit tests/gamepad_window_spec.lua
 -- The ledger sits above the native page and never shows or hides a Blizzard page itself. Under the gamepad interface
 -- those calls rebuild the frame manager's focus and the footer's binding group under our taint, and the next secure
--- window call has its protected SetPreferredGamepadInteractTarget refused (cjber/commissions-forever#147). Opening and
--- closing go through the client's own trade-skill call, which owns that bookkeeping.
+-- window call has its protected SetPreferredGamepadInteractTarget refused (cjber/commissions-forever#147). The player
+-- opens the window with their own profession control; closing goes through the client's own trade-skill call, which
+-- owns that bookkeeping.
 local nativeSelections = 0
 _G.hooksecurefunc = function(t, name, post)
 	local original = t[name]
@@ -164,7 +165,7 @@ host.rightProfessionTabs = { professionTab }
 host.RightTabSelected = function()
 	nativeSelections = nativeSelections + 1
 end
-local shown, hidden, bookPage = 0, 0, 0
+local hidden, bookPage = 0, 0
 host.SelectBookPage = function()
 	bookPage = bookPage + 1
 	host.BookPage:Show()
@@ -191,18 +192,18 @@ _G.HideUIPanel = function(frame)
 	frame:Hide()
 end
 _G.C_TradeSkillUI = {
-	GetBaseProfessionInfo = function()
-		return { professionID = 164 }
-	end,
+	-- The client refuses this from addon code (AllowedWhenUntainted); this spec fails if the addon calls it.
 	OpenTradeSkill = function()
-		shown = shown + 1
-		host:Show()
+		error("C_TradeSkillUI.OpenTradeSkill is blocked from addon code")
 	end,
 	CloseTradeSkill = function()
 		hidden = hidden + 1
 		host:Hide()
 	end,
 }
+_G.GetProfessions = function()
+	return 1
+end
 _G.GameTooltip = Region()
 _G.InCombatLockdown = function()
 	return false
@@ -254,18 +255,30 @@ assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 
--- Mouse and keyboard open and close through the client's own trade-skill call, never the panel manager.
+-- The command cannot open the client's window from addon code; the player's own profession control does, and the
+-- page appears with it without writing Blizzard's panel or page state.
 window.Toggle()
-assert(shown == 1 and host.shown and window.page.shown and window.tab.checked, "the mouse opens the ledger")
+assert(not host.shown and not window.page.shown, "the command opened the Professions window itself")
+assert(
+	messages[1] == ns.L["Commissions opens in the Professions window. Open it from your spellbook."],
+	"the command did not say how to open the window"
+)
+host:Show()
+assert(window.page.shown and window.tab.checked, "the page did not appear with the player's profession window")
 assert(panelCalls == 0 and bookPage == 0, "opening wrote Blizzard's panel or page state")
 window.Toggle()
 assert(hidden == 1 and not host.shown and not window.page.shown, "the mouse closes the ledger")
 assert(panelCalls == 0 and bookPage == 0, "closing wrote Blizzard's panel or page state")
 
--- The same on the gamepad interface: opening, selecting the tab and closing touch no native page.
+-- The same on the gamepad interface: selecting the page and closing touch no native page.
 gamepad = true
 window.Toggle()
-assert(shown == 2 and host.shown and window.page.shown, "/cf did not open the ledger under the gamepad interface")
+assert(not host.shown, "the gamepad command opened the Professions window itself")
+host:Show()
+-- The client shows the profession's native page with the window, after the window's own OnShow.
+host.CraftingPage:Show()
+nativeShows, nativeHides = 0, 0
+assert(window.page.shown and window.tab.checked, "/cf did not show the ledger under the gamepad interface")
 assert(nativeShows == 0 and nativeHides == 0, "opening changed a native page under the gamepad interface")
 assert(bookPage == 0, "opening changed the remembered profession under the gamepad interface")
 
@@ -273,6 +286,8 @@ window.tab.click(nil, "LeftButton", true)
 assert(window.page.shown and window.tab.checked, "the Commissions tab did not open")
 assert(nativeShows == 0 and nativeHides == 0, "the Commissions tab changed a native page under the gamepad interface")
 
+-- The client shows another native page (the one on screen must change for OnShow to run).
+host.CraftingPage:Hide()
 host.CraftingPage:Show()
 assert(not window.page.shown and not window.tab.checked, "a native page did not take the window back")
 nativeShows, nativeHides = 0, 0

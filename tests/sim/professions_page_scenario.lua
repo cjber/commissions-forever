@@ -503,13 +503,18 @@ end)
 scenario("closing on the Commissions page reopens the native window on its own page", function(sim)
 	world(sim)
 	sim:login()
-	-- /cf before the Professions window has ever loaded.
+	-- /cf cannot open the window from addon code; it waits for the player's own profession control.
 	slash(sim)
-	expectCommissionsPage(sim, "after /cf")
-	slash(sim)
-	check(not sim.G.ProfessionsFrame:IsShown(), "a second /cf did not close the window")
-
+	check(
+		not sim.G.ProfessionsFrame or not sim.G.ProfessionsFrame:IsShown(),
+		"/cf opened the Professions window itself"
+	)
 	local pf = sim:openProfessions(164)
+	expectCommissionsPage(sim, "the player's profession after /cf")
+	slash(sim)
+	check(not pf:IsShown(), "a second /cf did not close the window")
+
+	sim:openProfessions(164)
 	expectNativePage(sim, "CraftingPage", "reopened on Blacksmithing after /cf")
 	sim:closeProfessions()
 	check(not pf.BookPage:IsShown(), "closing on a native crafting page showed the native book page")
@@ -581,12 +586,13 @@ scenario("the gamepad interface walks the window with the Commissions page open"
 	sim:gamepadNavigate()
 	sim:expectNoGamepadTaint(ADDON)
 
-	-- The client's own trade-skill call opens the window from /cf under the gamepad interface and owns its
-	-- gamepad bookkeeping, so the tab still works there.
+	-- /cf asks for the page, and the player opens the window with their own profession control under the gamepad
+	-- interface; the page appears with it and the gamepad bookkeeping stays the client's.
 	sim:closeProfessions()
 	sim:gamepadNavigate()
 	slash(sim)
-	check(pf:IsShown(), "gamepad /cf did not open the Professions window")
+	check(not pf:IsShown(), "gamepad /cf opened the Professions window itself")
+	sim:openProfessions(164)
 	expectCommissionsPage(sim, "/cf with the gamepad interface")
 	sim:expectNoGamepadTaint(ADDON)
 
@@ -616,11 +622,12 @@ scenario("Questie's tracker and an old saved file", { stubs = { Questie = {} } }
 	check(sim.G.Questie_BaseFrame and sim.G.Questie_BaseFrame:IsShown(), "Questie's tracker did not build")
 	check(type(sim:savedState().CommissionsForeverDB) == "table", "the old saved value was kept")
 	slash(sim)
+	sim:openProfessions(164)
 	expectCommissionsPage(sim, "/cf with Questie's tracker")
 	check(rows(sim) == "Dark Iron Ore, Fiery Core, Lava Core", "rows with Questie: " .. rows(sim))
 end)
 
-scenario("slash opens the ledger after a previously selected profession without recasting it", function(sim)
+scenario("slash waits for the player's profession without recasting the previously selected one", function(sim)
 	world(sim)
 	sim:login()
 	local host = sim:openProfessions(164)
@@ -632,6 +639,8 @@ scenario("slash opens the ledger after a previously selected profession without 
 	end
 	slash(sim)
 	check(casts == 0, "/cf recast the old profession, whose TRADE_SKILL_SHOW would replace the ledger")
+	check(not host:IsShown(), "/cf opened the Professions window itself")
+	sim:openProfessions(164)
 	expectCommissionsPage(sim, "/cf after closing a previously selected profession")
 end)
 
@@ -657,15 +666,27 @@ scenario("in combat, /cf waits for combat to end and then opens the ledger", fun
 	check(#sim.chat == chat, "combat /cf wrote to chat")
 	sim:leaveCombat()
 	sim:expectNoErrors(ADDON)
-	expectCommissionsPage(sim, "after combat ended")
+	check(
+		not sim.G.ProfessionsFrame or not sim.G.ProfessionsFrame:IsShown(),
+		"the pending open opened the window itself"
+	)
+	check(#messages == 2, "the pending open did not tell the player how to open the window")
+	check(
+		messages[2] == "Commissions opens in the Professions window. Open it from your spellbook.",
+		"the pending open's on-screen message is not the phrase"
+	)
+	sim:openProfessions(164)
+	expectCommissionsPage(sim, "after combat ended and the player opened their profession")
 
-	-- Two toggles in combat share one pending open, which runs when combat ends.
+	-- Two toggles in combat share one pending request, which waits when combat ends.
 	sim:closeProfessions()
 	sim:enterCombat()
 	slash(sim)
 	slash(sim)
 	sim:expectNoErrors(ADDON)
 	sim:leaveCombat()
+	check(not sim.G.ProfessionsFrame:IsShown(), "two /cf in combat opened the window itself")
+	sim:openProfessions(164)
 	expectCommissionsPage(sim, "two /cf in combat")
 end)
 
@@ -692,6 +713,7 @@ scenario("completion controls preserve the ledger and count only supported turn-
 	)
 	sim:login()
 	slash(sim)
+	sim:openProfessions(164)
 	local share, board
 	for _, child in ipairs({ page(sim):GetChildren() }) do
 		if child.Text and child.Text.GetText and child.Text:GetText() == "Share my progress" then
@@ -730,4 +752,69 @@ scenario("completion controls preserve the ledger and count only supported turn-
 	sim:setGamepad(true)
 	sim:gamepadNavigate()
 	sim:expectNoGamepadTaint(ADDON)
+end)
+
+-- cjber/commissions-forever#194: the client refuses C_TradeSkillUI.OpenTradeSkill from addon code
+-- (AllowedWhenUntainted), so opening Commissions must never call it. The command and the addon compartment tell the
+-- player on screen how to open the window, and the page appears when they open it with their own profession control.
+scenario("opening Commissions never calls the blocked trade-skill function", function(sim)
+	world(sim)
+	sim:login()
+	-- The client's answer to the old open path: a blocked action, exactly as the game reports it.
+	sim.impl["C_TradeSkillUI.OpenTradeSkill"] = function()
+		sim.forbidden("C_TradeSkillUI.OpenTradeSkill")
+	end
+	local messages = {}
+	sim.G.UIErrorsFrame = {
+		AddMessage = function(_, text)
+			messages[#messages + 1] = text
+		end,
+	}
+	local chat = #sim.chat
+	slash(sim)
+	sim:expectNoErrors(ADDON)
+	check(
+		not sim.G.ProfessionsFrame or not sim.G.ProfessionsFrame:IsShown(),
+		"/cf opened the Professions window itself"
+	)
+	check(#messages == 1, "/cf did not tell the player on screen how to open the window")
+	check(
+		messages[1] == "Commissions opens in the Professions window. Open it from your spellbook.",
+		"/cf's on-screen message is not the phrase"
+	)
+	check(#sim.chat == chat, "/cf wrote to chat")
+
+	-- The player opens the window with their own profession control; the waiting page appears with it.
+	sim:openProfessions(164)
+	expectCommissionsPage(sim, "the player opened their profession after /cf")
+	sim:expectNoErrors(ADDON)
+
+	-- The addon compartment takes the same path.
+	sim:closeProfessions()
+	messages = {}
+	sim:input(function()
+		sim.G.CommissionsForever_OnAddonCompartmentClick()
+	end)
+	sim:advance(0.1)
+	sim:expectNoErrors(ADDON)
+	check(not sim.G.ProfessionsFrame:IsShown(), "the addon compartment opened the Professions window itself")
+	check(#messages == 1, "the addon compartment did not tell the player on screen how to open the window")
+	check(
+		messages[1] == "Commissions opens in the Professions window. Open it from your spellbook.",
+		"the addon compartment's on-screen message is not the phrase"
+	)
+	check(#sim.chat == chat, "the addon compartment wrote to chat")
+	sim:openProfessions(164)
+	expectCommissionsPage(sim, "the player opened their profession after the addon compartment")
+	sim:expectNoErrors(ADDON)
+
+	-- With the window already open, the command only selects the page and says nothing.
+	sim:closeProfessions()
+	sim:openProfessions(164)
+	expectNativePage(sim, "CraftingPage", "the player opened Blacksmithing")
+	local beforeOpen = #messages
+	slash(sim)
+	expectCommissionsPage(sim, "/cf with the window already open")
+	check(#messages == beforeOpen, "/cf said how to open a window that was already open")
+	sim:expectNoErrors(ADDON)
 end)

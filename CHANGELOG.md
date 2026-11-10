@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Opening Commissions no longer causes a blocked-action error.** The game refuses the addon call that opened the Professions window, so the command now tells you on screen to open your profession from your spellbook and shows the Commissions page as soon as you do. (#194)
+
 ### For addon authors
 
 - `CommissionsForever.API` is minor 3: a read with nothing to answer now returns `nil, reason` through `ForeverCore.APIKit.NotReady` (`"loading"` while QuestieDB is unavailable, `"none"` when SkillUp Forever has no materials), `ActiveObjectives` no longer answers an empty table while QuestieDB is missing, a read with an answer is unchanged, and `docs/api.md` now lists every function, its answer shape, the reasons each read can return and the minor history.

@@ -10,7 +10,8 @@ ns.Window = Window
 
 local ROW_HEIGHT = 30
 local page, tab
-local pendingOpen = false
+local pendingOpen = false -- a command during combat, retried when combat ends
+local pendingPage = false -- a command's page, waiting for the player to open their profession
 local requestedItems = {}
 
 local function IsTrackedItem(itemID)
@@ -317,18 +318,41 @@ local function Attach()
 	end)
 	Window.tab = tab
 	PlaceTab()
-	ProfessionsFrame:HookScript("OnShow", PlaceTab)
-	ProfessionsFrame.CraftingPage:HookScript("OnShow", Deselect)
-	ProfessionsFrame.BookPage:HookScript("OnShow", Deselect)
+	-- A command asked for the page while the window was closed. The player opens the window with their own
+	-- profession control, and the page appears with it (cjber/commissions-forever#194).
+	ProfessionsFrame:HookScript("OnShow", function()
+		PlaceTab()
+		if pendingPage then
+			SelectPage()
+		end
+	end)
+	-- The client builds and shows a native page as the window opens; shown after the window it would cover the
+	-- Commissions page, so a waiting request takes the window again on the same show.
+	local function NativePageShown()
+		Deselect()
+		if pendingPage then
+			SelectPage()
+			-- The native page shown with the window is the last step of the client's open; later page shows are the
+			-- player's or the client's own choice and leave the Commissions page alone.
+			pendingPage = false
+		end
+	end
+	ProfessionsFrame.CraftingPage:HookScript("OnShow", NativePageShown)
+	ProfessionsFrame.BookPage:HookScript("OnShow", NativePageShown)
 	-- A native page already shown beneath ours does not fire OnShow again, so its tab hands the window back here.
 	-- The tabs are Frames with no OnClick script, so hook the mixin method that a mouse-up and a gamepad press
 	-- both run. RightTabSelected is not that signal: the client also calls it while refreshing the tabs on a
 	-- skill-up or a reopen, which must leave our page alone.
-	hooksecurefunc(ProfessionsFrame.ProfessionsOverviewTab, "OnClick", Deselect)
+	local function HandBack()
+		pendingPage = false
+		Deselect()
+	end
+	hooksecurefunc(ProfessionsFrame.ProfessionsOverviewTab, "OnClick", HandBack)
 	for _, nativeTab in ipairs(ProfessionsFrame.rightProfessionTabs or {}) do
-		hooksecurefunc(nativeTab, "OnClick", Deselect)
+		hooksecurefunc(nativeTab, "OnClick", HandBack)
 	end
 	ProfessionsFrame:HookScript("OnHide", function()
+		pendingPage = false
 		if page and page:IsShown() then
 			Deselect()
 		end
@@ -336,39 +360,36 @@ local function Attach()
 	Window.Refresh()
 end
 
--- Loading Blizzard_Professions from our code runs its gamepad setup and panel bookkeeping under our taint, even with
--- the interface off, so the game's own trade-skill call opens it. It already owns the panel manager and the gamepad
--- focus, and the page above the native one then takes input.
-local function ShowNativeFrame()
-	local info = C_TradeSkillUI.GetBaseProfessionInfo()
-	local skillLineID = info and info.professionID
-	if not skillLineID or skillLineID == 0 then
-		local first = GetProfessions()
-		if first then
-			local _, _, _, _, _, _, professionSkillLine = GetProfessionInfo(first)
-			skillLineID = professionSkillLine
-		end
+-- A command, the addon compartment and the pending open after combat are not secure input, and the client refuses
+-- C_TradeSkillUI.OpenTradeSkill from addon code (AllowedWhenUntainted). The player opens the Professions window with
+-- their own profession control; the page waits for it and appears with it (cjber/commissions-forever#194).
+local function ShowPageWhenOpened()
+	if page and ProfessionsFrame and ProfessionsFrame:IsShown() then
+		pendingPage = false
+		SelectPage()
+		return true
 	end
-	if not skillLineID or skillLineID == 0 then
-		-- Nothing to open, and loading the window ourselves would taint the gamepad setup, so say so on screen.
+	return false
+end
+
+local function Open()
+	Attach()
+	if ShowPageWhenOpened() then
+		return
+	end
+	if not GetProfessions() then
+		-- Nothing to open, so ask the player to learn a profession instead of waiting for a window that cannot come.
 		UIErrorsFrame:AddMessage(
 			L["Commissions opens in the Professions window. Learn a profession to use it."],
 			NORMAL_FONT_COLOR:GetRGB()
 		)
-		return false
-	end
-	C_TradeSkillUI.OpenTradeSkill(skillLineID)
-	return true
-end
-
-local function Open()
-	if not ShowNativeFrame() then
 		return
 	end
-	Attach()
-	if page then
-		SelectPage()
-	end
+	pendingPage = true
+	UIErrorsFrame:AddMessage(
+		L["Commissions opens in the Professions window. Open it from your spellbook."],
+		NORMAL_FONT_COLOR:GetRGB()
+	)
 end
 
 function Window.Toggle()
