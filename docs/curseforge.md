@@ -6,8 +6,6 @@ Free, with nothing locked behind it. If it saves you time, you can [sponsor me o
 
 Free, open source, and nothing is locked behind it.
 
-[![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
-
 ## Features
 
 - **One list for turn-ins.** Argent Dawn writs, Cenarion Circle logistics, Thorium Brotherhood materials, Timbermaw Hold items, and Morrowgrain research appear together.
@@ -40,3 +38,5 @@ For help, ideas and each day's release notes, join [cjber's Workshop on Discord]
 Use `/commissions` or `/cf` to open its page in the Professions window. QuestieDB, SkillUp Forever, and Shortest Path Forever are optional.
 
 Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data. Licensed GPL-3.0-or-later.
+
+[![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
