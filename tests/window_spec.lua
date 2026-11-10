@@ -41,6 +41,12 @@ local function Region()
 				GetFrameLevel = function(self)
 					return rawget(self, "level") or 0
 				end,
+				SetFrameStrata = function(self, strata)
+					self.strata = strata
+				end,
+				GetFrameStrata = function(self)
+					return rawget(self, "strata") or "MEDIUM"
+				end,
 				GetHighestFrameLevel = function(self)
 					return rawget(self, "level") or 0
 				end,
@@ -160,6 +166,27 @@ host.BookPage = Region()
 host.ProfessionsOverviewTab = NativeTab()
 host.rightProfessionTabs = {}
 host.RightTabSelected = function() end
+-- The book page declares its profession rank bar at HIGH while the pages are MEDIUM. A deeper HIGH frame and a
+-- much higher MEDIUM frame prove the page covers the highest strata, not the highest level anywhere.
+local highStatusBar = Region()
+highStatusBar:SetFrameStrata("HIGH")
+highStatusBar.level = 7
+host.BookPage.children[#host.BookPage.children + 1] = highStatusBar
+local deepHigh = Region()
+deepHigh:SetFrameStrata("HIGH")
+deepHigh.level = 4
+highStatusBar.children[#highStatusBar.children + 1] = deepHigh
+local mediumDeep = Region()
+mediumDeep.level = 100
+host.BookPage.children[#host.BookPage.children + 1] = mediumDeep
+-- A hidden DIALOG frame draws nothing, so it must not lift the page level with the game's popups.
+local hiddenDialog = Region()
+hiddenDialog:SetFrameStrata("DIALOG")
+hiddenDialog.level = 50
+host.BookPage.children[#host.BookPage.children + 1] = hiddenDialog
+-- The book page is open beneath, as in the game, with its bars shown.
+host.BookPage.shown = true
+highStatusBar.shown, deepHigh.shown, mediumDeep.shown = true, true, true
 local shown, hidden = 0, 0
 local baseProfession = { professionID = 164 }
 _G.C_TradeSkillUI = {
@@ -253,6 +280,25 @@ for index = 1, 30 do
 end
 window.Toggle()
 assert(window.page.shown and ProfessionsFrame.shown, "slash command opens the native host and commissions page")
+assert(
+	window.page.strata == "HIGH" and window.page.level == 8,
+	"the Commissions page did not cover the native page's HIGH strata: "
+		.. tostring(window.page.strata)
+		.. " "
+		.. tostring(window.page.level)
+)
+-- The native pages build and re-level frames after attach; showing the page again picks up the new HIGH level.
+local lateStatusBar = Region()
+lateStatusBar:SetFrameStrata("HIGH")
+lateStatusBar.level = 20
+lateStatusBar.shown = true
+host.BookPage.children[#host.BookPage.children + 1] = lateStatusBar
+window.page:Hide()
+window.page:Show()
+assert(
+	window.page.strata == "HIGH" and window.page.level == 21,
+	"a HIGH frame created after attach stayed above the Commissions page"
+)
 assert(window.tab.point[2] == secondTab, "commissions leaves both existing addon tabs visible and uses the next slot")
 assert(firstTab.shown and secondTab.shown, "placing commissions does not hide other addon tabs")
 window.Refresh()

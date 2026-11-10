@@ -90,7 +90,7 @@ def window(ui, *, sharing=True, empty=False, available=True):
     ix, iy = px + 14, py + 78
     iw, ih = WIDTH - 8 - 28, HEIGHT - 32 - 78 - 44
     canvas.draw(ui.atlas("common-insideframe"), ix + 2, iy + 2, iw - 4, ih - 4)
-    columns = re.findall(r'\{ "(Material|Turn-in|Have|Need)", (\d+), (\d+) \}', SOURCE)
+    columns = re.findall(r'\{ L\["(Material|Turn-in|Have|Need)"\], (\d+), (\d+) \}', SOURCE)
     for label, offset, width in columns:
         canvas.text(ix + int(offset), iy + 10, label, wowmock.FONTS["GameFontNormalSmall"], width=int(width))
     if empty:
