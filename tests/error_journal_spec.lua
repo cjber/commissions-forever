@@ -75,6 +75,8 @@ ns.Window = {
 	Refresh = function() end,
 	Toggle = function() end,
 }
+-- Core/API.lua's change signal, which this spec does not load.
+ns.APIChanged = function() end
 assert(loadfile("Core/Core.lua"))("CommissionsForever", ns)
 
 -- An older save's journal and log under the same keys core reads.

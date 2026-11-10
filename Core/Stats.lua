@@ -213,6 +213,7 @@ events:SetScript("OnEvent", function(_, event, questID)
 		end
 		local total = Totals()
 		record.total, record.eventUnix = math.min(total + 1, MAX_VALUE), stamp
+		ns.APIChanged("turnin")
 	end
 	peer:Sync()
 end)

@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 
+- **The materials ledger and the turn-in route now use each quest's own identity instead of its title.** A quest whose name happens to contain a turn-in's name is no longer listed or routed, and a commission whose title matches none of them is now listed and routed. (#200)
 - **The addon's own icon is the same everywhere it appears in game.** The Professions side tab now wears the letter icon the Forever Leaderboards tab uses. (#146)
+
+### For addon authors
+
+- `CommissionsForever.API` is minor 4: `CommissionCategory(questID)` names the turn-in category a quest belongs to, `Materials()` returns the window's have-versus-need rows as fresh `{ category, itemID, have, need?, questID? }` rows, and `Subscribe(callback)` reports `materials`, `objectives` and `turnin` changes through `ForeverCore.APIKit.Hub`. `RequiredMaterials` is documented as a forward to SkillUp Forever, the source of truth for a recipe's reagents.
 
 ## [0.3.3] - 2026-11-10
 

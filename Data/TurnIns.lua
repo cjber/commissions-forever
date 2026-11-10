@@ -35,7 +35,6 @@ ns.TurnIns = {
 		faction = "Argent Dawn",
 		place = "Light's Hope Chapel",
 		items = { 12844 }, -- Argent Dawn Valor Token, used to obtain a Craftsman's Writ.
-		quest = "Craftsman's Writ",
 	},
 	{
 		key = "cenarionCircle",
@@ -43,8 +42,7 @@ ns.TurnIns = {
 		faction = "Cenarion Circle",
 		place = "Cenarion Hold",
 		items = {}, -- Logistics assignments come from the active quest log, not a guessed briefing item.
-		quest = "Logistics Task Briefing",
-		-- Client briefing items identify assignments whose quest titles differ from the briefing.
+		-- The briefing items that start this category's assignments, which QuestieDB's classifier matches.
 		sourceItems = {
 			20806,
 			20807,
@@ -75,7 +73,6 @@ ns.TurnIns = {
 		faction = "Thorium Brotherhood",
 		place = "The Grim Guzzler",
 		items = { 11370, 17012, 11382, 17010, 17011 },
-		quest = "Favor Amongst the Brotherhood",
 	},
 	{
 		key = "timbermawHold",
@@ -83,8 +80,6 @@ ns.TurnIns = {
 		faction = "Timbermaw Hold",
 		place = "Timbermaw Hold",
 		items = { 21377, 21383, 20741, 20742 }, -- Headdress Feather, Spirit Beads, Deadwood and Winterfall Ritual Totems.
-		quest = "Feathers for Nafien",
-		questAliases = { "Beads for Salfa", "Feathers for Grazle", "Deadwood Ritual Totem", "Winterfall Ritual Totem" },
 	},
 	{
 		key = "morrowgrain",
@@ -92,7 +87,5 @@ ns.TurnIns = {
 		faction = "Morrowgrain research",
 		place = "Darnassus or Thunder Bluff",
 		items = { 11040, 11018 }, -- Morrowgrain and Un'Goro Soil.
-		quest = "Morrowgrain",
-		questAliases = { "Un'Goro Soil" },
 	},
 }

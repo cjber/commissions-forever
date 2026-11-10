@@ -88,6 +88,11 @@ OBJECTIVES = """{
     { questID = 1007, questName = "Favor Amongst the Brotherhood", itemID = 17012, required = 2 },
     { questID = 1008, questName = "Favor Amongst the Brotherhood", itemID = 11382, required = 1 },
 }"""
+# The category QuestieDB would give each synthetic quest ID.
+CATEGORIES = """{
+    [1001] = "cenarionCircle", [1002] = "timbermawHold", [1003] = "timbermawHold", [1004] = "morrowgrain",
+    [1005] = "morrowgrain", [1006] = "thoriumBrotherhood", [1007] = "thoriumBrotherhood", [1008] = "thoriumBrotherhood",
+}"""
 BAGS = """{
     [14529] = 22, [21377] = 5, [21383] = 2, [11040] = 12, [11018] = 7, [11370] = 4,
     [17012] = 6, [11382] = 1, [17010] = 2, [17011] = 1, [20741] = 1, [20742] = 1, [12844] = 3,
@@ -102,9 +107,16 @@ def sample_rows():
             "-e",
             f"""local ns = {{}}
 assert(loadfile("Data/TurnIns.lua"))("CommissionsForever", ns)
-assert(loadfile("Core/Model.lua"))("CommissionsForever", ns)
 local bags = {BAGS}
 local objectives = {OBJECTIVES}
+local categories = {CATEGORIES}
+-- The scene is synthetic, so QuestieDB's answer per quest ID comes from CATEGORIES.
+ns.Questie = {{
+    CommissionCategory = function(questID)
+        return categories[questID]
+    end,
+}}
+assert(loadfile("Core/Model.lua"))("CommissionsForever", ns)
 for _, row in ipairs(ns.Model.Inventory(function(id) return bags[id] or 0 end, objectives)) do
     print(row.itemID .. "\\t" .. row.count .. "\\t" .. (row.need and tostring(row.need) or "-")
         .. "\\t" .. row.turnIn.faction)

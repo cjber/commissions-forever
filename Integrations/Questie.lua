@@ -63,6 +63,12 @@ end
 ---@type table<integer, CommissionsQuestieQuest|false>
 local quests = {}
 
+-- Each quest's commission category, and "not a commission", kept per quest ID for the session like its row: the bag
+-- and log events re-ask about the same quests, and classification does not change while the library stays installed.
+-- false is the answer "not a commission", so only a library that is fitted again clears it.
+---@type table<integer, string|false>
+local categories = {}
+
 -- QuestieDB as this file reads it, fitted once so the contract check and its zone tables cost one pass. A
 -- library that replaces the one held is fitted again, so one that loads later is picked up.
 ---@type table?
@@ -76,7 +82,7 @@ local libraryZones
 local function Library()
 	local lib = LibQuestieDB
 	if lib ~= fitted then
-		fitted, library, libraryZones, quests = lib, nil, nil, {}
+		fitted, library, libraryZones, quests, categories = lib, nil, nil, {}, {}
 		if type(lib) == "table" and type(lib.RequireContract) == "function" then
 			local ok, compatible = pcall(lib.RequireContract, CONTRACT)
 			if ok and compatible and type(lib.Quest) == "table" and type(lib.Quest.GetAll) == "function" then
@@ -292,12 +298,11 @@ local function PositiveReputation(db, category, rewards)
 	return false
 end
 
+-- The category a quest belongs to, read from QuestieDB now. false is a quest that is not a commission; nil is a
+-- library that cannot answer yet, so the answer is not cached and the caller can ask again.
 ---@param questID integer
----@return string? category
-function Questie.CommissionCategory(questID)
-	if type(questID) ~= "number" or questID <= 0 or questID % 1 ~= 0 then
-		return nil
-	end
+---@return string|false|nil
+local function Classify(questID)
 	local db = Library()
 	local fields = db
 		and Fields(db, "Quest", {
@@ -312,12 +317,15 @@ function Questie.CommissionCategory(questID)
 		return nil
 	end
 	local ok, values = pcall(db.Quest.GetAll, questID, fields)
-	if not ok or type(values) ~= "table" then
+	if not ok then
 		return nil
+	end
+	if type(values) ~= "table" then
+		return false
 	end
 	local flags, finishers = values[1], values[2]
 	if type(flags) ~= "number" or flags < 0 or flags % 2 ~= 1 or type(finishers) ~= "table" then
-		return nil
+		return false
 	end
 	local hasFinisher = false
 	for _, ids in pairs(finishers) do
@@ -326,7 +334,7 @@ function Questie.CommissionCategory(questID)
 		end
 	end
 	if not hasFinisher then
-		return nil
+		return false
 	end
 	local objectives = type(values[4]) == "table" and values[4][3]
 	local starters = type(values[6]) == "table" and values[6][3]
@@ -351,13 +359,39 @@ function Questie.CommissionCategory(questID)
 			end
 			if starterMatch or objectiveMatch then
 				if matched then
-					return nil
+					return false
 				end
 				matched = category.key
 			end
 		end
 	end
-	return matched
+	return matched or false
+end
+
+-- The commission category a quest ID belongs to, the same answer the window, the route and the completion record
+-- use. Titles never classify a quest. The answer is kept per ID for the session.
+---@param questID integer
+---@return string? category
+function Questie.CommissionCategory(questID)
+	if type(questID) ~= "number" or questID <= 0 or questID % 1 ~= 0 then
+		return nil
+	end
+	-- Fit the library first: a library that replaced the one read before clears the session's answers, not just the
+	-- next refresh's.
+	local db = Library()
+	if not db then
+		return nil
+	end
+	---@type string|false|nil
+	local category = categories[questID]
+	if category == nil then
+		category = Classify(questID)
+		if category == nil then
+			return nil
+		end
+		categories[questID] = category
+	end
+	return category or nil
 end
 
 return Questie
