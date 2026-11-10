@@ -12,13 +12,9 @@ Rankings separate the client's game-mode record ID and Hardcore flag. An unavail
 
 ## Public API
 
-`CommissionsForever.API` remains version 1, minor 2. Existing methods remain available.
-
-- `Stats()` returns a fresh array containing `{addon="CommissionsForever", metric="commission_turnin", subject="all", value=total, eventUnix=lastObservedTime}`. The timestamp is absent before the first accepted event. This is local data, not a wire payload.
-- `Leaderboard(limit)` returns `{metric="commission_turnin", scope="guild_group", ruleset=classification, sharing=boolean, total=rankedCount, rows={...}}`. Each fresh row has `rank`, `name`, `value`, optional `eventUnix`, and `self=true` for the personal row. The classification is absent when unavailable. The personal row is retained even below the requested cutoff.
-- The default limit is 10, capped at 25. Zero returns only the personal row. Negative, fractional and nonnumeric limits return `nil, "invalid"`.
-
-Guild/group transport is Forever Core's bounded `WFAStats` protocol. It sends the supported cumulative total and last observation time, not quest titles or inventory. Equal totals use the shared deterministic ordering.
+The recorded total and the leaderboard are read through `CommissionsForever.API`; [the API page](api.md) lists its
+functions, the shapes they return and the reasons a read can return. Completion records stay local and are shared
+only through the guild and group transport described there.
 
 ## Client checks before merge
 

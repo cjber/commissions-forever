@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### For addon authors
+
+- `CommissionsForever.API` is minor 3: a read with nothing to answer now returns `nil, reason` through `ForeverCore.APIKit.NotReady` (`"loading"` while QuestieDB is unavailable, `"none"` when SkillUp Forever has no materials), `ActiveObjectives` no longer answers an empty table while QuestieDB is missing, a read with an answer is unchanged, and `docs/api.md` now lists every function, its answer shape, the reasons each read can return and the minor history.
+
 ## [0.3.0] - 2026-11-10
 
 - **Needs Forever Core.** The shared tracker column, bug report and leaderboards now come from one Forever Core addon that installs with it, so every Forever addon's tracker scale, lock and position stay in step. Your tracker settings carry over.
