@@ -1,4 +1,9 @@
 {
+  "canvas": {
+    "width": 765,
+    "height": 642,
+    "scale": 2
+  },
   "frame": {
     "x": 24,
     "y": 24,
@@ -45,6 +50,258 @@
       "y": 580,
       "w": 190,
       "h": 24
+    },
+    {
+      "name": "page tab",
+      "role": "tabs",
+      "x": 697,
+      "y": 140,
+      "w": 55,
+      "h": 55
     }
-  ]
+  ],
+  "scenes": [
+    "window.png",
+    "window-search.png",
+    "leaderboard.png",
+    "leaderboard-all-time.png"
+  ],
+  "scene_layouts": {
+    "window.png": {
+      "frame": {
+        "x": 24,
+        "y": 24,
+        "w": 673,
+        "h": 594
+      },
+      "widgets": [
+        {
+          "name": "leaderboard",
+          "role": "button",
+          "x": 547,
+          "y": 60,
+          "w": 132,
+          "h": 24
+        },
+        {
+          "name": "sharing",
+          "role": "input",
+          "x": 42,
+          "y": 579,
+          "w": 329,
+          "h": 26
+        },
+        {
+          "name": "search",
+          "role": "input",
+          "x": 50,
+          "y": 100,
+          "w": 250,
+          "h": 20
+        },
+        {
+          "name": "ledger",
+          "role": "list",
+          "x": 42,
+          "y": 130,
+          "w": 637,
+          "h": 440
+        },
+        {
+          "name": "route",
+          "role": "button",
+          "x": 489,
+          "y": 580,
+          "w": 190,
+          "h": 24
+        },
+        {
+          "name": "page tab",
+          "role": "tabs",
+          "x": 697,
+          "y": 140,
+          "w": 55,
+          "h": 55
+        }
+      ],
+      "canvas": {
+        "width": 765,
+        "height": 642,
+        "scale": 2
+      }
+    },
+    "window-search.png": {
+      "frame": {
+        "x": 24,
+        "y": 24,
+        "w": 673,
+        "h": 594
+      },
+      "widgets": [
+        {
+          "name": "leaderboard",
+          "role": "button",
+          "x": 547,
+          "y": 60,
+          "w": 132,
+          "h": 24
+        },
+        {
+          "name": "sharing",
+          "role": "input",
+          "x": 42,
+          "y": 579,
+          "w": 329,
+          "h": 26
+        },
+        {
+          "name": "search",
+          "role": "input",
+          "x": 50,
+          "y": 100,
+          "w": 250,
+          "h": 20
+        },
+        {
+          "name": "ledger",
+          "role": "list",
+          "x": 42,
+          "y": 130,
+          "w": 637,
+          "h": 440
+        },
+        {
+          "name": "route",
+          "role": "button",
+          "x": 489,
+          "y": 580,
+          "w": 190,
+          "h": 24
+        },
+        {
+          "name": "page tab",
+          "role": "tabs",
+          "x": 697,
+          "y": 140,
+          "w": 55,
+          "h": 55
+        }
+      ],
+      "canvas": {
+        "width": 765,
+        "height": 642,
+        "scale": 2
+      }
+    },
+    "leaderboard.png": {
+      "frame": {
+        "x": 26,
+        "y": 26,
+        "w": 460,
+        "h": 560
+      },
+      "widgets": [
+        {
+          "name": "metric",
+          "role": "content",
+          "x": 88,
+          "y": 60,
+          "w": 200,
+          "h": 24
+        },
+        {
+          "name": "scope",
+          "role": "input",
+          "x": 330,
+          "y": 86,
+          "w": 140,
+          "h": 24
+        },
+        {
+          "name": "board tabs",
+          "role": "tabs",
+          "x": 482,
+          "y": 56,
+          "w": 55,
+          "h": 113
+        },
+        {
+          "name": "board",
+          "role": "list",
+          "x": 40,
+          "y": 118,
+          "w": 432,
+          "h": 394
+        },
+        {
+          "name": "sharing",
+          "role": "input",
+          "x": 42,
+          "y": 520,
+          "w": 32,
+          "h": 32
+        }
+      ],
+      "canvas": {
+        "width": 572,
+        "height": 612,
+        "scale": 2
+      }
+    },
+    "leaderboard-all-time.png": {
+      "frame": {
+        "x": 26,
+        "y": 26,
+        "w": 460,
+        "h": 560
+      },
+      "widgets": [
+        {
+          "name": "metric",
+          "role": "content",
+          "x": 88,
+          "y": 60,
+          "w": 200,
+          "h": 24
+        },
+        {
+          "name": "scope",
+          "role": "input",
+          "x": 330,
+          "y": 86,
+          "w": 140,
+          "h": 24
+        },
+        {
+          "name": "board tabs",
+          "role": "tabs",
+          "x": 482,
+          "y": 56,
+          "w": 55,
+          "h": 113
+        },
+        {
+          "name": "board",
+          "role": "list",
+          "x": 40,
+          "y": 118,
+          "w": 432,
+          "h": 394
+        },
+        {
+          "name": "sharing",
+          "role": "input",
+          "x": 42,
+          "y": 520,
+          "w": 32,
+          "h": 32
+        }
+      ],
+      "canvas": {
+        "width": 572,
+        "height": 612,
+        "scale": 2
+      }
+    }
+  }
 }

@@ -6,19 +6,27 @@ from pathlib import Path
 from forever_tools.screens import files, main
 
 ROOT = Path(__file__).resolve().parents[1]
+WINDOW_SOURCES = [
+    "tools/screenshots.py",
+    "UI/RowArt.lua",
+    "UI/Window.lua",
+    "Data/TurnIns.lua",
+    "Core/Core.lua",
+    "Core/Model.lua",
+    "Integrations/Questie.lua",
+    "Locales/enUS.lua",
+]
+# The leaderboard window itself is ForeverCore's UI/Leaderboards.lua; this addon supplies its board's rows and labels.
+LEADERBOARD_SOURCES = [
+    "tools/screenshots.py",
+    "Core/Stats.lua",
+    "Locales/enUS.lua",
+]
 SCENES = {
-    name: lambda: files(
-        ROOT,
-        [
-            "tools/screenshots.py",
-            "UI/RowArt.lua",
-            "UI/Window.lua",
-            "Data/TurnIns.lua",
-            "Core/Model.lua",
-            "Locales/enUS.lua",
-        ],
-    )
-    for name in ("window.png", "sharing-off.png", "empty.png", "questiedb-missing.png")
+    "window.png": lambda: files(ROOT, WINDOW_SOURCES),
+    "window-search.png": lambda: files(ROOT, WINDOW_SOURCES),
+    "leaderboard.png": lambda: files(ROOT, LEADERBOARD_SOURCES),
+    "leaderboard-all-time.png": lambda: files(ROOT, LEADERBOARD_SOURCES),
 }
 
 if __name__ == "__main__":
