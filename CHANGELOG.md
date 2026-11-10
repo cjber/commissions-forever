@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- **Pressing K no longer raises a Lua error, and a skill-up no longer hides the Commissions page.** The Professions side tabs are frames rather than buttons, so Commissions now hooks the tab method that a mouse click and a gamepad press both run instead of a script they do not have. (#158)
+## [0.2.20] - 2026-11-10
+
+- **Pressing K no longer raises a Lua error.** The Professions side tabs are frames rather than buttons, so Commissions now hooks the tab method that a mouse click and a gamepad press both run instead of a script those tabs do not have. (#158)
 
 ## [0.2.19] - 2026-11-10
 
