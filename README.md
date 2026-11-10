@@ -6,7 +6,7 @@ Track materials for repeatable WoW: Forever turn-ins. Open its Professions page 
 
 [![Tests](https://github.com/cjber/commissions-forever/actions/workflows/test.yml/badge.svg)](https://github.com/cjber/commissions-forever/actions/workflows/test.yml)
 
-<a href="https://github.com/sponsors/cjber"><img src="docs/github-sponsors-button.png" width="223" alt="Sponsor me on GitHub"></a>
+<a href="https://github.com/sponsors/cjber"><img src="docs/github-sponsors-button.png" alt="Sponsor me on GitHub"></a>
 
 Free, open source, and nothing is locked behind it.
 
