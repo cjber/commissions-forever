@@ -18,14 +18,14 @@ local ns = {
 		end,
 	}),
 	Model = {
-		IsCommissionQuest = function(name)
-			return name == "Feathers for Nafien"
-		end,
 		Inventory = function()
 			return {}
 		end,
 	},
 	Questie = {
+		CommissionCategory = function(questID)
+			return questID == 7 and "timbermawHold" or nil
+		end,
 		ActiveObjectives = function()
 			return {}
 		end,
@@ -72,21 +72,38 @@ local function Route(objectives)
 end
 
 assert(
-	Route({ { questName = "Feathers for Nafien", finished = true, npcIDs = { 7 } } }) and #sent == 1,
+	Route({ { questID = 7, finished = true, npcIDs = { 7 } } }) and #sent == 1,
 	"a commission ready to hand in routes to its finisher"
 )
 assert(
-	Route({ { questName = "Feathers for Nafien", finished = false, npcIDs = { 7 } } }) and #sent == 1,
+	Route({ { questID = 7, finished = false, npcIDs = { 7 } } }) and #sent == 1,
 	"a commission still being collected routes to its finisher"
 )
 assert(Route({
-	{ questName = "Feathers for Nafien", finished = true, npcIDs = { 7 } },
-	{ questName = "Feathers for Nafien", finished = false, npcIDs = { 7 } },
+	{ questID = 7, finished = true, npcIDs = { 7 } },
+	{ questID = 7, finished = false, npcIDs = { 7 } },
 }) and #sent == 1, "a finisher shared by two objectives is one stop")
+-- A title never routes a quest: only QuestieDB's classification of its ID does (cjber/commissions-forever#200).
 assert(
-	not Route({ { questName = "The Missing Diplomat", finished = true, npcIDs = { 8 } } }) and sent == nil,
+	not Route({ { questID = 8, questName = "Feathers for Nafien", finished = true, npcIDs = { 8 } } }) and sent == nil,
+	"a quest whose title matches a turn-in but is not classified sends no route"
+)
+assert(
+	Route({ { questID = 7, questName = "The Missing Diplomat", finished = true, npcIDs = { 7 } } }) and #sent == 1,
+	"a classified commission routes whatever its title"
+)
+assert(
+	not Route({ { questID = 8, finished = true, npcIDs = { 8 } } }) and sent == nil,
 	"an unrelated quest sends no route"
 )
+
+-- Every refresh tells the API's hub that the rows may have changed; the hub compares them itself.
+local announced
+ns.APIChanged = function(kind)
+	announced = kind
+end
+frame.OnEvent(frame, "BAG_UPDATE_DELAYED")
+assert(announced == "refresh" and ns.Refreshed == true, "a refresh is announced to the API's hub")
 
 -- The leaderboard command opens the shared window on this addon's tab and writes nothing to chat.
 _G.SlashCmdList = {}

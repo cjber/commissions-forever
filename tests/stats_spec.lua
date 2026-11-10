@@ -6,6 +6,7 @@ end
 local Toc = dofile("tests/toc.lua")
 local function boot(saved, mode, hardcore, guid)
 	local frames, timers, sent, lines = {}, {}, {}, {}
+	local notifications = {}
 	local now = 2000
 	local env = setmetatable({ SlashCmdList = {} }, { __index = _G })
 	env._G = env
@@ -96,6 +97,10 @@ local function boot(saved, mode, hardcore, guid)
 	})
 	local ns = {}
 	ns.core = env.ForeverCore.Register("CommissionsForever", {})
+	-- Core/API.lua publishes this; the completion record is the one place that counts a hand-in.
+	ns.APIChanged = function(kind)
+		notifications[kind] = (notifications[kind] or 0) + 1
+	end
 	-- Core/Core.lua reads this from the TOC; the spec loads Core/Stats.lua alone, so it reads the same value.
 	ns.ICON = Toc.get("CommissionsForever", "X-Forever-Icon")
 	assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
@@ -113,7 +118,7 @@ local function boot(saved, mode, hardcore, guid)
 		end,
 	}
 	setfenv(assert(loadfile("Core/Stats.lua")), env)("CommissionsForever", ns)
-	local kit = { ns = ns, env = env, sent = sent, lines = lines }
+	local kit = { ns = ns, env = env, sent = sent, lines = lines, notifications = notifications }
 	function kit.fire(event, ...)
 		for _, frame in ipairs(frames) do
 			if frame.events[event] and frame.callback then
@@ -156,12 +161,14 @@ kit.fire("QUEST_TURNED_IN", 123)
 kit.fire("QUEST_TURNED_IN", 123)
 kit.flush()
 check(stats.Activity()[1].value == 2, "two events for the same ID in one second count twice")
+check(kit.notifications.turnin == 2, "each recorded completion tells the API's hub")
 for _, event in ipairs({ "BAG_UPDATE_DELAYED", "QUEST_LOG_UPDATE", "QUEST_COMPLETE", "QUEST_REMOVED" }) do
 	kit.fire(event, 123)
 end
 kit.fire("QUEST_TURNED_IN", 124)
 kit.fire("QUEST_TURNED_IN", "123")
 check(stats.Activity()[1].value == 2, "unrelated quests and non-completion events cannot advance totals")
+check(kit.notifications.turnin == 2, "only a recorded completion tells the API's hub")
 kit.hear("Bob-Home", "1_0", 8)
 kit.hear("Alice-Home", "1_0", 8)
 kit.hear("Hardcore-Home", "1_1", 99)

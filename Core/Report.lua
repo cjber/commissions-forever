@@ -27,7 +27,7 @@ end
 function ns.ReportLines()
 	local objectives = 0
 	for _, row in ipairs(ns.ActiveObjectives or {}) do
-		if ns.Model.IsCommissionQuest(row.questName, row.sourceItemID) then
+		if ns.Questie.CommissionCategory(row.questID) then
 			objectives = objectives + 1
 		end
 	end
