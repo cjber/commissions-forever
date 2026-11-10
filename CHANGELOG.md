@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### For addon authors
+
+- `CommissionsForever.API` is minor 3: a read with nothing to answer now returns `nil, reason` through `ForeverCore.APIKit.NotReady` (`"loading"` while QuestieDB is unavailable, `"none"` when SkillUp Forever has no materials), `ActiveObjectives` no longer answers an empty table while QuestieDB is missing, a read with an answer is unchanged, and `docs/api.md` now lists every function, its answer shape, the reasons each read can return and the minor history.
+
 ## [0.3.2] - 2026-11-10
 
 - **Forever Core now comes in the same download.** This addon needs Forever Core, and until Forever Core has its own CurseForge page every Forever addon's download carries a copy of it, so the addon loads with nothing else to install.
