@@ -15,3 +15,9 @@ ignore:
   - .agents
   - media/icon.svg
   - media/icon-400.png
+
+# CurseForge relations: the CurseForge slug of every OptionalDeps folder in the root .toc (WFA-28).
+optional-dependencies:
+  - questiedb
+  - skillup-forever
+  - shortest-path-forever
