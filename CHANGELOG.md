@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- **The materials ledger and the turn-in route now use each quest's own identity instead of its title.** A quest whose name happens to contain a turn-in's name is no longer listed or routed, and a commission whose title matches none of them is now listed and routed. (#200)
+## [0.3.4] - 2026-11-10
+
+- **Commissions now finds every commission in your quest log, and only those.** A quest that merely shares part of a turn-in's name is no longer listed or routed, and a commission with an unusual name is now listed and routed. (#200)
 - **The addon's own icon is the same everywhere it appears in game.** The Professions side tab now wears the letter icon the Forever Leaderboards tab uses. (#146)
 
 ### For addon authors
