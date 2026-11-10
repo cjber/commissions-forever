@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Pressing K no longer raises a Lua error, and a skill-up no longer hides the Commissions page.** The Professions side tabs are frames rather than buttons, so Commissions now hooks the tab method that a mouse click and a gamepad press both run instead of a script they do not have. (#158)
+
 ## [0.2.19] - 2026-11-10
 
 - **Commissions no longer causes a blocked-action error with a gamepad.** With the gamepad interface on, the game could refuse a gamepad action after you opened or closed the Commissions tab and blame Commissions for it. The tab now opens above the Professions page you have open, and `/cf` opens and closes the Professions window the game's own way. (#147)

@@ -1,4 +1,12 @@
 -- Native Professions page, real event ordering and a long materials list.
+_G.hooksecurefunc = function(t, name, post)
+	local original = t[name]
+	t[name] = function(...)
+		local result = { original(...) }
+		post(...)
+		return unpack(result)
+	end
+end
 local function Region()
 	local region = { shown = false, text = "", children = {}, scripts = {}, hooks = {}, width = 673, height = 594 }
 	return setmetatable(region, {
@@ -121,6 +129,19 @@ local function Region()
 		end,
 	})
 end
+-- A native Professions tab: a Frame whose mouse-up handler and gamepad press both run its mixin OnClick.
+local function NativeTab()
+	local nativeTab = Region()
+	nativeTab.OnClick = function(self)
+		ProfessionsFrame:RightTabSelected(self)
+	end
+	nativeTab:SetCustomOnMouseUpHandler(function(self, button, upInside)
+		if button == "LeftButton" and upInside then
+			self:OnClick()
+		end
+	end)
+	return nativeTab
+end
 local frames = {}
 _G.CreateFrame = function(_, _, parent)
 	local frame = Region()
@@ -136,8 +157,9 @@ local host = Region()
 _G.ProfessionsFrame = host
 host.CraftingPage = Region()
 host.BookPage = Region()
-host.ProfessionsOverviewTab = Region()
+host.ProfessionsOverviewTab = NativeTab()
 host.rightProfessionTabs = {}
+host.RightTabSelected = function() end
 local shown, hidden = 0, 0
 local baseProfession = { professionID = 164 }
 _G.C_TradeSkillUI = {
@@ -295,6 +317,16 @@ local otherPage = Region()
 otherPage:Show()
 window.tab.click(nil, "LeftButton", true)
 assert(window.page.shown, "the tab opens the ledger above the native page")
+-- A native tab's mouse-up runs its mixin OnClick, and a gamepad press runs it with no mouse-up.
+host.ProfessionsOverviewTab.click(host.ProfessionsOverviewTab, "LeftButton", true)
+assert(not window.page.shown and not window.tab.checked, "a native tab mouse-up deselects commissions")
+window.tab.click(nil, "LeftButton", true)
+host.ProfessionsOverviewTab:OnClick()
+assert(not window.page.shown and not window.tab.checked, "a gamepad press on a native tab deselects commissions")
+-- The client refreshes the tabs on SKILL_LINES_CHANGED and selects a native tab itself; that leaves our page.
+window.tab.click(nil, "LeftButton", true)
+host:RightTabSelected(host.ProfessionsOverviewTab)
+assert(window.page.shown and window.tab.checked, "a tab refresh deselected the Commissions page")
 otherPage:Hide()
 window.Toggle()
 assert(not ProfessionsFrame.shown and not window.page.shown, "toggle closes the native host cleanly")

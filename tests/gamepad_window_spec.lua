@@ -3,6 +3,15 @@
 -- those calls rebuild the frame manager's focus and the footer's binding group under our taint, and the next secure
 -- window call has its protected SetPreferredGamepadInteractTarget refused (cjber/commissions-forever#147). Opening and
 -- closing go through the client's own trade-skill call, which owns that bookkeeping.
+local nativeSelections = 0
+_G.hooksecurefunc = function(t, name, post)
+	local original = t[name]
+	t[name] = function(...)
+		local result = { original(...) }
+		post(...)
+		return unpack(result)
+	end
+end
 local function Region()
 	local region = { shown = false, text = "", children = {}, scripts = {}, hooks = {}, width = 673, height = 594 }
 	return setmetatable(region, {
@@ -136,9 +145,25 @@ local host = Region()
 _G.ProfessionsFrame = host
 host.CraftingPage = Region()
 host.BookPage = Region()
-host.ProfessionsOverviewTab = Region()
-local professionTab = Region()
+-- A native Professions tab: a Frame whose mouse-up handler and gamepad press both run its mixin OnClick.
+local function NativeTab()
+	local nativeTab = Region()
+	nativeTab.OnClick = function(self)
+		host:RightTabSelected(self)
+	end
+	nativeTab:SetCustomOnMouseUpHandler(function(self, button, upInside)
+		if button == "LeftButton" and upInside then
+			self:OnClick()
+		end
+	end)
+	return nativeTab
+end
+host.ProfessionsOverviewTab = NativeTab()
+local professionTab = NativeTab()
 host.rightProfessionTabs = { professionTab }
+host.RightTabSelected = function()
+	nativeSelections = nativeSelections + 1
+end
 local shown, hidden, bookPage = 0, 0, 0
 host.SelectBookPage = function()
 	bookPage = bookPage + 1
@@ -254,12 +279,17 @@ nativeShows, nativeHides = 0, 0
 window.tab.click(nil, "LeftButton", true)
 assert(window.page.shown, "the Commissions tab did not reopen")
 
--- A native tab hands the window back from its OnClick script: a gamepad press runs it with no mouse-up.
-host.ProfessionsOverviewTab.hooks.OnClick[1](host.ProfessionsOverviewTab)
-assert(not window.page.shown and not window.tab.checked, "the overview tab's OnClick did not hand the window back")
+-- A native tab's mouse-up runs its mixin OnClick, and a gamepad press runs it with no mouse-up.
+host.ProfessionsOverviewTab.click(host.ProfessionsOverviewTab, "LeftButton", true)
+assert(not window.page.shown and not window.tab.checked, "the overview tab's mouse-up did not hand the window back")
 window.tab.click(nil, "LeftButton", true)
-professionTab.hooks.OnClick[1](professionTab)
-assert(not window.page.shown and not window.tab.checked, "a profession tab's OnClick did not hand the window back")
+professionTab:OnClick()
+assert(not window.page.shown and not window.tab.checked, "a profession tab's gamepad press did not hand it back")
+assert(nativeSelections == 2, "the OnClick hooks did not run for both native tabs")
+-- The client refreshes the tabs on SKILL_LINES_CHANGED and selects a native tab itself; that leaves our page.
+window.tab.click(nil, "LeftButton", true)
+host:RightTabSelected(professionTab)
+assert(window.page.shown and window.tab.checked, "a tab refresh deselected the Commissions page")
 nativeShows, nativeHides = 0, 0
 window.tab.click(nil, "LeftButton", true)
 assert(window.page.shown, "the Commissions tab did not reopen after the tab hand-backs")

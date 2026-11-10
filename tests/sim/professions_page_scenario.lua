@@ -154,12 +154,11 @@ local function press(sim, tab)
 	sim:advance(0.05)
 end
 
--- A native tab pressed with the gamepad: the client runs the tab's OnClick with no mouse-up. The tab's own OnClick
--- switches the native page, then the Commissions post-hook on that script hands the window back.
+-- A native tab pressed with the gamepad: the client's tab indicator runs the tab's mixin OnClick with no mouse-up.
+-- The method switches the native page, and the Commissions post-hook on that method hands the window back.
 local function click(sim, tab)
 	sim:input(function()
 		tab:OnClick()
-		sim.widgets.dispatch(tab, "OnClick")
 	end)
 	sim:advance(0.05)
 end
@@ -266,17 +265,52 @@ scenario("the side tab opens the Commissions page and every native tab takes the
 	expectCommissionsPage(sim, "after the Commissions tab")
 	check(rows(sim) == "Dark Iron Ore, Fiery Core, Lava Core", "rows: " .. rows(sim))
 
-	click(sim, pf.ProfessionsOverviewTab)
-	expectNativePage(sim, "BookPage", "after the overview tab")
-	check(checked(pf.ProfessionsOverviewTab), "the overview tab is not selected")
-
-	press(sim, commissionsTab(sim))
-	expectCommissionsPage(sim, "back on the Commissions tab")
-
-	click(sim, pf.rightProfessionTabs[1])
-	expectNativePage(sim, "CraftingPage", "after the Blacksmithing tab")
-	check(checked(pf.rightProfessionTabs[1]), "the Blacksmithing tab is not selected")
+	-- Every native tab takes the window back by mouse and by the gamepad's OnClick path.
+	local nativeTabs = {
+		{ tab = pf.ProfessionsOverviewTab, nativePage = "BookPage", name = "the overview tab" },
+		{ tab = pf.rightProfessionTabs[1], nativePage = "CraftingPage", name = "the Blacksmithing tab" },
+		{ tab = pf.rightProfessionTabs[2], nativePage = "CraftingPage", name = "the Mining tab" },
+	}
+	for _, case in ipairs(nativeTabs) do
+		for _, path in ipairs({ "mouse", "gamepad" }) do
+			press(sim, commissionsTab(sim))
+			expectCommissionsPage(sim, case.name .. " is about to take the window back by " .. path)
+			if path == "mouse" then
+				press(sim, case.tab)
+			else
+				click(sim, case.tab)
+			end
+			expectNativePage(sim, case.nativePage, case.name .. " by " .. path)
+			check(checked(case.tab), case.name .. " is not selected after " .. path)
+		end
+	end
 	check(not pf.BookPage:IsShown(), "the book page shows under the crafting page")
+
+	-- A skill-up fires SKILL_LINES_CHANGED, whose RefreshRightTabs selects the open profession's tab itself. That is
+	-- not a player choosing a tab, so the Commissions page stays above it.
+	press(sim, commissionsTab(sim))
+	expectCommissionsPage(sim, "before a skill-up")
+	sim.events.fire("SKILL_LINES_CHANGED")
+	sim:advance(0.05)
+	check(page(sim):IsVisible(), "a skill-up deselected the Commissions page")
+	check(checked(commissionsTab(sim)), "a skill-up deselected the Commissions tab")
+	local selected = 0
+	for _, nativeTab in ipairs(pf.rightProfessionTabs) do
+		if checked(nativeTab) then
+			selected = selected + 1
+		end
+	end
+	check(selected == 1, "a skill-up did not select the open profession's native tab")
+
+	-- Attach gets past its tab hooks: its OnHide hook is installed, so a native close puts the page away.
+	press(sim, commissionsTab(sim))
+	expectCommissionsPage(sim, "before a native close")
+	sim:closeProfessions()
+	check(
+		not page(sim):IsVisible(),
+		"Attach stopped before its OnHide hook: the page stayed shown after a native close"
+	)
+	check(not checked(commissionsTab(sim)), "Attach stopped before its OnHide hook: the tab stayed selected")
 end)
 
 scenario("a character with no profession is told on screen and no window opens", function(sim)
