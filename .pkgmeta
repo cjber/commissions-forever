@@ -13,8 +13,12 @@ ignore:
   - ruff.toml
   - stylua.toml
   - .agents
+  - forever-core
   - media/icon.svg
   - media/icon-400.png
+
+required-dependencies:
+  - forevercore
 
 # CurseForge relations: the CurseForge slug of every OptionalDeps folder in the root .toc (WFA-28).
 optional-dependencies:

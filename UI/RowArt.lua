@@ -1,7 +1,11 @@
 local _, ns = ...
 
-local Art = {}
-ns.Art = Art
+if ns.broken then
+	return
+end
+
+local RowArt = {}
+ns.RowArt = RowArt
 
 -- The Who list's row art (common-button-list-large and its hover and selected pieces) is 169x69 and slices only
 -- horizontally, so the client draws it at native height on a 69-high row (WhoList.xml: LFGWhoListButtonTemplate).
@@ -10,7 +14,7 @@ local NATIVE_HEIGHT = 69
 
 -- Draw a row atlas at its native height and scale the whole texture down to the row. The atlas's horizontal-only
 -- slice still stretches its middle by design; its height never stretches. Offsets follow the texture's scale.
-function Art.RowAtlas(row, atlas, layer, blend, x, y)
+function RowArt.RowAtlas(row, atlas, layer, blend, x, y)
 	local texture = row:CreateTexture(nil, layer)
 	texture:SetAtlas(atlas)
 	if blend then
@@ -32,15 +36,4 @@ function Art.RowAtlas(row, atlas, layer, blend, x, y)
 	return texture
 end
 
--- A file icon, square as every one is, `size` across and whole: a texture that drew an atlas before keeps that
--- atlas's crop until it is reset.
----@param texture Texture
----@param file string|integer
----@param size number
-function Art.Icon(texture, file, size)
-	texture:SetTexCoord(0, 1, 0, 1)
-	texture:SetTexture(file)
-	texture:SetSize(size, size)
-end
-
-return Art
+return RowArt

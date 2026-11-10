@@ -1,5 +1,9 @@
 local _, ns = ...
 
+if ns.broken then
+	return
+end
+
 local ShortestPath = {}
 ns.ShortestPath = ShortestPath
 

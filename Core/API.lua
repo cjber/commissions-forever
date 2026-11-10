@@ -1,5 +1,9 @@
 local _, ns = ...
 
+if ns.broken then
+	return
+end
+
 local API = { version = 1, minor = 2 }
 
 ---@param recipeID integer SkillUp Forever recipe ID.

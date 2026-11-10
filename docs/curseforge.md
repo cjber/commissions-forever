@@ -1,5 +1,7 @@
 Commissions Forever keeps repeatable turn-ins in view. Check the materials in your bags, see the item objectives for active assignments, and send the remaining assignment route to Shortest Path Forever.
 
+It needs Forever Core, which CurseForge and Wago install with it.
+
 Free, with nothing locked behind it. If it saves you time, you can [sponsor me on GitHub](https://github.com/sponsors/cjber), which takes no fees, or [buy me a coffee on Ko-fi](https://ko-fi.com/cjber). For help and each day's release notes, [join me on Discord](https://discord.gg/FpHugGxRJY).
 
 [![Join me on Discord](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/discord-button.png)](https://discord.gg/FpHugGxRJY) [![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber) [![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)

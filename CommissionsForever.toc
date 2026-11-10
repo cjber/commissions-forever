@@ -1,4 +1,5 @@
 ## Interface: 16001
+## Dependencies: ForeverCore
 ## Title: Commissions Forever
 ## Notes: Tracks repeatable Classic turn-ins and the materials in your bags.
 ## Author: cjber
@@ -14,21 +15,16 @@
 ## IconTexture: Interface\AddOns\CommissionsForever\media\Icon
 ## AddonCompartmentFunc: CommissionsForever_OnAddonCompartmentClick
 
+Core\Require.lua
 Locales\enUS.lua
 Data\TurnIns.lua
-Core\SafeCall.lua
-Core\Log.lua
 Core\Model.lua
 Integrations\Questie.lua
 Integrations\SkillUp.lua
 Integrations\ShortestPath.lua
+Core\Report.lua
 Core\Core.lua
-Core\PeerStats.lua
-Core\LeaderboardsData.lua
-UI\Leaderboards.lua
 Core\Stats.lua
 Core\API.lua
-Core\Report.lua
-UI\Art.lua
-UI\Report.lua
+UI\RowArt.lua
 UI\Window.lua

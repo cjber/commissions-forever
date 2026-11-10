@@ -2,6 +2,8 @@
 
 Commissions Forever tracks repeatable Classic turn-ins, the materials in your bags, and the next NPC stop. It targets WoW: Forever (`Interface 16001`, client folder `_forever_`).
 
+Commissions Forever requires ForeverCore (`## Dependencies: ForeverCore`), the standalone addon that owns the shared tracker column, report window, error journal, debug log, Forever Leaderboards, minimap button, settings-page chrome and family page. `.pkgmeta`'s `required-dependencies` makes CurseForge and Wago install ForeverCore with it, and no shared runtime file is vendored here.
+
 ## Commands
 
 ```sh
@@ -28,6 +30,8 @@ CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `p
 - Use only QuestieDB's public `LibQuestieDB` contract for NPC and quest data; never copy its database into this repository.
 - Read active quests and inventory from client APIs. Re-scan after quest and bag events.
 - Treat each integration as optional. The addon works without QuestieDB, SkillUp Forever, or Shortest Path Forever.
+- Read the shared runtime from the `ForeverCore` global: `ns.core` for this addon's journal, log, report and map canvas, and the `ForeverCore` modules for everything shared. Never copy one of its files here.
+- The specs load ForeverCore from the checkout in `FOREVER_CORE` first, then the addon's own files; `tests/forever_core.lua` is the one place that finds it, and `tools/forever-core.txt` names the ref CI checks out.
 - Never call protected functions.
 - Never touch Blizzard's Lua state: WFA-38 in `wow-forever-addon` lists what addon code may do to Blizzard's
   frames, how to restyle one by drawing on top, and when a `taint-ok` exception holds.

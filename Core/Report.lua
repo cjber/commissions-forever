@@ -1,5 +1,9 @@
 local _, ns = ...
 
+if ns.broken then
+	return
+end
+
 -- Commissions Forever's own lines in /cf report: whether each optional addon answered, what the ledger holds and
 -- whether progress is shared, so a bug report says what state the addon was in. English throughout, like the other
 -- shared report lines.

@@ -11,7 +11,7 @@ SCENES = {
         ROOT,
         [
             "tools/screenshots.py",
-            "UI/Art.lua",
+            "UI/RowArt.lua",
             "UI/Window.lua",
             "Data/TurnIns.lua",
             "Core/Model.lua",

@@ -251,7 +251,7 @@ local ns = {
 	Rows = {},
 }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
-assert(loadfile("UI/Art.lua"))("CommissionsForever", ns)
+assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 
 -- Mouse and keyboard open and close through the client's own trade-skill call, never the panel manager.

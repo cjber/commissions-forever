@@ -4,6 +4,17 @@
 -- interface, Questie's tracker, an old saved file).
 -- luacheck: read globals scenario ADDON
 
+local ForeverCore = dofile("tests/forever_core.lua")
+-- Every scenario loads ForeverCore first, as the client loads the TOC's required dependency.
+local declare = scenario
+local function scenario(name, options, fn)
+	if type(options) == "function" then
+		options, fn = {}, options
+	end
+	options.addons = options.addons or ForeverCore.addons()
+	declare(name, options, fn)
+end
+
 local TAB_TEXT = "Commissions Forever"
 local SEARCH_SCRIPTS = {
 	"OnEscapePressed",

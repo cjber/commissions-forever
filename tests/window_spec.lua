@@ -255,7 +255,7 @@ local ns = {
 	},
 }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
-assert(loadfile("UI/Art.lua"))("CommissionsForever", ns)
+assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 local function Visible()
 	local count = 0
