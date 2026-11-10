@@ -24,12 +24,57 @@ local function Deselect()
 	end
 end
 
--- The highest level in either native page's tree, so this page can sit above both and take their input.
-local function NativePagesLevel()
-	return math.max(
-		ProfessionsFrame.CraftingPage:GetHighestFrameLevel(true),
-		ProfessionsFrame.BookPage:GetHighestFrameLevel(true)
-	)
+-- Frame strata, lowest first. The pinned client's APIDocumentationGenerated names the FrameStrata type
+-- (SimpleFrameAPIDocumentation.lua:445) but does not list its members, so this is the documented FrameStrata enum
+-- order (Wowpedia, "API FrameStrata"). A frame in a higher strata draws over every frame in a lower one.
+local STRATA = {
+	BACKGROUND = 1,
+	LOW = 2,
+	MEDIUM = 3,
+	HIGH = 4,
+	DIALOG = 5,
+	FULLSCREEN = 6,
+	FULLSCREEN_DIALOG = 7,
+	TOOLTIP = 8,
+}
+
+-- The highest strata among the shown frames of either native page and the highest level within that strata, so this
+-- page can sit above every frame that draws there and take their input. Hidden frames draw nothing, and the pages hold
+-- hidden DIALOG frames that would otherwise lift this page level with the game's popups. The profession rank bars
+-- are HIGH while the pages are MEDIUM, so the level of the page alone does not cover them
+-- (cjber/commissions-forever#167).
+local function NativePagesStrata()
+	local function walk(frame, best)
+		local strata = frame:GetFrameStrata()
+		local level = frame:GetFrameLevel()
+		local rank = STRATA[strata] or 0
+		if not best or rank > (STRATA[best.strata] or 0) then
+			best = { strata = strata, level = level }
+		elseif strata == best.strata and level > best.level then
+			best.level = level
+		end
+		for _, child in ipairs({ frame:GetChildren() }) do
+			if child:IsShown() then
+				best = walk(child, best)
+			end
+		end
+		return best
+	end
+	-- The window itself is the floor when neither native page is shown. Its children include this page, so it is
+	-- not walked.
+	local best = { strata = ProfessionsFrame:GetFrameStrata(), level = ProfessionsFrame:GetFrameLevel() }
+	for _, native in ipairs({ ProfessionsFrame.CraftingPage, ProfessionsFrame.BookPage }) do
+		if native:IsShown() then
+			best = walk(native, best)
+		end
+	end
+	return best.strata, best.level
+end
+
+local function RaiseAboveNativePages()
+	local strata, level = NativePagesStrata()
+	page:SetFrameStrata(strata)
+	page:SetFrameLevel(level + 1)
 end
 
 local function PlaceTab()
@@ -166,7 +211,10 @@ local function Attach()
 	page:SetPoint("TOPLEFT", 4, -28)
 	page:SetPoint("BOTTOMRIGHT", -4, 4)
 	-- A combat tab press cannot hide the protected native page, so sit above both pages and take their input.
-	page:SetFrameLevel(NativePagesLevel() + 1)
+	RaiseAboveNativePages()
+	-- Both pages create and re-level their frames after attach, so take the highest strata again on every show.
+	-- SetFrameStrata and SetFrameLevel on this unprotected frame are allowed in combat.
+	page:HookScript("OnShow", RaiseAboveNativePages)
 	-- The native page stays shown beneath, so the page carries the host's own surface instead of leaving it visible.
 	local surface = page:CreateTexture(nil, "BACKGROUND")
 	-- art-ok: the host's own overview surface fills the page above the native page it covers.

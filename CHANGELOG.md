@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Profession rank bars no longer cover the Commissions page.** The ledger now sits above every frame in both native Professions pages, at the highest strata those pages use, so the book page's HIGH rank bars stay behind it. It still takes the mouse above both pages, and a page that rebuilds its frames picks the new height up when it is shown again. (#167)
+
 ## [0.2.20] - 2026-11-10
 
 - **Pressing K no longer raises a Lua error.** The Professions side tabs are frames rather than buttons, so Commissions now hooks the tab method that a mouse click and a gamepad press both run instead of a script those tabs do not have. (#158)

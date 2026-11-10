@@ -145,6 +145,24 @@ local function checked(tab)
 	return tab.SelectedTexture and tab.SelectedTexture:IsShown() or false
 end
 
+-- The documented FrameStrata order, lowest first, for comparing frames the way the client draws them.
+local STRATA = {
+	BACKGROUND = 1,
+	LOW = 2,
+	MEDIUM = 3,
+	HIGH = 4,
+	DIALOG = 5,
+	FULLSCREEN = 6,
+	FULLSCREEN_DIALOG = 7,
+	TOOLTIP = 8,
+}
+
+local function above(frame, other)
+	local rank = STRATA[frame:GetFrameStrata()] or 0
+	local otherRank = STRATA[other:GetFrameStrata()] or 0
+	return rank > otherRank or (rank == otherRank and frame:GetFrameLevel() > other:GetFrameLevel())
+end
+
 -- A left click on the Commissions side tab, as the client delivers it to its custom mouse-up handler.
 local function press(sim, tab)
 	local W = sim.widgets
@@ -199,10 +217,7 @@ local function expectCommissionsPage(sim, why)
 	-- frame manager. The ledger takes its input from above.
 	for _, nativePage in ipairs({ "CraftingPage", "BookPage" }) do
 		if pf[nativePage]:IsShown() then
-			check(
-				page(sim):GetFrameLevel() > pf[nativePage]:GetFrameLevel(),
-				why .. ": the Commissions page is not above " .. nativePage
-			)
+			check(above(page(sim), pf[nativePage]), why .. ": the Commissions page is not above " .. nativePage)
 		end
 	end
 	check(page(sim):IsMouseEnabled(), why .. ": the Commissions page does not take input over the native page")
@@ -311,6 +326,66 @@ scenario("the side tab opens the Commissions page and every native tab takes the
 		"Attach stopped before its OnHide hook: the page stayed shown after a native close"
 	)
 	check(not checked(commissionsTab(sim)), "Attach stopped before its OnHide hook: the tab stayed selected")
+end)
+
+scenario("a HIGH frame under the book page stays below the Commissions page", function(sim)
+	world(sim)
+	sim:login()
+	local pf = sim:openProfessions(164)
+	click(sim, pf.ProfessionsOverviewTab)
+	check(pf.BookPage:IsShown(), "the book page did not open")
+	-- The book page's rank bars are HIGH while the page is MEDIUM, so the page has to cover their strata, not just
+	-- a level above the page frame.
+	sim:runAs(
+		"SyntheticStatusBar",
+		[[
+		local bar = CreateFrame("Frame", "TestHighStatusBar", ProfessionsFrame.BookPage)
+		bar:SetFrameStrata("HIGH")
+		bar:SetFrameLevel(12)
+		bar:Show()
+	]]
+	)
+	press(sim, commissionsTab(sim))
+	expectCommissionsPage(sim, "with a HIGH frame under the book page")
+	local bar = sim.G.TestHighStatusBar
+	local strata = page(sim):GetFrameStrata()
+	check(
+		(STRATA[strata] or 0) >= STRATA.HIGH,
+		"the Commissions page stayed below the book page's HIGH strata: " .. strata
+	)
+	check(above(page(sim), bar), "a HIGH frame under the book page draws over the Commissions page")
+
+	-- A native page can create and re-level frames after attach; the next show takes the new highest level. The
+	-- late frame sits in whatever strata the page found highest, above the page's current level.
+	local lateStrata = strata
+	local lateLevel = page(sim):GetFrameLevel() + 10
+	sim:runAs(
+		"SyntheticStatusBar",
+		string.format(
+			[[
+		local bar = CreateFrame("Frame", "TestLateStatusBar", ProfessionsFrame.BookPage)
+		bar:SetFrameStrata(%q)
+		bar:SetFrameLevel(%d)
+		bar:Show()
+	]],
+			lateStrata,
+			lateLevel
+		)
+	)
+	click(sim, pf.ProfessionsOverviewTab)
+	press(sim, commissionsTab(sim))
+	expectCommissionsPage(sim, "after a frame was created and re-levelled under the book page")
+	bar = sim.G.TestLateStatusBar
+	check(
+		page(sim):GetFrameStrata() == lateStrata and page(sim):GetFrameLevel() == lateLevel + 1,
+		"the Commissions page did not take the new level under "
+			.. lateStrata
+			.. ": "
+			.. page(sim):GetFrameStrata()
+			.. " "
+			.. page(sim):GetFrameLevel()
+	)
+	check(above(page(sim), bar), "a frame created after attach draws over the Commissions page")
 end)
 
 scenario("a character with no profession is told on screen and no window opens", function(sim)
