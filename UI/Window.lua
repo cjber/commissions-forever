@@ -268,10 +268,12 @@ local function Attach()
 	ProfessionsFrame.CraftingPage:HookScript("OnShow", Deselect)
 	ProfessionsFrame.BookPage:HookScript("OnShow", Deselect)
 	-- A native page already shown beneath ours does not fire OnShow again, so its tab hands the window back here.
-	-- A gamepad press runs the tab's OnClick with no mouse-up, so hook that script rather than OnMouseUp.
-	ProfessionsFrame.ProfessionsOverviewTab:HookScript("OnClick", Deselect)
+	-- The tabs are Frames with no OnClick script, so hook the mixin method that a mouse-up and a gamepad press
+	-- both run. RightTabSelected is not that signal: the client also calls it while refreshing the tabs on a
+	-- skill-up or a reopen, which must leave our page alone.
+	hooksecurefunc(ProfessionsFrame.ProfessionsOverviewTab, "OnClick", Deselect)
 	for _, nativeTab in ipairs(ProfessionsFrame.rightProfessionTabs or {}) do
-		nativeTab:HookScript("OnClick", Deselect)
+		hooksecurefunc(nativeTab, "OnClick", Deselect)
 	end
 	ProfessionsFrame:HookScript("OnHide", function()
 		if page and page:IsShown() then

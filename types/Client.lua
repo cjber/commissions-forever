@@ -17,6 +17,7 @@ UISpecialFrames = {}
 
 -- Blizzard_Professions is loaded on demand by the client's trade-skill call.
 ---@class CommissionsSideTab : Frame
+---@field OnClick fun(self: CommissionsSideTab)
 ---@field SetChecked fun(self: CommissionsSideTab, checked: boolean)
 ---@class CommissionsProfessionsFrame : Frame
 ---@field CraftingPage Frame
