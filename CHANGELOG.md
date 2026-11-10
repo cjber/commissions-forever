@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Commissions no longer causes a blocked-action error with a gamepad.** With the gamepad interface on, the game could refuse a gamepad action after you opened or closed the Commissions tab and blame Commissions for it. The tab now opens above the Professions page you have open, and `/cf` opens and closes the Professions window the game's own way. (#147)
+
 ## [0.2.18] - 2026-11-09
 
 - **Commissions Forever is on CurseForge and Wago.** Install and update it from either store, or with any addon manager that reads them.

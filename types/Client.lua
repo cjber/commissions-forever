@@ -15,19 +15,16 @@ UIErrorsFrame = nil
 ---@type string[]
 UISpecialFrames = {}
 
--- Blizzard_Professions is loaded on demand by ShowProfessionsFrame.
+-- Blizzard_Professions is loaded on demand by the client's trade-skill call.
 ---@class CommissionsSideTab : Frame
 ---@field SetChecked fun(self: CommissionsSideTab, checked: boolean)
 ---@class CommissionsProfessionsFrame : Frame
----@field SelectBookPage fun(self: CommissionsProfessionsFrame)
 ---@field CraftingPage Frame
 ---@field BookPage Frame
 ---@field ProfessionsOverviewTab CommissionsSideTab
 ---@field rightProfessionTabs CommissionsSideTab[]
 ---@type CommissionsProfessionsFrame
 ProfessionsFrame = nil
-
-function ShowProfessionsFrame() end
 
 -- Core/LeaderboardsData.lua reads the client's weekly reset countdown when it has one.
 ---@type {GetSecondsUntilWeeklyReset: fun(): number?}

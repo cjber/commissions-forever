@@ -6,7 +6,6 @@ ns.Window = Window
 local ROW_HEIGHT = 30
 local page, tab
 local pendingOpen = false
-local pendingNativePage = false
 local requestedItems = {}
 
 local function IsTrackedItem(itemID)
@@ -20,7 +19,6 @@ end
 
 local function Deselect()
 	if page then
-		pendingNativePage = false
 		page:Hide()
 		tab:SetChecked(false)
 	end
@@ -70,17 +68,9 @@ local function PlaceTab()
 end
 
 local function SelectPage()
-	if InCombatLockdown() then
-		-- The book page is protected through the profession buttons inside it, so the client refuses an addon
-		-- Hide on it in combat. Keep it shown under this page and finish the native swap when combat ends.
-		pendingNativePage = true
-	else
-		pendingNativePage = false
-		-- Hand the host back to its native page first, so another addon's page can deselect itself.
-		ProfessionsFrame.CraftingPage:Show()
-		ProfessionsFrame.CraftingPage:Hide()
-		ProfessionsFrame.BookPage:Hide()
-	end
+	-- The client's own pages stay where they are. Showing or hiding one from our code rebuilds the gamepad
+	-- footer's binding group and the frame manager's focus under our taint, and the next secure gamepad call is
+	-- then refused. A page above both native pages takes their input instead (cjber/commissions-forever#147).
 	page:Show()
 	tab:SetChecked(true)
 	ProfessionsFrame.ProfessionsOverviewTab:SetChecked(false)
@@ -177,6 +167,11 @@ local function Attach()
 	page:SetPoint("BOTTOMRIGHT", -4, 4)
 	-- A combat tab press cannot hide the protected native page, so sit above both pages and take their input.
 	page:SetFrameLevel(NativePagesLevel() + 1)
+	-- The native page stays shown beneath, so the page carries the host's own surface instead of leaving it visible.
+	local surface = page:CreateTexture(nil, "BACKGROUND")
+	-- art-ok: the host's own overview surface fills the page above the native page it covers.
+	surface:SetAtlas("Profession-Background-Overview")
+	surface:SetAllPoints()
 	page:EnableMouse(true)
 	page:Hide()
 	Window.page = page
@@ -272,25 +267,49 @@ local function Attach()
 	ProfessionsFrame:HookScript("OnShow", PlaceTab)
 	ProfessionsFrame.CraftingPage:HookScript("OnShow", Deselect)
 	ProfessionsFrame.BookPage:HookScript("OnShow", Deselect)
+	-- A native page already shown beneath ours does not fire OnShow again, so its tab hands the window back here.
+	-- A gamepad press runs the tab's OnClick with no mouse-up, so hook that script rather than OnMouseUp.
+	ProfessionsFrame.ProfessionsOverviewTab:HookScript("OnClick", Deselect)
+	for _, nativeTab in ipairs(ProfessionsFrame.rightProfessionTabs or {}) do
+		nativeTab:HookScript("OnClick", Deselect)
+	end
 	ProfessionsFrame:HookScript("OnHide", function()
 		if page and page:IsShown() then
 			Deselect()
-			-- Selecting the book page hides the crafting page and shows the protected book page. In combat the
-			-- client refuses that, and every way of opening the window selects a page again before showing it.
-			if not InCombatLockdown() then
-				ProfessionsFrame:SelectBookPage()
-			end
 		end
 	end)
 	Window.Refresh()
 end
 
-local function Open()
-	-- Clear the host's remembered profession through its native API before OnShow can recast it.
-	if ProfessionsFrame then
-		ProfessionsFrame:SelectBookPage()
+-- Loading Blizzard_Professions from our code runs its gamepad setup and panel bookkeeping under our taint, even with
+-- the interface off, so the game's own trade-skill call opens it. It already owns the panel manager and the gamepad
+-- focus, and the page above the native one then takes input.
+local function ShowNativeFrame()
+	local info = C_TradeSkillUI.GetBaseProfessionInfo()
+	local skillLineID = info and info.professionID
+	if not skillLineID or skillLineID == 0 then
+		local first = GetProfessions()
+		if first then
+			local _, _, _, _, _, _, professionSkillLine = GetProfessionInfo(first)
+			skillLineID = professionSkillLine
+		end
 	end
-	ShowProfessionsFrame()
+	if not skillLineID or skillLineID == 0 then
+		-- Nothing to open, and loading the window ourselves would taint the gamepad setup, so say so on screen.
+		UIErrorsFrame:AddMessage(
+			L["Commissions opens in the Professions window. Learn a profession to use it."],
+			NORMAL_FONT_COLOR:GetRGB()
+		)
+		return false
+	end
+	C_TradeSkillUI.OpenTradeSkill(skillLineID)
+	return true
+end
+
+local function Open()
+	if not ShowNativeFrame() then
+		return
+	end
 	Attach()
 	if page then
 		SelectPage()
@@ -305,7 +324,12 @@ function Window.Toggle()
 		return
 	end
 	if page and page:IsShown() and ProfessionsFrame:IsShown() then
-		HideUIPanel(ProfessionsFrame)
+		-- The client's own close runs its panel and gamepad bookkeeping securely; HideUIPanel from here would write
+		-- it under our taint. A client that closes on a later frame leaves the native window as it was.
+		C_TradeSkillUI.CloseTradeSkill()
+		if ProfessionsFrame:IsShown() then
+			Deselect()
+		end
 		return
 	end
 	Open()
@@ -322,9 +346,6 @@ events:SetScript("OnEvent", function(_, event, name)
 	elseif event == "GET_ITEM_INFO_RECEIVED" and (requestedItems[name] or IsTrackedItem(name)) then
 		ns.Refresh()
 	elseif event == "PLAYER_REGEN_ENABLED" then
-		if pendingNativePage then
-			SelectPage()
-		end
 		if pendingOpen then
 			pendingOpen = false
 			Open()
