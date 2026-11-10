@@ -71,16 +71,30 @@ local function boot(saved, mode, hardcore, guid)
 	env.strtrim = function(text)
 		return text:match("^%s*(.-)%s*$")
 	end
+	-- The client pieces ForeverCore's journal and log install against.
+	env.geterrorhandler = function()
+		return error
+	end
+	env.seterrorhandler = function() end
+	env.date = function()
+		return "2026-11-08 12:00:00"
+	end
 	env.CommissionsForeverDB = saved or {}
-	local ns = {}
-	for _, path in ipairs({
-		"Locales/enUS.lua",
+	-- ForeverCore first, as the client loads a required dependency, then the addon's own files.
+	local core = dofile("tests/forever_core.lua")
+	core.install(env, {
+		"Core/SafeCall.lua",
+		"Core/Log.lua",
 		"Core/PeerStats.lua",
 		"Core/LeaderboardsData.lua",
+		"UI/Report.lua",
+		"UI/MapCanvas.lua",
 		"UI/Leaderboards.lua",
-	}) do
-		setfenv(assert(loadfile(path)), env)("CommissionsForever", ns)
-	end
+		"Expose.lua",
+	})
+	local ns = {}
+	ns.core = env.ForeverCore.Register("CommissionsForever", {})
+	assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 	ns.Questie = {
 		CommissionCategory = function(id)
 			return id == 123 and "thoriumBrotherhood" or nil
@@ -157,7 +171,7 @@ check(stats.Leaderboard().rows[1].value == 8, "public reads return fresh copies"
 check(stats.Leaderboard(-1) == nil and stats.Leaderboard("1") == nil, "invalid limits fail explicitly")
 
 -- The shared Forever Leaderboards registration.
-local leaderboards = kit.ns.Leaderboards
+local leaderboards = kit.env.ForeverCore.Leaderboards
 check(type(leaderboards) == "table" and type(leaderboards.boards.commissions) == "table", "shares a board")
 local spec = leaderboards.boards.commissions
 check(spec.title == "Commissions Forever", "the tab carries the addon's title")

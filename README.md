@@ -46,7 +46,7 @@ For help, ideas and each day's release notes, join [cjber's Workshop on Discord]
 
 ## Install
 
-Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever and Shortest Path Forever are optional.
+Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever and Shortest Path Forever are optional. It needs Forever Core, which CurseForge and Wago install with it.
 
 ## Usage
 

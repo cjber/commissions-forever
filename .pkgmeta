@@ -13,5 +13,9 @@ ignore:
   - ruff.toml
   - stylua.toml
   - .agents
+  - forever-core
   - media/icon.svg
   - media/icon-400.png
+
+required-dependencies:
+  - forevercore

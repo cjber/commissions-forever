@@ -1,5 +1,9 @@
 local _, ns = ...
 
+if ns.broken then
+	return
+end
+
 local L = ns.L
 
 -- Only game-authored turn-in events with a stable, supported QuestieDB quest ID advance this record.
@@ -68,8 +72,9 @@ local function Enabled()
 	return Stats.Participating() and Ruleset() ~= nil
 end
 
-local peer = ns.PeerStats.New({
+local peer = ForeverCore.PeerStats.New({
 	addon = "commissions",
+	safeCall = ns.core.SafeCall,
 	enabled = Enabled,
 	db = function()
 		local record = Character()
@@ -176,26 +181,23 @@ end
 
 --- Open Forever Leaderboards on this addon's tab.
 function Stats.Open()
-	if ns.Leaderboards then
-		ns.Leaderboards:Open("commissions")
-	end
+	ForeverCore.Leaderboards:Open("commissions")
 end
 
-if ns.Leaderboards then
-	ns.Leaderboards:Register("commissions", {
-		title = L["Commissions Forever"],
-		icon = ICON,
-		metric = L["Commission turn-ins"],
-		board = Board,
-		revision = function()
-			return peer:Revision()
-		end,
-		sharing = Stats.Participating,
-		setSharing = function(shared)
-			Stats.SetEnabled(shared == true)
-		end,
-	})
-end
+ForeverCore.Leaderboards:Register("commissions", {
+	title = L["Commissions Forever"],
+	icon = ICON,
+	metric = L["Commission turn-ins"],
+	board = Board,
+	revision = function()
+		return peer:Revision()
+	end,
+	sharing = Stats.Participating,
+	setSharing = function(shared)
+		Stats.SetEnabled(shared == true)
+	end,
+	safeCall = ns.core.SafeCall,
+})
 
 local events = CreateFrame("Frame")
 events:RegisterEvent("PLAYER_LOGIN")

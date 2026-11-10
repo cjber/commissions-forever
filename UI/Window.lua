@@ -1,4 +1,9 @@
 local _, ns = ...
+
+if ns.broken then
+	return
+end
+
 local L = ns.L
 local Window = {}
 ns.Window = Window
@@ -142,10 +147,10 @@ local function Row(index)
 		row:SetPoint("TOPLEFT", 4, -(index - 1) * ROW_HEIGHT)
 		row:SetPoint("TOPRIGHT", -4, -(index - 1) * ROW_HEIGHT)
 		row:SetHeight(ROW_HEIGHT)
-		row.background = ns.Art.RowAtlas(row, "common-button-list-large", "BACKGROUND")
-		row.selected = ns.Art.RowAtlas(row, "common-button-list-large-selected", "BACKGROUND")
+		row.background = ns.RowArt.RowAtlas(row, "common-button-list-large", "BACKGROUND")
+		row.selected = ns.RowArt.RowAtlas(row, "common-button-list-large-selected", "BACKGROUND")
 		row.selected:Hide()
-		row.hover = ns.Art.RowAtlas(row, "common-button-list-large-hover", "HIGHLIGHT", "ADD")
+		row.hover = ns.RowArt.RowAtlas(row, "common-button-list-large-hover", "HIGHLIGHT", "ADD")
 		row:SetHighlightTexture(row.hover, "ADD")
 		row.icon = row:CreateTexture(nil, "ARTWORK")
 		row.icon:SetSize(24, 24)

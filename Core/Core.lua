@@ -1,5 +1,16 @@
 local addonName, ns = ...
 
+if ns.broken then
+	return
+end
+
+-- The shared services, registered once: the report window's title, this addon's own report lines, and later the
+-- journal and log that live in CommissionsForeverDB.
+ns.core = ForeverCore.Register(addonName, {
+	title = ns.ReportTitle,
+	lines = ns.ReportLines,
+})
+
 local addon = CreateFrame("Frame")
 ns.Addon = addon
 
@@ -46,19 +57,14 @@ addon:RegisterEvent("QUEST_LOG_UPDATE")
 addon:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGIN" then
 		CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
-		if type(CommissionsForeverDB.errors) ~= "table" then
-			CommissionsForeverDB.errors = {}
-		end
-		if type(CommissionsForeverDB.log) ~= "table" then
-			CommissionsForeverDB.log = { lines = {}, pinned = false }
-		end
-		ns.AttachErrorJournal(CommissionsForeverDB.errors)
-		ns.AttachLog(CommissionsForeverDB.log)
+		-- The journal and the log ring are Forever Core's now, under `errors` and `log` in this same table, which
+		-- Attach makes when they are missing and merges into when an older save has them.
+		ns.core.Attach(CommissionsForeverDB)
 		_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
 		_G.SLASH_COMMISSIONSFOREVER2 = "/cf"
 		SlashCmdList.COMMISSIONSFOREVER = function(message)
 			local command = (message or ""):lower():match("^%s*(.-)%s*$")
-			if ns.Report and ns.Report.Command and ns.Report.Command(command) then
+			if ns.core.Report.Command(command) then
 				return
 			end
 			if command == "leaderboard" or command == "stats" then

@@ -10,6 +10,11 @@ _G.CreateFrame = function()
 end
 local sent
 local ns = {
+	L = setmetatable({}, {
+		__index = function(_, key)
+			return key
+		end,
+	}),
 	Model = {
 		IsCommissionQuest = function(name)
 			return name == "Feathers for Nafien"
@@ -32,9 +37,27 @@ local ns = {
 			return true
 		end,
 	},
-	AttachErrorJournal = function() end,
-	AttachLog = function() end,
 }
+-- The one ForeverCore service Core/Core.lua registers: its report window and the saved table Attach takes.
+local attached
+_G.ForeverCore = {
+	Register = function(name, spec)
+		assert(name == "CommissionsForever", "registers under the addon's folder name")
+		assert(spec.title == "Commissions Forever report", "registers the addon's report title")
+		assert(spec.lines == ns.ReportLines, "registers the addon's own report lines")
+		return {
+			Attach = function(db)
+				attached = db
+			end,
+			Report = {
+				Command = function(command)
+					return command == "report"
+				end,
+			},
+		}
+	end,
+}
+assert(loadfile("Core/Report.lua"))("CommissionsForever", ns)
 assert(loadfile("Core/Core.lua"))("CommissionsForever", ns)
 
 local function Route(objectives)
@@ -72,6 +95,7 @@ ns.Stats = {
 	end,
 }
 frame.OnEvent(frame, "PLAYER_LOGIN")
+assert(attached == CommissionsForeverDB, "PLAYER_LOGIN hands the saved table to Forever Core")
 SlashCmdList.COMMISSIONSFOREVER("leaderboard")
 assert(opened, "leaderboard opens Forever Leaderboards")
 opened = false

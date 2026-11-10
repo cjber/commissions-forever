@@ -14,7 +14,7 @@ sys.path.insert(0, str(CORE / "tools" / "wowmock"))
 import wowmock  # noqa: E402
 
 SOURCE = (ROOT / "UI" / "Window.lua").read_text()
-ART = (ROOT / "UI" / "Art.lua").read_text()
+ART = (ROOT / "UI" / "RowArt.lua").read_text()
 ROW_HEIGHT = int(re.search(r"local ROW_HEIGHT = (\d+)", SOURCE)[1])
 ROW_WIDTH = 576  # Window.list is 584 wide, minus the row's 4-unit left and right insets.
 NATIVE_ROW_HEIGHT = int(re.search(r"local NATIVE_HEIGHT = (\d+)", ART)[1])  # WhoList.xml draws these on a 69-high row.
