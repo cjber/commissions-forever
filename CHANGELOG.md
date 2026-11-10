@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- **Profession rank bars no longer cover the Commissions page.** The ledger now sits above every frame in both native Professions pages, at the highest strata those pages use, so the book page's HIGH rank bars stay behind it. It still takes the mouse above both pages, and a page that rebuilds its frames picks the new height up when it is shown again. (#167)
+## [0.2.21] - 2026-11-10
+
+- **Profession skill bars no longer show through the Commissions page.** With the Professions overview open underneath, its skill bars drew over the Commissions list. The Commissions page now covers them. (#167)
 
 ## [0.2.20] - 2026-11-10
 
