@@ -79,14 +79,19 @@ def row_atlas(canvas, ui, name, x, y, width, height):
 # the held materials that belong to no active assignment. The model and the client sort and format them, so the
 # screenshots follow Core/Model.lua and UI/Window.lua rather than a hand-written list.
 OBJECTIVES = """{
-    { questID = 1001, category = "cenarionCircle", questName = "Bandages for the Field", sourceItemID = 20806, itemID = 14529, required = 30 },
-    { questID = 1002, category = "timbermawHold", questName = "Feathers for Nafien", itemID = 21377, required = 5 },
-    { questID = 1003, category = "timbermawHold", questName = "Beads for Salfa", itemID = 21383, required = 5 },
-    { questID = 1004, category = "morrowgrain", questName = "Morrowgrain", itemID = 11040, required = 10 },
-    { questID = 1005, category = "morrowgrain", questName = "Un'Goro Soil", itemID = 11018, required = 20 },
-    { questID = 1006, category = "thoriumBrotherhood", questName = "Favor Amongst the Brotherhood", itemID = 11370, required = 10 },
-    { questID = 1007, category = "thoriumBrotherhood", questName = "Favor Amongst the Brotherhood", itemID = 17012, required = 2 },
-    { questID = 1008, category = "thoriumBrotherhood", questName = "Favor Amongst the Brotherhood", itemID = 11382, required = 1 },
+    { questID = 1001, questName = "Bandages for the Field", sourceItemID = 20806, itemID = 14529, required = 30 },
+    { questID = 1002, questName = "Feathers for Nafien", itemID = 21377, required = 5 },
+    { questID = 1003, questName = "Beads for Salfa", itemID = 21383, required = 5 },
+    { questID = 1004, questName = "Morrowgrain", itemID = 11040, required = 10 },
+    { questID = 1005, questName = "Un'Goro Soil", itemID = 11018, required = 20 },
+    { questID = 1006, questName = "Favor Amongst the Brotherhood", itemID = 11370, required = 10 },
+    { questID = 1007, questName = "Favor Amongst the Brotherhood", itemID = 17012, required = 2 },
+    { questID = 1008, questName = "Favor Amongst the Brotherhood", itemID = 11382, required = 1 },
+}"""
+# The category QuestieDB would give each synthetic quest ID.
+CATEGORIES = """{
+    [1001] = "cenarionCircle", [1002] = "timbermawHold", [1003] = "timbermawHold", [1004] = "morrowgrain",
+    [1005] = "morrowgrain", [1006] = "thoriumBrotherhood", [1007] = "thoriumBrotherhood", [1008] = "thoriumBrotherhood",
 }"""
 BAGS = """{
     [14529] = 22, [21377] = 5, [21383] = 2, [11040] = 12, [11018] = 7, [11370] = 4,
@@ -104,14 +109,11 @@ def sample_rows():
 assert(loadfile("Data/TurnIns.lua"))("CommissionsForever", ns)
 local bags = {BAGS}
 local objectives = {OBJECTIVES}
--- The scene is synthetic, so each objective carries the category QuestieDB would give its quest ID.
+local categories = {CATEGORIES}
+-- The scene is synthetic, so QuestieDB's answer per quest ID comes from CATEGORIES.
 ns.Questie = {{
     CommissionCategory = function(questID)
-        for _, objective in ipairs(objectives) do
-            if objective.questID == questID then
-                return objective.category
-            end
-        end
+        return categories[questID]
     end,
 }}
 assert(loadfile("Core/Model.lua"))("CommissionsForever", ns)
