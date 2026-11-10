@@ -1,4 +1,6 @@
-Commissions Forever keeps repeatable turn-ins in view. Check the materials in your bags, see the item objectives for active assignments, and send the remaining assignment route to Shortest Path Forever.
+Commissions Forever keeps repeatable turn-ins in view on its own page in the Professions window. It lists the materials in your bags, shows what each active assignment still needs, and sends the remaining stops to Shortest Path Forever.
+
+QuestieDB, SkillUp Forever and Shortest Path Forever are optional. QuestieDB supplies active quest finishers and their locations; without it the list still counts your materials.
 
 It needs Forever Core, which CurseForge and Wago install with it.
 
@@ -6,13 +8,39 @@ Free, with nothing locked behind it. If it saves you time, you can [sponsor me o
 
 [![Join me on Discord](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/discord-button.png)](https://discord.gg/FpHugGxRJY) [![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber) [![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
 
+![Commissions Forever lists turn-in materials with what you have and what each assignment needs](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/window.png)
+
+Active assignments come first, with the count in your bags beside what the quest still asks for.
+
+![Searching the Commissions list for one assignment's materials](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/window-search.png)
+
+The search box narrows the list to one material, assignment or faction.
+
+![Forever Leaderboards on the Commissions tab, showing this week's turn-ins in your guild and group](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/leaderboard.png)
+
+The leaderboard ranks this week's turn-ins in your guild and group, with your own row pinned at the bottom.
+
+![The all-time Commissions leaderboard for players you have met](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/leaderboard-all-time.png)
+
+Switch to the all-time total to compare with players you have met. Others' values are player-reported.
+
+These images are generated previews of the Commissions UI.
+
 ## Features
 
-- **One list for turn-ins.** Argent Dawn writs, Cenarion Circle logistics, Thorium Brotherhood materials, Timbermaw Hold items, and Morrowgrain research appear together.
-- **Live counts.** Bag and quest-log changes refresh the list.
-- **Optional route guidance.** QuestieDB supplies active quest finishers and their locations; Shortest Path Forever guides you between them.
+- **One list for turn-ins.** Argent Dawn writs, Cenarion Circle logistics, Thorium Brotherhood materials, Timbermaw Hold items and Morrowgrain research appear together.
+- **Live counts.** Bag and quest-log changes refresh the list, and active quest objectives fill in the Need column.
+- **Route to the next stop.** Open turn-in route sends the active commission finishers to Shortest Path Forever, which guides you between them.
 - **Recipe materials.** When SkillUp Forever is installed, other addons can ask its public API for the raw reagents behind a recipe.
-- **Shared leaderboards.** `/cf leaderboard` opens Forever Leaderboards on the Commissions tab, with this week's progress, the all-time total and peer values marked as player-reported. Sharing is on unless you turn it off with `/cf share off` or the window's **Share my progress** box.
+- **Shared leaderboards.** Forever Leaderboards opens on the Commissions tab with this week's progress, the all-time total and peer values marked as player-reported. Sharing is on unless you turn it off.
+
+Completions are counted from real repeat hand-ins from the moment you install the addon. Nothing is backfilled from earlier play, and variable logistics assignments are not guessed from their names.
+
+## Usage
+
+Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Leaderboard**, or use `/cf leaderboard`, to open Forever Leaderboards. `/cf share off` stops sending and receiving totals while keeping your own history, and `/cf share on` resumes; the window's **Share my progress** box does the same.
+
+For a bug report, paste `/cf report`.
 
 <!-- forever-family:start -->
 
@@ -37,8 +65,8 @@ For help, ideas and each day's release notes, join [cjber's Workshop on Discord]
 
 <!-- forever-family:end -->
 
-Use `/commissions` or `/cf` to open its page in the Professions window. QuestieDB, SkillUp Forever, and Shortest Path Forever are optional.
+Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data.
 
-Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data. Licensed GPL-3.0-or-later.
+Source code and issues: [github.com/cjber/commissions-forever](https://github.com/cjber/commissions-forever). Licence: GPL-3.0-or-later.
 
 Built with AI assistance.
