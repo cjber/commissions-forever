@@ -26,8 +26,13 @@ assert(#missingLines == 1 and missingLines[1].text:find("ForeverCore", 1, true),
 local old, oldLines = Require({ API = 0 })
 assert(old.broken == true and #oldLines == 1, "a ForeverCore older than API 1 stops the addon too")
 
-local ready, readyLines = Require({ API = 1 })
-assert(ready.broken == nil, "API 1 runs the addon")
+-- ForeverCore 1.0.0 has API 1 but no shared API kit, which Core/API.lua calls, so it is too old as well.
+local noKit, noKitLines = Require({ API = 1 })
+assert(noKit.broken == true and #noKitLines == 1, "a ForeverCore without the API kit stops the addon")
+assert(noKitLines[1].text:find("ForeverCore", 1, true), "and names it in one error line")
+
+local ready, readyLines = Require({ API = 1, APIKit = {} })
+assert(ready.broken == nil, "API 1 with the API kit runs the addon")
 assert(#readyLines == 0, "and says nothing")
 
 print("core_dependency_spec: ok")
