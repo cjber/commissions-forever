@@ -1,9 +1,9 @@
 ---
 name: release
-description: "Prepare, publish and verify a complete SkillUp Forever release. Use for /release or cutting a release, including data, README and store copy, screenshots, both stores and client installation."
+description: "Prepare, publish and verify a complete Commissions Forever release. Use for /release or cutting a release, including data, README and store copy, screenshots, both stores and client installation."
 ---
 
-# Release SkillUp Forever
+# Release Commissions Forever
 
 Run from the repository root. Read `AGENTS.md`, then the suite skills in `cjber/forever-core`
 (`.agents/skills/wow-forever-addon` and `.agents/skills/wow-addon-publish`).
@@ -68,7 +68,7 @@ authorization. A preparation-only request ends before tags or uploads.
    `ci.yml` **push run on main at the exact commit to be tagged**. PR checks and
    workflow-dispatch runs do not satisfy `tools/release_check.py`. Confirm the
    primary checkout is clean main at that commit before proceeding.
-9. Inspect `.github/workflows/release.yml`, `.pkgmeta` and `SkillUpForever.toc`.
+9. Inspect `.github/workflows/release.yml`, `.pkgmeta` and `CommissionsForever.toc`.
    Confirm `X-Curse-Project-ID`, `X-Wago-ID`, interface and dependencies are right.
    Check secret names with `gh secret list`: `CF_API_KEY` and `WAGO_API_TOKEN`
    must both be present; never print their values. Create a new signed `vX.Y.Z`
@@ -99,11 +99,9 @@ authorization. A preparation-only request ends before tags or uploads.
 
 ## Addon checks
 
-- Review thresholds, recipes, sources, trainer and vendor data together. Use the
-  refresh workflow for upstream pins; the classic-db waiver remains deliberate.
-- User checks: `/su audit` for several professions, native recipe colours, costs,
-  route and tracker updates after crafting, trainer offers, and missing companion
-  data rendering as unknown rather than a fabricated value.
+- User checks after `/reload`: `/cf` opens the Professions window on the Commissions tab and closes it again,
+  the other Professions tabs still switch pages, the turn-in list and bag materials match the character, and with
+  no profession learned `/cf` says on screen that Commissions opens in the Professions window.
 
 ## Command discovery
 
