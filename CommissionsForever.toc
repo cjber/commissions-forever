@@ -13,6 +13,7 @@
 ## SavedVariables: CommissionsForeverDB
 ## OptionalDeps: QuestieDB, SkillUpForever, ShortestPathForever
 ## IconTexture: Interface\AddOns\CommissionsForever\media\Icon
+## X-Forever-Icon: Interface\Icons\INV_Letter_15
 ## AddonCompartmentFunc: CommissionsForever_OnAddonCompartmentClick
 
 Core\Require.lua

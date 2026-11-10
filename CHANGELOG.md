@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **The addon's own icon is the same everywhere it appears in game.** The Professions side tab now wears the letter icon the Forever Leaderboards tab uses. (#146)
+
 ## [0.3.3] - 2026-11-10
 
 - **Opening Commissions no longer causes a blocked-action error.** The game refuses the addon call that opened the Professions window, so the command now tells you on screen to open your profession from your spellbook and shows the Commissions page as soon as you do. (#194)

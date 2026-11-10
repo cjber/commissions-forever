@@ -4,6 +4,10 @@ if ns.broken then
 	return
 end
 
+-- The one client icon every in-game identity surface draws: the Professions side tab and the leaderboard tab. The TOC
+-- declares it once, and the drawn media/Icon stays the addon list, compartment and store identity.
+ns.ICON = C_AddOns.GetAddOnMetadata(addonName, "X-Forever-Icon") --[[@as string]]
+
 -- The shared services, registered once: the report window's title, this addon's own report lines, and later the
 -- journal and log that live in CommissionsForeverDB.
 ns.core = ForeverCore.Register(addonName, {

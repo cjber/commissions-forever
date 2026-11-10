@@ -1,4 +1,6 @@
 -- The turn-in route: Core/Core.lua against stubbed client frames, Questie and Shortest Path.
+local Toc = dofile("tests/toc.lua")
+Toc.install(_G, "CommissionsForever")
 local frame = {
 	RegisterEvent = function() end,
 	SetScript = function(self, event, handler)
@@ -59,6 +61,9 @@ _G.ForeverCore = {
 }
 assert(loadfile("Core/Report.lua"))("CommissionsForever", ns)
 assert(loadfile("Core/Core.lua"))("CommissionsForever", ns)
+local identity = Toc.get("CommissionsForever", "X-Forever-Icon")
+assert(identity and identity ~= "", "the TOC declares the addon's identity icon")
+assert(ns.ICON == identity, "Core reads the TOC's identity icon once onto the namespace")
 
 local function Route(objectives)
 	sent = nil

@@ -1,4 +1,6 @@
 -- Native Professions page, real event ordering and a long materials list.
+local Toc = dofile("tests/toc.lua")
+Toc.install(_G, "CommissionsForever")
 _G.hooksecurefunc = function(t, name, post)
 	local original = t[name]
 	t[name] = function(...)
@@ -55,6 +57,9 @@ local function Region()
 				end,
 				SetAtlas = function(self, atlas)
 					self.atlas = atlas
+				end,
+				SetTexture = function(self, texture)
+					self.texture = texture
 				end,
 				SetHighlightTexture = function(self, texture, blendMode)
 					self.highlightTexture, self.highlightBlend = texture, blendMode
@@ -239,6 +244,8 @@ _G.C_Item = {
 local available = true
 local opened = false
 local ns = {
+	-- Core/Core.lua reads this from the TOC before UI/Window.lua loads.
+	ICON = Toc.get("CommissionsForever", "X-Forever-Icon"),
 	Stats = {
 		Participating = function()
 			return true
@@ -290,6 +297,10 @@ assert(#chat == 0, "the slash command wrote to chat")
 ProfessionsFrame:Show()
 ProfessionsFrame.CraftingPage:Show()
 assert(window.page.shown and window.tab.checked, "the page did not appear when the player opened their profession")
+assert(
+	window.tab.Icon.texture == Toc.get("CommissionsForever", "X-Forever-Icon"),
+	"the side tab wears the TOC's identity icon"
+)
 ProfessionsFrame.CraftingPage:Hide()
 assert(
 	window.page.strata == "HIGH" and window.page.level == 8,

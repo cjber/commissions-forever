@@ -307,7 +307,7 @@ local function Attach()
 		end
 	end)
 	tab = CreateFrame("Frame", nil, ProfessionsFrame, "LargeSideTabButtonTemplate")
-	tab.Icon:SetTexture("Interface\\Icons\\INV_Misc_Note_01")
+	tab.Icon:SetTexture(ns.ICON)
 	tab:SetFillToInterior(true)
 	tab.tooltipText = L["Commissions Forever"]
 	tab:EnableMouse(true)

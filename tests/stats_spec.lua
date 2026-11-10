@@ -3,11 +3,13 @@ local function check(value, label)
 	checks = checks + 1
 	assert(value, label)
 end
+local Toc = dofile("tests/toc.lua")
 local function boot(saved, mode, hardcore, guid)
 	local frames, timers, sent, lines = {}, {}, {}, {}
 	local now = 2000
 	local env = setmetatable({ SlashCmdList = {} }, { __index = _G })
 	env._G = env
+	Toc.install(env, "CommissionsForever")
 	env.GetServerTime = function()
 		return now
 	end
@@ -94,6 +96,8 @@ local function boot(saved, mode, hardcore, guid)
 	})
 	local ns = {}
 	ns.core = env.ForeverCore.Register("CommissionsForever", {})
+	-- Core/Core.lua reads this from the TOC; the spec loads Core/Stats.lua alone, so it reads the same value.
+	ns.ICON = Toc.get("CommissionsForever", "X-Forever-Icon")
 	assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 	ns.Questie = {
 		CommissionCategory = function(id)
@@ -176,7 +180,10 @@ check(type(leaderboards) == "table" and type(leaderboards.boards.commissions) ==
 local spec = leaderboards.boards.commissions
 check(spec.title == "Commissions Forever", "the tab carries the addon's title")
 check(spec.metric == "Commission turn-ins", "the board names its metric")
-check(spec.icon == "Interface\\Icons\\INV_Letter_15", "the tab carries the game's letter icon")
+check(
+	spec.icon == kit.env.C_AddOns.GetAddOnMetadata("CommissionsForever", "X-Forever-Icon"),
+	"the tab wears the TOC's identity icon"
+)
 check(type(spec.revision) == "function" and spec.revision() >= 0, "the board has a revision callback")
 check(spec.sharing(), "sharing reads the saved switch")
 local allRows = spec.board("all")
