@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-10
+
+- **Commissions Forever installs and updates from CurseForge and Wago again.** The 0.3.0 store upload was
+  rejected because the addon's package metadata named a CurseForge project that does not exist; Forever Core
+  ships from GitHub and Wago, so the package now declares it as a client dependency only. Store installs get
+  0.3.0's shared Forever Core tracker, bug report and leaderboards.
+
 ## [0.3.0] - 2026-11-10
 
 - **Needs Forever Core.** The shared tracker column, bug report and leaderboards now come from one Forever Core addon that installs with it, so every Forever addon's tracker scale, lock and position stay in step. Your tracker settings carry over.
