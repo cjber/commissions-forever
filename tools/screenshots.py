@@ -14,6 +14,8 @@ sys.path.insert(0, str(CORE / "tools" / "wowmock"))
 import wowmock  # noqa: E402
 
 SOURCE = (ROOT / "UI" / "Window.lua").read_text()
+TOC_TEXT = (ROOT / "CommissionsForever.toc").read_text(encoding="utf-8-sig")
+TOC_METADATA = dict(re.findall(r"^##\s*([^:]+):\s*(.*?)\s*$", TOC_TEXT, re.MULTILINE))
 ART = (ROOT / "UI" / "RowArt.lua").read_text()
 ROW_HEIGHT = int(re.search(r"local ROW_HEIGHT = (\d+)", SOURCE)[1])
 ROW_WIDTH = 576  # Window.list is 584 wide, minus the row's 4-unit left and right insets.
@@ -30,7 +32,10 @@ LB_SPACER_HEIGHT = 16
 
 MEDALS = ("challenges-medal-gold", "challenges-medal-silver", "challenges-medal-bronze")
 TROPHY = "interface/icons/inv_misc_trophy_argent.blp"
-COMMISSIONS_ICON = "interface/icons/inv_letter_15.blp"
+# Every identity surface draws the icon the TOC declares, the same value the addon reads at load.
+COMMISSIONS_ICON = TOC_METADATA["X-Forever-Icon"].replace("\\", "/").lower()
+if not COMMISSIONS_ICON.endswith(".blp"):
+    COMMISSIONS_ICON += ".blp"
 CLASS_COLOURS = {
     "WARRIOR": wowmock.rgb("c79c6e"),
     "PALADIN": wowmock.rgb("f58cba"),
@@ -134,7 +139,7 @@ def window(ui, *, query=""):
     canvas.draw(ui.atlas("Profession-Background-Template2"), X + 3, Y + 21)
     wowmock.portrait_frame_art(canvas, X, Y, WIDTH, HEIGHT, 136241, "Professions")
     wowmock.side_tab(canvas, X + WIDTH, Y + 60, 136241)
-    wowmock.side_tab(canvas, X + WIDTH, Y + 116, "interface/icons/inv_misc_note_01.blp", selected=True)
+    wowmock.side_tab(canvas, X + WIDTH, Y + 116, COMMISSIONS_ICON, selected=True)
     px, py = X + 4, Y + 28  # page TOPLEFT
     canvas.text(px + 74, py + 12, "Commissions Forever", wowmock.FONTS["GameFontNormalLarge"])
     wowmock.ui_panel_button(canvas, px + WIDTH - 8 - 14 - 132, py + 8, 132, 24, "Leaderboard")

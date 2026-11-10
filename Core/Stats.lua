@@ -11,7 +11,6 @@ local Stats = {}
 ns.Stats = Stats
 local DEFAULTS = { statsShare = true }
 local METRIC = "commission_turnin"
-local ICON = "Interface\\Icons\\INV_Letter_15"
 local MAX_VALUE, MAX_LIMIT = 1e9, 25
 
 local function DB()
@@ -186,7 +185,7 @@ end
 
 ForeverCore.Leaderboards:Register("commissions", {
 	title = L["Commissions Forever"],
-	icon = ICON,
+	icon = ns.ICON,
 	metric = L["Commission turn-ins"],
 	board = Board,
 	revision = function()

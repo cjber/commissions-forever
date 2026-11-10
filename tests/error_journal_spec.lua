@@ -9,6 +9,8 @@ local function check(condition, label)
 end
 
 -- Every frame Core/Core.lua or ForeverCore makes, so PLAYER_LOGIN reaches the addon's own handler.
+local Toc = dofile("tests/toc.lua")
+Toc.install(_G, "CommissionsForever")
 local frames = {}
 _G.CreateFrame = function()
 	local frame = {

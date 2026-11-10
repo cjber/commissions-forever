@@ -4,6 +4,8 @@
 -- window call has its protected SetPreferredGamepadInteractTarget refused (cjber/commissions-forever#147). The player
 -- opens the window with their own profession control; closing goes through the client's own trade-skill call, which
 -- owns that bookkeeping.
+local Toc = dofile("tests/toc.lua")
+Toc.install(_G, "CommissionsForever")
 local nativeSelections = 0
 _G.hooksecurefunc = function(t, name, post)
 	local original = t[name]
@@ -238,6 +240,8 @@ _G.InputUtil = {
 	end,
 }
 local ns = {
+	-- Core/Core.lua reads this from the TOC before UI/Window.lua loads.
+	ICON = Toc.get("CommissionsForever", "X-Forever-Icon"),
 	Stats = {
 		Participating = function()
 			return true
