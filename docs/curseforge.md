@@ -4,10 +4,6 @@ It needs Forever Core, which CurseForge and Wago install with it.
 
 Free, with nothing locked behind it. If it saves you time, you can [sponsor me on GitHub](https://github.com/sponsors/cjber), which takes no fees, or [buy me a coffee on Ko-fi](https://ko-fi.com/cjber).
 
-[![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber)
-
-Free, open source, and nothing is locked behind it.
-
 ## Features
 
 - **One list for turn-ins.** Argent Dawn writs, Cenarion Circle logistics, Thorium Brotherhood materials, Timbermaw Hold items, and Morrowgrain research appear together.
@@ -30,6 +26,8 @@ Each one works on its own, and they work together when you install more than one
 | [Legacy Forever](https://www.curseforge.com/wow/addons/legacy-forever) | Shows your unfinished Legacy challenges on the world map and tracks the ones you choose. | [Issues](https://github.com/cjber/legacy-forever/issues) |
 | [Tweaks Forever](https://www.curseforge.com/wow/addons/tweaks-forever) | Adds quest automation, rare alerts and merchant options to the game's settings. | [Issues](https://github.com/cjber/tweaks-forever/issues) |
 | [Field Guide Forever](https://www.curseforge.com/wow/addons/field-guide-forever) | Keeps a cosmetic journal of the creatures you kill, zone by zone. | [Issues](https://github.com/cjber/field-guide-forever/issues) |
+| [Commissions Forever](https://www.curseforge.com/wow/addons/commissions-forever) | Lists your commission turn-ins, the materials in your bags and the next NPC to visit. | [Issues](https://github.com/cjber/commissions-forever/issues) |
+| [Macro Assist Forever](https://www.curseforge.com/wow/addons/macro-assist-forever) | Adds a macro window with every macro in one list, a mono editor with live checks, and history. | [Issues](https://github.com/cjber/macro-assist-forever/issues) |
 
 Bug reports, feature requests and pull requests are welcome on each addon's GitHub. Everyone whose report or idea ships is thanked by name in the addon's credits and changelog.
 
@@ -41,4 +39,6 @@ Use `/commissions` or `/cf` to open its page in the Professions window. QuestieD
 
 Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data. Licensed GPL-3.0-or-later.
 
-[![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
+Built with AI assistance.
+
+[![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber) [![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
