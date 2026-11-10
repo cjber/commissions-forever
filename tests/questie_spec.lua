@@ -31,12 +31,13 @@ rawset(_G, "LibQuestieDB", {
 		end,
 	},
 })
+local log = { questID = 123, title = "Logistics Task Briefing IV (log)" }
 rawset(_G, "C_QuestLog", {
 	GetNumQuestLogEntries = function()
 		return 1, 1
 	end,
 	GetInfo = function()
-		return { questID = 123, title = "Logistics Task Briefing IV (log)" }
+		return { questID = log.questID, title = log.title }
 	end,
 	GetQuestObjectives = function()
 		-- The quest log lists its objectives in its own order, not QuestieDB's, and the third item is not cached yet.
@@ -70,6 +71,8 @@ questDB.GetAll = function()
 	values[1] = nil
 	return values
 end
+-- A quest's row is read once per ID, so a changed reader is asked about a quest the log has not shown yet.
+log.questID = 124
 assert(
 	ns.Questie.ActiveObjectives()[1].questName == "Logistics Task Briefing IV (log)",
 	"the quest log's title fills a name QuestieDB lacks"
@@ -83,6 +86,7 @@ questDB.GetAll = function(_, fields)
 	values[4] = 20806
 	return values
 end
+log.questID = 125
 assert(ns.Questie.ActiveObjectives()[1].sourceItemID == 20806, "briefing source reaches the model")
 questKeys.sourceItemId = nil
 questDB.GetAll = questieGetAll
@@ -144,12 +148,17 @@ local npcCases = {
 	{ name = "a contract without the spawns field is no NPC", npcKeys = { name = 1, zoneID = 3 } },
 }
 for _, case in ipairs(npcCases) do
-	local getAll, support, npcKeys = db.Npc.GetAll, db.Support.Get, db.Meta.NpcMeta.npcKeys
-	db.Npc.GetAll = case.getAll or getAll
-	db.Support.Get = case.support or support
-	db.Meta.NpcMeta.npcKeys = case.npcKeys or npcKeys
+	-- Each case is its own library: QuestieDB is fitted and its zone tables run once, so they cannot change
+	-- under a library that has already been read.
+	local variant = {}
+	for key, value in pairs(db) do
+		variant[key] = value
+	end
+	variant.Npc = case.getAll and { GetAll = case.getAll } or db.Npc
+	variant.Support = case.support and { Get = case.support } or db.Support
+	variant.Meta = case.npcKeys and { QuestMeta = db.Meta.QuestMeta, NpcMeta = { npcKeys = case.npcKeys } } or db.Meta
+	rawset(_G, "LibQuestieDB", variant)
 	local got = ns.Questie.NPC(42)
-	db.Npc.GetAll, db.Support.Get, db.Meta.NpcMeta.npcKeys = getAll, support, npcKeys
 	local want = case.want
 	if want == nil then
 		assert(got == nil, case.name)
@@ -161,6 +170,7 @@ for _, case in ipairs(npcCases) do
 		end
 	end
 end
+rawset(_G, "LibQuestieDB", db)
 
 rawset(_G, "LibQuestieDB", nil)
 assert(not ns.Questie.Available(), "QuestieDB is unavailable without the library")
