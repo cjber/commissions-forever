@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-11-11
+
+<!-- discord-image: docs/screenshots/window.png -->
+
 - **Switching tabs in the Professions window no longer leaves Commissions drawn over another addon's page.** Commissions now gives its side tab and page to Forever Core's shared tab set, which shows one page at a time, places every Forever tab under the game's own, and keeps the window at one width without moving it. (#197, cjber/forever-core#382)
 
 ### For addon authors
