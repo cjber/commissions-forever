@@ -8,8 +8,14 @@ local L = ns.L
 local Window = {}
 ns.Window = Window
 
+local ProfessionTabs = assert(ForeverCore.ProfessionTabs, "ForeverCore has no shared Professions tabs")
 local ROW_HEIGHT = 30
-local page, tab
+-- The materials list keeps its own columns, and the window needs this much room for the 584-wide scroll child: the
+-- page's 4 either side, the inset's 14 either side and the scroll frame's 4 and 30. The shared tab owner keeps the
+-- window at one width for every profession and tab, raised for this page.
+local LIST_WIDTH = 584
+local WINDOW_WIDTH = LIST_WIDTH + 70
+local page
 local pendingOpen = false -- a command during combat, retried when combat ends
 local pendingPage = false -- a command's page, waiting for the player to open their profession
 local requestedItems = {}
@@ -21,13 +27,6 @@ local function IsTrackedItem(itemID)
 		end
 	end
 	return false
-end
-
-local function Deselect()
-	if page then
-		page:Hide()
-		tab:SetChecked(false)
-	end
 end
 
 -- Frame strata, lowest first. The pinned client's APIDocumentationGenerated names the FrameStrata type
@@ -83,53 +82,11 @@ local function RaiseAboveNativePages()
 	page:SetFrameLevel(level + 1)
 end
 
-local function PlaceTab()
-	local last = ProfessionsFrame.ProfessionsOverviewTab
-	for _, candidate in ipairs(ProfessionsFrame.rightProfessionTabs or {}) do
-		if candidate:IsShown() then
-			last = candidate
-		end
-	end
-	-- Other addons can add tabs outside Blizzard's array. Walk every occupied slot, not just the first.
-	local seen = {}
-	while last and not seen[last] do
-		seen[last] = true
-		local occupied
-		local left, bottom = last:GetLeft(), last:GetBottom()
-		if type(left) == "number" and type(bottom) == "number" then
-			for _, child in ipairs({ ProfessionsFrame:GetChildren() }) do
-				if child ~= tab and child:IsShown() then
-					local childLeft, top = child:GetLeft(), child:GetTop()
-					if type(childLeft) == "number" and type(top) == "number" then
-						if math.abs(childLeft - left) < 1 and math.abs(top - (bottom - 2)) < 1 then
-							occupied = child
-							break
-						end
-					end
-				end
-			end
-		end
-		if not occupied then
-			break
-		end
-		last = occupied
-	end
-	tab:ClearAllPoints()
-	tab:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, -2)
-end
-
 local function SelectPage()
-	-- The client's own pages stay where they are. Showing or hiding one from our code rebuilds the gamepad
-	-- footer's binding group and the frame manager's focus under our taint, and the next secure gamepad call is
-	-- then refused. A page above both native pages takes their input instead (cjber/commissions-forever#147).
-	page:Show()
-	tab:SetChecked(true)
-	ProfessionsFrame.ProfessionsOverviewTab:SetChecked(false)
-	for _, nativeTab in ipairs(ProfessionsFrame.rightProfessionTabs or {}) do
-		nativeTab:SetChecked(false)
-	end
-	-- RightTabSelected expects a native gamepad tab ID. Our extra tab is not part of that array.
-	Window.Refresh()
+	-- The shared tab owner shows this page and hides every other registered page, unchecks the client's tabs and
+	-- never shows or hides a native page. A page above both native pages takes their input instead
+	-- (cjber/commissions-forever#147).
+	ProfessionTabs.Select("commissions")
 end
 
 local function Text(parent, font, x, y, width)
@@ -292,7 +249,7 @@ local function Attach()
 	Window.scroll:SetPoint("TOPLEFT", 4, -32)
 	Window.scroll:SetPoint("BOTTOMRIGHT", -30, 4)
 	Window.list = CreateFrame("Frame", nil, Window.scroll)
-	Window.list:SetSize(584, 1)
+	Window.list:SetSize(LIST_WIDTH, 1)
 	Window.scroll:SetScrollChild(Window.list)
 	Window.rows = {}
 	Window.empty = Text(inset, "GameFontDisableSmall", 12, -42, 560)
@@ -306,56 +263,39 @@ local function Attach()
 			DEFAULT_CHAT_FRAME:AddMessage(L["No active commission route is available."])
 		end
 	end)
-	tab = CreateFrame("Frame", nil, ProfessionsFrame, "LargeSideTabButtonTemplate")
-	tab.Icon:SetTexture(ns.ICON)
-	tab:SetFillToInterior(true)
-	tab.tooltipText = L["Commissions Forever"]
-	tab:EnableMouse(true)
-	tab:SetCustomOnMouseUpHandler(function(_, button, upInside)
-		if button == "LeftButton" and upInside then
-			SelectPage()
-		end
-	end)
-	Window.tab = tab
-	PlaceTab()
+	-- The shared tab owner creates and places the tab under the client's own tabs, and hands the window back from
+	-- every native tab and page. This page only declares what it is and how wide it needs the window.
+	Window.tab = ProfessionTabs.Register("commissions", {
+		icon = ns.ICON,
+		tooltip = L["Commissions Forever"],
+		page = page,
+		minWidth = WINDOW_WIDTH,
+		onSelect = Window.Refresh,
+		safeCall = ns.core.SafeCall,
+	})
 	-- A command asked for the page while the window was closed. The player opens the window with their own
 	-- profession control, and the page appears with it (cjber/commissions-forever#194).
 	ProfessionsFrame:HookScript("OnShow", function()
-		PlaceTab()
 		if pendingPage then
 			SelectPage()
 		end
 	end)
-	-- The client builds and shows a native page as the window opens; shown after the window it would cover the
-	-- Commissions page, so a waiting request takes the window again on the same show.
+	-- The client shows the profession's native page after the window, and the shared owner hands the window back on
+	-- that show. A waiting request takes the page again after it. This only serves the request; the hand-back itself
+	-- is the shared owner's.
 	local function NativePageShown()
-		Deselect()
 		if pendingPage then
-			SelectPage()
-			-- The native page shown with the window is the last step of the client's open; later page shows are the
-			-- player's or the client's own choice and leave the Commissions page alone.
 			pendingPage = false
+			SelectPage()
 		end
 	end
 	ProfessionsFrame.CraftingPage:HookScript("OnShow", NativePageShown)
 	ProfessionsFrame.BookPage:HookScript("OnShow", NativePageShown)
-	-- A native page already shown beneath ours does not fire OnShow again, so its tab hands the window back here.
-	-- The tabs are Frames with no OnClick script, so hook the mixin method that a mouse-up and a gamepad press
-	-- both run. RightTabSelected is not that signal: the client also calls it while refreshing the tabs on a
-	-- skill-up or a reopen, which must leave our page alone.
-	local function HandBack()
-		pendingPage = false
-		Deselect()
-	end
-	hooksecurefunc(ProfessionsFrame.ProfessionsOverviewTab, "OnClick", HandBack)
-	for _, nativeTab in ipairs(ProfessionsFrame.rightProfessionTabs or {}) do
-		hooksecurefunc(nativeTab, "OnClick", HandBack)
-	end
+	-- Closing the window leaves the shared selection on this page; clear it so the next open starts on the client's
+	-- own page. The client still owns the window and every native page.
 	ProfessionsFrame:HookScript("OnHide", function()
 		pendingPage = false
-		if page and page:IsShown() then
-			Deselect()
-		end
+		ProfessionTabs.ShowNative()
 	end)
 	Window.Refresh()
 end
@@ -403,9 +343,7 @@ function Window.Toggle()
 		-- The client's own close runs its panel and gamepad bookkeeping securely; HideUIPanel from here would write
 		-- it under our taint. A client that closes on a later frame leaves the native window as it was.
 		C_TradeSkillUI.CloseTradeSkill()
-		if ProfessionsFrame:IsShown() then
-			Deselect()
-		end
+		ProfessionTabs.ShowNative()
 		return
 	end
 	Open()
@@ -414,7 +352,6 @@ end
 local events = CreateFrame("Frame")
 events:RegisterEvent("ADDON_LOADED")
 events:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-events:RegisterEvent("SKILL_LINES_CHANGED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:SetScript("OnEvent", function(_, event, name)
 	if event == "ADDON_LOADED" and name == "Blizzard_Professions" then
@@ -426,8 +363,6 @@ events:SetScript("OnEvent", function(_, event, name)
 			pendingOpen = false
 			Open()
 		end
-	elseif event == "SKILL_LINES_CHANGED" and page then
-		PlaceTab()
 	end
 end)
 Attach()

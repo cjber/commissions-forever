@@ -7,14 +7,6 @@
 local Toc = dofile("tests/toc.lua")
 Toc.install(_G, "CommissionsForever")
 local nativeSelections = 0
-_G.hooksecurefunc = function(t, name, post)
-	local original = t[name]
-	t[name] = function(...)
-		local result = { original(...) }
-		post(...)
-		return unpack(result)
-	end
-end
 local function Region()
 	local region = { shown = false, text = "", children = {}, scripts = {}, hooks = {}, width = 673, height = 594 }
 	return setmetatable(region, {
@@ -254,7 +246,88 @@ local ns = {
 		end,
 	},
 	Rows = {},
+	core = {
+		SafeCall = function(_, fn, ...)
+			return fn(...)
+		end,
+	},
 }
+-- ForeverCore.ProfessionTabs, with the same one-page and native hand-back contract its real module publishes.
+local registered = {}
+local order = {}
+local selectedKey
+local installed = false
+local ProfessionTabs = {}
+local function ApplyPages()
+	local selected = selectedKey and registered[selectedKey]
+	for _, entry in ipairs(order) do
+		entry.spec.page:SetShown(entry == selected)
+		entry.tab:SetChecked(entry == selected)
+	end
+end
+function ProfessionTabs.Register(key, spec)
+	assert(type(key) == "string" and key ~= "", "the key is not a non-empty string")
+	assert(not registered[key], "the key is already registered: " .. tostring(key))
+	if not installed then
+		installed = true
+		for _, nativePage in ipairs({ host.CraftingPage, host.BookPage }) do
+			nativePage:HookScript("OnShow", function()
+				ProfessionTabs.ShowNative()
+			end)
+		end
+		local nativeTabs = { host.ProfessionsOverviewTab }
+		for _, nativeTab in ipairs(host.rightProfessionTabs or {}) do
+			nativeTabs[#nativeTabs + 1] = nativeTab
+		end
+		for _, nativeTab in ipairs(nativeTabs) do
+			nativeTab:HookScript("OnMouseUp", function()
+				ProfessionTabs.ShowNative()
+			end)
+		end
+	end
+	local tab = CreateFrame("Frame", nil, host, "LargeSideTabButtonTemplate")
+	tab.Icon:SetTexture(spec.icon)
+	tab.tooltipText = spec.tooltip
+	tab:SetCustomOnMouseUpHandler(function(_, button, upInside)
+		if button == "LeftButton" and upInside then
+			ProfessionTabs.Select(key)
+		end
+	end)
+	tab:SetChecked(false)
+	local entry = { key = key, spec = spec, tab = tab }
+	registered[key] = entry
+	order[#order + 1] = entry
+	return tab
+end
+function ProfessionTabs.Select(key)
+	local entry = registered[key]
+	if not entry then
+		return
+	end
+	selectedKey = key
+	ApplyPages()
+	host.ProfessionsOverviewTab:SetChecked(false)
+	for _, nativeTab in ipairs(host.rightProfessionTabs or {}) do
+		nativeTab:SetChecked(false)
+	end
+	local spec = entry.spec
+	if spec.onSelect then
+		if spec.safeCall then
+			spec.safeCall("profession tab selected", spec.onSelect, key)
+		else
+			spec.onSelect(key)
+		end
+	end
+end
+function ProfessionTabs.ShowNative()
+	selectedKey = nil
+	ApplyPages()
+end
+function ProfessionTabs.Selected()
+	return selectedKey
+end
+ProfessionTabs.registered = registered
+_G.ForeverCore = { ProfessionTabs = ProfessionTabs }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
@@ -298,13 +371,20 @@ nativeShows, nativeHides = 0, 0
 window.tab.click(nil, "LeftButton", true)
 assert(window.page.shown, "the Commissions tab did not reopen")
 
--- A native tab's mouse-up runs its mixin OnClick, and a gamepad press runs it with no mouse-up.
-host.ProfessionsOverviewTab.click(host.ProfessionsOverviewTab, "LeftButton", true)
+-- A native tab's mouse-up (and the gamepad press that sends the same pair) runs its mixin and then the shared
+-- owner's mouse-up hook, which hands the window back.
+local function NativeMouseUp(tab)
+	tab.click(tab, "LeftButton", true)
+	for _, hook in ipairs(tab.hooks.OnMouseUp or {}) do
+		hook(tab, "LeftButton", true)
+	end
+end
+NativeMouseUp(host.ProfessionsOverviewTab)
 assert(not window.page.shown and not window.tab.checked, "the overview tab's mouse-up did not hand the window back")
 window.tab.click(nil, "LeftButton", true)
-professionTab:OnClick()
+NativeMouseUp(professionTab)
 assert(not window.page.shown and not window.tab.checked, "a profession tab's gamepad press did not hand it back")
-assert(nativeSelections == 2, "the OnClick hooks did not run for both native tabs")
+assert(nativeSelections == 2, "a native tab's own click did not run for both native tabs")
 -- The client refreshes the tabs on SKILL_LINES_CHANGED and selects a native tab itself; that leaves our page.
 window.tab.click(nil, "LeftButton", true)
 host:RightTabSelected(professionTab)

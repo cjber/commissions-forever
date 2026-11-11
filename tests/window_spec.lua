@@ -1,14 +1,6 @@
 -- Native Professions page, real event ordering and a long materials list.
 local Toc = dofile("tests/toc.lua")
 Toc.install(_G, "CommissionsForever")
-_G.hooksecurefunc = function(t, name, post)
-	local original = t[name]
-	t[name] = function(...)
-		local result = { original(...) }
-		post(...)
-		return unpack(result)
-	end
-end
 local function Region()
 	local region = { shown = false, text = "", children = {}, scripts = {}, hooks = {}, width = 673, height = 594 }
 	return setmetatable(region, {
@@ -259,7 +251,85 @@ local ns = {
 			return available
 		end,
 	},
+	core = {
+		SafeCall = function(_, fn, ...)
+			return fn(...)
+		end,
+	},
 }
+-- ForeverCore.ProfessionTabs, with the same one-page and native hand-back contract its real module publishes, so
+-- this spec exercises the window against that contract without booting the client.
+local registered = {}
+local order = {}
+local selectedKey
+local installed = false
+local ProfessionTabs = {}
+local function ApplyPages()
+	local selected = selectedKey and registered[selectedKey]
+	for _, entry in ipairs(order) do
+		entry.spec.page:SetShown(entry == selected)
+		entry.tab:SetChecked(entry == selected)
+	end
+end
+function ProfessionTabs.Register(key, spec)
+	assert(type(key) == "string" and key ~= "", "the key is not a non-empty string")
+	assert(not registered[key], "the key is already registered: " .. tostring(key))
+	if not installed then
+		installed = true
+		for _, nativePage in ipairs({ host.CraftingPage, host.BookPage }) do
+			nativePage:HookScript("OnShow", function()
+				ProfessionTabs.ShowNative()
+			end)
+		end
+		for _, nativeTab in ipairs({ host.ProfessionsOverviewTab }) do
+			nativeTab:HookScript("OnMouseUp", function()
+				ProfessionTabs.ShowNative()
+			end)
+		end
+	end
+	local tab = CreateFrame("Frame", nil, host, "LargeSideTabButtonTemplate")
+	tab.Icon:SetTexture(spec.icon)
+	tab.tooltipText = spec.tooltip
+	tab:SetCustomOnMouseUpHandler(function(_, button, upInside)
+		if button == "LeftButton" and upInside then
+			ProfessionTabs.Select(key)
+		end
+	end)
+	tab:SetChecked(false)
+	local entry = { key = key, spec = spec, tab = tab }
+	registered[key] = entry
+	order[#order + 1] = entry
+	return tab
+end
+function ProfessionTabs.Select(key)
+	local entry = registered[key]
+	if not entry then
+		return
+	end
+	selectedKey = key
+	ApplyPages()
+	host.ProfessionsOverviewTab:SetChecked(false)
+	for _, nativeTab in ipairs(host.rightProfessionTabs or {}) do
+		nativeTab:SetChecked(false)
+	end
+	local spec = entry.spec
+	if spec.onSelect then
+		if spec.safeCall then
+			spec.safeCall("profession tab selected", spec.onSelect, key)
+		else
+			spec.onSelect(key)
+		end
+	end
+end
+function ProfessionTabs.ShowNative()
+	selectedKey = nil
+	ApplyPages()
+end
+function ProfessionTabs.Selected()
+	return selectedKey
+end
+ProfessionTabs.registered = registered
+_G.ForeverCore = { ProfessionTabs = ProfessionTabs }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
@@ -272,14 +342,12 @@ local function Visible()
 	end
 	return count
 end
--- Two other addon tabs occupy consecutive slots outside the native profession array.
-local firstTab, secondTab = Region(), Region()
-firstTab.top, firstTab.bottom = 98, 60
-secondTab.top, secondTab.bottom = 58, 20
-firstTab:Show()
-secondTab:Show()
-host.children[#host.children + 1] = firstTab
-host.children[#host.children + 1] = secondTab
+local commission = ProfessionTabs.registered.commissions
+assert(commission, "the window did not register its page with the shared tab owner")
+assert(commission.spec.page == window.page, "the registered page is not the materials page")
+assert(commission.spec.minWidth == 654, "the page did not ask for the window width its 584 list needs")
+assert(commission.spec.onSelect == window.Refresh, "selecting the tab no longer refreshes the page")
+assert(commission.spec.safeCall == ns.core.SafeCall, "the page's selection callback is not in the addon journal")
 ns.Rows = {}
 for index = 1, 30 do
 	ns.Rows[index] = { turnIn = { faction = "Thorium Brotherhood" }, itemID = index, count = index }
@@ -321,8 +389,6 @@ assert(
 	window.page.strata == "HIGH" and window.page.level == 21,
 	"a HIGH frame created after attach stayed above the Commissions page"
 )
-assert(window.tab.point[2] == secondTab, "commissions leaves both existing addon tabs visible and uses the next slot")
-assert(firstTab.shown and secondTab.shown, "placing commissions does not hide other addon tabs")
 window.Refresh()
 assert(Visible() == 30 and window.list.height == 30 * 30, "all rows remain reachable through scrolling")
 assert(window.rows[30].name.text == "Cached item 30", "the final row is not lost")
@@ -381,21 +447,24 @@ assert(window.notice.shown, "missing QuestieDB is named while bag counts remain"
 ProfessionsFrame.CraftingPage:Show()
 assert(not window.page.shown and not window.tab.checked, "native profession selection deselects commissions")
 ProfessionsFrame.CraftingPage:Hide()
-local otherPage = Region()
-otherPage:Show()
 window.tab.click(nil, "LeftButton", true)
 assert(window.page.shown, "the tab opens the ledger above the native page")
--- A native tab's mouse-up runs its mixin OnClick, and a gamepad press runs it with no mouse-up.
-host.ProfessionsOverviewTab.click(host.ProfessionsOverviewTab, "LeftButton", true)
+-- A native tab's mouse-up runs its mixin and then the shared owner's hook, which hands the window back.
+local function NativeMouseUp(tab)
+	tab.click(tab, "LeftButton", true)
+	for _, hook in ipairs(tab.hooks.OnMouseUp or {}) do
+		hook(tab, "LeftButton", true)
+	end
+end
+NativeMouseUp(host.ProfessionsOverviewTab)
 assert(not window.page.shown and not window.tab.checked, "a native tab mouse-up deselects commissions")
 window.tab.click(nil, "LeftButton", true)
-host.ProfessionsOverviewTab:OnClick()
+NativeMouseUp(host.ProfessionsOverviewTab)
 assert(not window.page.shown and not window.tab.checked, "a gamepad press on a native tab deselects commissions")
 -- The client refreshes the tabs on SKILL_LINES_CHANGED and selects a native tab itself; that leaves our page.
 window.tab.click(nil, "LeftButton", true)
 host:RightTabSelected(host.ProfessionsOverviewTab)
 assert(window.page.shown and window.tab.checked, "a tab refresh deselected the Commissions page")
-otherPage:Hide()
 window.Toggle()
 assert(not ProfessionsFrame.shown and not window.page.shown, "toggle closes the native host cleanly")
 cached = false
