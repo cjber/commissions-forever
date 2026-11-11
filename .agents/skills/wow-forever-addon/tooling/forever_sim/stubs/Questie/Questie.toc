@@ -1,4 +1,0 @@
-## Interface: 16001
-## Title: Questie (forever_sim stand-in)
-## Notes: The public surface and tracker frame the Forever addons read, written for the simulator. No Questie code.
-Questie.lua

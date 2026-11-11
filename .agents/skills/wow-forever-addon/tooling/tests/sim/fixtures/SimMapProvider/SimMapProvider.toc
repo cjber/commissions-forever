@@ -1,4 +1,0 @@
-## Interface: 16001
-## Title: SimMapProvider
-## SavedVariables: SimMapProviderDB
-SimMapProvider.lua

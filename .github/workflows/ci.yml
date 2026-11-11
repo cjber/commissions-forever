@@ -129,6 +129,7 @@ jobs:
           persist-credentials: false
       # A release publishes its changelog entry, so every tagged version needs one.
       - run: python3 tools/changelog.py --check
+      - run: python3 tools/repo_rules.py
 
   workflows:
     runs-on: ubuntu-24.04

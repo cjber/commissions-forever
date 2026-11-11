@@ -109,6 +109,7 @@ local function Row(index)
 		row.selected = ns.RowArt.RowAtlas(row, "common-button-list-large-selected", "BACKGROUND")
 		row.selected:Hide()
 		row.hover = ns.RowArt.RowAtlas(row, "common-button-list-large-hover", "HIGHLIGHT", "ADD")
+		-- art-ok: the highlight is the row's own RowArt texture, already fitted at its native aspect.
 		row:SetHighlightTexture(row.hover, "ADD")
 		row.icon = row:CreateTexture(nil, "ARTWORK")
 		row.icon:SetSize(24, 24)
@@ -152,6 +153,7 @@ function Window.Refresh()
 			shown = shown + 1
 			local row = Row(shown)
 			row.itemID = item.itemID
+			-- art-ok: an item icon is square, and the icon region is a square 24 by 24.
 			row.icon:SetTexture(C_Item.GetItemIconByID(item.itemID))
 			row.name:SetText(name)
 			row.source:SetText(source)
@@ -321,14 +323,14 @@ local function Open()
 		-- Nothing to open, so ask the player to learn a profession instead of waiting for a window that cannot come.
 		UIErrorsFrame:AddMessage(
 			L["Commissions opens in the Professions window. Learn a profession to use it."],
-			NORMAL_FONT_COLOR:GetRGB()
+			NORMAL_FONT_COLOR:GetRGB() -- multi-value: r, g, b
 		)
 		return
 	end
 	pendingPage = true
 	UIErrorsFrame:AddMessage(
 		L["Commissions opens in the Professions window. Open it from your spellbook."],
-		NORMAL_FONT_COLOR:GetRGB()
+		NORMAL_FONT_COLOR:GetRGB() -- multi-value: r, g, b
 	)
 end
 
@@ -336,7 +338,7 @@ function Window.Toggle()
 	-- The panel manager refuses ShowUIPanel and HideUIPanel in combat, so wait for the player to leave it.
 	if InCombatLockdown() then
 		pendingOpen = true
-		UIErrorsFrame:AddMessage(L["Commissions opens when combat ends."], NORMAL_FONT_COLOR:GetRGB())
+		UIErrorsFrame:AddMessage(L["Commissions opens when combat ends."], NORMAL_FONT_COLOR:GetRGB()) -- multi-value: r, g, b
 		return
 	end
 	if page and page:IsShown() and ProfessionsFrame:IsShown() then
