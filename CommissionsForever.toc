@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Dependencies: ForeverCore
-## X-Forever-Core: v1.5.0
+## X-Forever-Core: v1.6.1
 ## Title: Commissions Forever
 ## Notes: Tracks repeatable Classic turn-ins and the materials in your bags.
 ## Author: cjber

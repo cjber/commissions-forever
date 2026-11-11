@@ -67,7 +67,6 @@ addon:SetScript("OnEvent", function(_, event)
 		-- Attach makes when they are missing and merges into when an older save has them.
 		ns.core.Attach(CommissionsForeverDB)
 		_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
-		_G.SLASH_COMMISSIONSFOREVER2 = "/cf"
 		SlashCmdList.COMMISSIONSFOREVER = function(message)
 			local command = (message or ""):lower():match("^%s*(.-)%s*$")
 			if ns.core.Report.Command(command) then

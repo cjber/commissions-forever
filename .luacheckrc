@@ -8,7 +8,6 @@ globals = {
 	"CommissionsForever_OnAddonCompartmentClick",
 	"CommissionsForeverDB",
 	"SLASH_COMMISSIONSFOREVER1",
-	"SLASH_COMMISSIONSFOREVER2",
 	"SlashCmdList",
 }
 
