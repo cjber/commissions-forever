@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- **The players who helped are on the Thanks page.** Settings, Forever addons, Thanks lists everyone whose report or idea shipped in Commissions Forever, ranked by how much they gave. (#227)
 ## [0.4.1] - 2026-11-11
 
 <!-- forever-core-sync -->
