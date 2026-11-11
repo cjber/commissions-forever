@@ -2,7 +2,7 @@
 
 <h1 align="center">Commissions Forever</h1>
 
-Track materials for repeatable WoW: Forever turn-ins. Open its Professions page with `/commissions` or `/cf`.
+Track materials for repeatable WoW: Forever turn-ins. Open its Professions page with `/commissions`.
 
 [![Tests](https://github.com/cjber/commissions-forever/actions/workflows/test.yml/badge.svg)](https://github.com/cjber/commissions-forever/actions/workflows/test.yml)
 
@@ -52,7 +52,7 @@ Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever 
 
 ## Usage
 
-Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
+Use `/commissions` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
 ## Data
 

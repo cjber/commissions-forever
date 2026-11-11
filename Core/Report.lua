@@ -4,8 +4,8 @@ if ns.broken then
 	return
 end
 
--- Commissions Forever's own lines in /cf report: whether each optional addon answered and what the ledger holds, so
--- a bug report says what state the addon was in. English throughout, like the other shared report lines.
+-- Commissions Forever's own lines in /commissions report: whether each optional addon answered and what the ledger
+-- holds, so a bug report says what state the addon was in. English throughout, like the other shared report lines.
 
 ns.ReportTitle = ns.L["Commissions Forever report"]
 

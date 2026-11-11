@@ -99,9 +99,9 @@ authorization. A preparation-only request ends before tags or uploads.
 
 ## Addon checks
 
-- User checks after `/reload`: `/cf` opens the Professions window on the Commissions tab and closes it again,
+- User checks after `/reload`: `/commissions` opens the Professions window on the Commissions tab and closes it again,
   the other Professions tabs still switch pages, the turn-in list and bag materials match the character, and with
-  no profession learned `/cf` says on screen that Commissions opens in the Professions window.
+  no profession learned `/commissions` says on screen that Commissions opens in the Professions window.
 
 ## Command discovery
 

@@ -32,9 +32,9 @@ Completions are counted from real repeat hand-ins from the moment you install th
 
 ## Usage
 
-Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
+Use `/commissions` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
-For a bug report, paste `/cf report`.
+For a bug report, paste `/commissions report`.
 
 <!-- forever-family:start -->
 
