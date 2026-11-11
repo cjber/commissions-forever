@@ -1,6 +1,6 @@
 ---@meta
 
--- CommissionsForever.API, version 1, minor 4: the contract other addons read (docs/api.md). Core/API.lua implements
+-- CommissionsForever.API, version 2, minor 0: the contract other addons read (docs/api.md). Core/API.lua implements
 -- it, and these declarations never load in the client.
 
 -- ForeverCore.APIKit's not-ready reasons. "loading" asks again later, "disabled" is the player's choice and "none"
@@ -40,29 +40,13 @@
 ---@field value integer
 ---@field eventUnix? integer the last accepted turn-in's time, absent before the first one
 
----@class CommissionsAPILeaderboardRow
----@field rank integer
----@field name string
----@field value integer
----@field eventUnix? integer
----@field self? boolean true on this character's row
-
----@class CommissionsAPILeaderboard
----@field metric "commission_turnin"
----@field scope "guild_group"
----@field ruleset? string the client's game-mode record ID and Hardcore flag, absent when the client cannot classify
----@field sharing boolean whether this character sends and receives totals
----@field total integer every eligible row, before the limit
----@field rows CommissionsAPILeaderboardRow[]
-
 ---@class CommissionsPublicAPI
----@field version 1
----@field minor 4
+---@field version 2
+---@field minor 0
 ---@field RequiredMaterials fun(recipeID: integer, crafts?: integer): CommissionsAPIMaterial[]?, CommissionsAPIReason?
 ---@field CommissionCategory fun(questID: integer): string?, CommissionsAPIReason|"invalid"?
 ---@field ActiveObjectives fun(): CommissionsAPIObjective[]?, CommissionsAPIReason?
 ---@field Materials fun(): CommissionsAPIMaterialsRow[]?, CommissionsAPIReason?
 ---@field NavigateActiveAssignments fun(): boolean
 ---@field Stats fun(): CommissionsAPIStatsRow[]
----@field Leaderboard fun(limit?: integer): CommissionsAPILeaderboard?, "invalid"?
 ---@field Subscribe fun(callback: fun(changes: CommissionsAPIChanges)): fun() unsubscribes, safe to call twice

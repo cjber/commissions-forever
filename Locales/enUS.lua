@@ -15,12 +15,6 @@ ns.L = {
 	["Have"] = true,
 	["Need"] = true,
 	["Item %d"] = true,
-	["Leaderboard"] = true,
-	["Share my progress"] = true,
-	["On unless you turn it off. Shares commission totals and puts you on Forever Leaderboards."] = true,
-	["Already shared totals cannot be recalled."] = true,
-	["Commission turn-ins"] = true,
-	["total"] = true,
 
 	-- The shared report window's title; Forever Core owns its other phrases.
 	["Commissions Forever report"] = true,

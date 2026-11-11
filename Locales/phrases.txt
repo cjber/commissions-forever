@@ -6,8 +6,6 @@ if GetLocale() ~= "deDE" then
 end
 local L = ns.L
 
-L["Already shared totals cannot be recalled."] = "Already shared totals cannot be recalled."
-L["Commission turn-ins"] = "Commission turn-ins"
 L["Commissions Forever"] = "Commissions Forever"
 L["Commissions Forever report"] = "Commissions Forever report"
 L["Commissions opens in the Professions window. Learn a profession to use it."] = "Commissions opens in the Professions window. Learn a profession to use it."
@@ -16,13 +14,9 @@ L["Commissions opens when combat ends."] = "Commissions opens when combat ends."
 L["Have"] = "Have"
 L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
 L["Item %d"] = "Item %d"
-L["Leaderboard"] = "Leaderboard"
 L["Material"] = "Material"
 L["Need"] = "Need"
 L["No active commission route is available."] = "No active commission route is available."
 L["No tracked materials found"] = "No tracked materials found"
-L["On unless you turn it off. Shares commission totals and puts you on Forever Leaderboards."] = "On unless you turn it off. Shares commission totals and puts you on Forever Leaderboards."
 L["Open turn-in route"] = "Open turn-in route"
-L["Share my progress"] = "Share my progress"
 L["Turn-in"] = "Turn-in"
-L["total"] = "total"

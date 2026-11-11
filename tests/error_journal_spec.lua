@@ -66,11 +66,6 @@ ns.ShortestPath = {
 		return false
 	end,
 }
-ns.Stats = {
-	Participating = function()
-		return true
-	end,
-}
 ns.Window = {
 	Refresh = function() end,
 	Toggle = function() end,

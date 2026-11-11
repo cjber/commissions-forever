@@ -16,13 +16,9 @@ Active assignments come first, with the count in your bags beside what the quest
 
 The search box narrows the list to one material, assignment or faction.
 
-![Forever Leaderboards on the Commissions tab, showing this week's turn-ins in your guild and group](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/leaderboard.png)
+![Commissions Forever counting bag materials without QuestieDB](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/window-bags.png)
 
-The leaderboard ranks this week's turn-ins in your guild and group, with your own row pinned at the bottom.
-
-![The all-time Commissions leaderboard for players you have met](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/leaderboard-all-time.png)
-
-Switch to the all-time total to compare with players you have met. Others' values are player-reported.
+Without QuestieDB, the list still counts the turn-in materials in your bags.
 
 These images are generated previews of the Commissions UI.
 
@@ -32,13 +28,13 @@ These images are generated previews of the Commissions UI.
 - **Live counts.** Bag and quest-log changes refresh the list, and active quest objectives fill in the Need column.
 - **Route to the next stop.** Open turn-in route sends the active commission finishers to Shortest Path Forever, which guides you between them.
 - **Recipe materials.** When SkillUp Forever is installed, other addons can ask its public API for the raw reagents behind a recipe.
-- **Shared leaderboards.** Forever Leaderboards opens on the Commissions tab with this week's progress, the all-time total and peer values marked as player-reported. Sharing is on unless you turn it off.
+- **Observed totals.** Supported hand-ins are counted from the moment you install the addon, and other addons can read the total through its public API.
 
 Completions are counted from real repeat hand-ins from the moment you install the addon. Nothing is backfilled from earlier play, and variable logistics assignments are not guessed from their names.
 
 ## Usage
 
-Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Leaderboard**, or use `/cf leaderboard`, to open Forever Leaderboards. `/cf share off` stops sending and receiving totals while keeping your own history, and `/cf share on` resumes; the window's **Share my progress** box does the same.
+Use `/commissions` or `/cf` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
 For a bug report, paste `/cf report`.
 

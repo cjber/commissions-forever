@@ -2,7 +2,7 @@
 
 Commissions Forever tracks repeatable Classic turn-ins, the materials in your bags, and the next NPC stop. It targets WoW: Forever (`Interface 16001`, client folder `_forever_`).
 
-Commissions Forever requires ForeverCore (`## Dependencies: ForeverCore`), the standalone addon that owns the shared tracker column, report window, error journal, debug log, Forever Leaderboards, minimap button, settings-page chrome and family page. `.pkgmeta`'s `required-dependencies` makes CurseForge and Wago install ForeverCore with it, and no shared runtime file is vendored here.
+Commissions Forever requires ForeverCore (`## Dependencies: ForeverCore`), the standalone addon that owns the shared tracker column, report window, error journal, debug log, minimap button, settings-page chrome and family page. `.pkgmeta`'s `required-dependencies` makes CurseForge and Wago install ForeverCore with it, and no shared runtime file is vendored here.
 
 ## Commands
 

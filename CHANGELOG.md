@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- **Forever Leaderboards are gone.** Commissions Forever no longer has a leaderboard tab, a Leaderboard button, or the `/cf leaderboard` and `/cf stats` commands, and guild and group stat sharing has stopped. No totals are sent or received, and the sharing switch is gone with the `/cf share` commands. Your own completed turn-in count stays, and other addons can still read it through the addon's API. Saved shared data is cleared when you log in.
+
+### For addon authors
+
+- `CommissionsForever.API` is version 2, minor 0: `Leaderboard(limit)` is removed along with its guild and group stat sharing. `Stats()` still returns this character's own recorded total.
+
 ## [0.3.7] - 2026-11-11
 
 - **Works again after updating.** Updating to the last version could leave the addon switched off in the game's AddOns list with "ForeverCore: missing", because the update did not bring Forever Core with it. Forever Core now comes inside this addon's download again, from CurseForge, Wago or GitHub alike, so updating is all it takes (cjber/shortest-path-forever#731).

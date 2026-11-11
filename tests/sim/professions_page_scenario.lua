@@ -778,7 +778,7 @@ scenario("in combat, /cf waits for combat to end and then opens the ledger", fun
 	expectCommissionsPage(sim, "two /cf in combat")
 end)
 
-scenario("completion controls preserve the ledger and count only supported turn-in events", function(sim)
+scenario("completion records count only supported turn-in events", function(sim)
 	world(sim)
 	-- Synthetic public-contract fixture. No quest-log title or inventory change establishes completion.
 	sim:runAs(
@@ -802,44 +802,25 @@ scenario("completion controls preserve the ledger and count only supported turn-
 	sim:login()
 	slash(sim)
 	sim:openProfessions(164)
-	local share, board
+	-- Forever Leaderboards is gone: neither its button nor its sharing switch is on the page.
 	for _, child in ipairs({ page(sim):GetChildren() }) do
-		if child.Text and child.Text.GetText and child.Text:GetText() == "Share my progress" then
-			share = child
-		elseif child.GetText and child:GetText() == "Leaderboard" then
-			board = child
+		local label
+		if child.Text and child.Text.GetText then
+			label = child.Text:GetText()
+		elseif child.GetText then
+			local ok, text = pcall(child.GetText, child)
+			label = ok and text or nil
 		end
+		check(
+			label ~= "Share my progress" and label ~= "Leaderboard",
+			"a removed leaderboard control is still on the page"
+		)
 	end
-	check(share and board, "completion controls are missing from the native page")
-	check(share:GetChecked(), "participation should default on")
-	sim:click(share)
-	check(sim:savedState().CommissionsForeverDB.statsShare == false, "the checkbox did not save explicit opt-out")
-	check(not share:GetChecked(), "the checkbox stayed checked after opt-out")
-	check(not sim.G.CommissionsForever.API.Leaderboard().sharing, "opt-out left the shared view enabled")
 	sim:event("QUEST_TURNED_IN", 123, 0, 0)
 	sim:event("QUEST_TURNED_IN", 123, 0, 0)
 	sim:event("QUEST_TURNED_IN", 124, 0, 0)
 	check(sim.G.CommissionsForever.API.Stats()[1].value == 2, "repeat hand-ins were lost or an unrelated quest counted")
-	-- The Leaderboard button opens the shared Forever Leaderboards window, which is client UI the simulator does
-	-- not render; the board itself still reads while in combat.
-	check(
-		sim.G.CommissionsForever.API.Leaderboard().rows[1].value == 2,
-		"the personal board stopped reading after opt-out"
-	)
-	sim:enterCombat()
-	sim:hoverUnit({ name = "Guard", level = 55, friendly = false })
-	sim:unhoverUnit()
-	sim:hover(share)
-	check(sim.G.GameTooltip:IsShown(), "the sharing explanation did not show after a secret tooltip")
-	sim:leave()
-	sim:input(function()
-		sim.G.SlashCmdList.COMMISSIONSFOREVER("share on")
-	end)
-	check(share:GetChecked(), "slash participation did not refresh the visible checkbox")
-	sim:leaveCombat()
-	sim:setGamepad(true)
-	sim:gamepadNavigate()
-	sim:expectNoGamepadTaint(ADDON)
+	check(sim.G.CommissionsForever.API.Leaderboard == nil, "the board member is still published")
 end)
 
 -- cjber/commissions-forever#194: the client refuses C_TradeSkillUI.OpenTradeSkill from addon code
