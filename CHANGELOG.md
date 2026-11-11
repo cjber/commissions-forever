@@ -2,17 +2,15 @@
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-11
+
+<!-- discord-image: docs/screenshots/window-bags.png -->
+
 - **Forever Leaderboards are gone.** Commissions Forever no longer has a leaderboard tab, a Leaderboard button, or the `/cf leaderboard` and `/cf stats` commands, and guild and group stat sharing has stopped. No totals are sent or received, and the sharing switch is gone with the `/cf share` commands. Your own completed turn-in count stays, and other addons can still read it through the addon's API. Saved shared data is cleared when you log in.
 
 ### For addon authors
 
 - `CommissionsForever.API` is version 2, minor 0: `Leaderboard(limit)` is removed along with its guild and group stat sharing. `Stats()` still returns this character's own recorded total.
-
-## [0.3.9] - 2026-11-11
-
-<!-- forever-core-sync -->
-
-- Ships with the same shared code as your other Forever addons, so they keep working together.
 
 ## [0.3.8] - 2026-11-11
 
