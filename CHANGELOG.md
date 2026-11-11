@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- **`/commissions` is the command.** `/cf` was the game's own whisper command, so typing it never reached Commissions; use `/commissions` and `/commissions report` (#249).
 - **Forever Leaderboards are gone.** Commissions Forever no longer has a leaderboard tab, a Leaderboard button, or the `/cf leaderboard` and `/cf stats` commands, and guild and group stat sharing has stopped. No totals are sent or received, and the sharing switch is gone with the `/cf share` commands. Your own completed turn-in count stays, and other addons can still read it through the addon's API. Saved shared data is cleared when you log in.
 
 ### For addon authors

@@ -16,7 +16,7 @@ Nothing below is dead code, even when no file calls it by name.
 - The files `CommissionsForever.toc` lists, loaded in order: `Locales/`, `Data/`, `Core/`, `Integrations/`, `UI/`.
 - `## SavedVariables: CommissionsForeverDB`: anything read from it may hold data an older version wrote.
 - `CommissionsForever.API` in `Core/API.lua`: the public API other addons call.
-- `CommissionsForever_OnAddonCompartmentClick`, `SLASH_COMMISSIONSFOREVER1/2` and their `SlashCmdList` handler: the
+- `CommissionsForever_OnAddonCompartmentClick`, `SLASH_COMMISSIONSFOREVER1` and their `SlashCmdList` handler: the
   client calls them by name.
 - `Integrations/Questie.lua`, `SkillUp.lua` and `ShortestPath.lua`: each reads another addon's public API when it is
   loaded and keeps working when it is not.

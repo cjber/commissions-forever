@@ -349,7 +349,7 @@ host:Show()
 -- The client shows the profession's native page with the window, after the window's own OnShow.
 host.CraftingPage:Show()
 nativeShows, nativeHides = 0, 0
-assert(window.page.shown and window.tab.checked, "/cf did not show the ledger under the gamepad interface")
+assert(window.page.shown and window.tab.checked, "/commissions did not show the ledger under the gamepad interface")
 assert(nativeShows == 0 and nativeHides == 0, "opening changed a native page under the gamepad interface")
 assert(bookPage == 0, "opening changed the remembered profession under the gamepad interface")
 
@@ -390,7 +390,7 @@ assert(window.page.shown, "the Commissions tab did not reopen after the tab hand
 window.Toggle()
 assert(
 	hidden == 2 and not host.shown and not window.page.shown,
-	"/cf did not close the ledger under the gamepad interface"
+	"/commissions did not close the ledger under the gamepad interface"
 )
 assert(nativeShows == 0 and nativeHides == 0, "closing changed a native page under the gamepad interface")
 assert(bookPage == 0, "closing changed the remembered profession under the gamepad interface")

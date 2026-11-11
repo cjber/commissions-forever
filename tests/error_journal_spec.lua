@@ -132,7 +132,7 @@ for _, line in ipairs(CommissionsForeverDB.log.lines) do
 end
 check(logged ~= nil, "a log line is kept in the saved ring")
 
--- /cf report goes to the shared report before the addon's own commands.
+-- /commissions report goes to the shared report before the addon's own commands.
 local reported, toggled
 ns.core.Report.Command = function(command)
 	reported = command
@@ -142,7 +142,7 @@ ns.Window.Toggle = function()
 	toggled = true
 end
 SlashCmdList.COMMISSIONSFOREVER("report")
-check(reported == "report", "/cf report is handled by ns.core.Report.Command")
-check(not toggled, "/cf report does not fall through to the addon's command")
+check(reported == "report", "/commissions report is handled by ns.core.Report.Command")
+check(not toggled, "/commissions report does not fall through to the addon's command")
 
 print(("error_journal_spec: %d checks passed"):format(checks))
