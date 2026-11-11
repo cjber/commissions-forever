@@ -1,4 +1,0 @@
-## Interface: 16001
-## Title: SimTracker
-## SavedVariables: SimTrackerDB
-SimTracker.lua

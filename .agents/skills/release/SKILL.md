@@ -41,7 +41,7 @@ authorization. A preparation-only request ends before tags or uploads.
 
 4. Compare `README.md`, `docs/curseforge.md`, linked documentation, defaults,
    commands and companion requirements with the behaviour being released. Remove
-   stale claims and broken links. Run the shared `wow-forever-addon/check_copy.py`
+   stale claims and broken links. Run `python3 tools/check_copy.py docs/curseforge.md README.md`
    on both copy files. Keep README/store copy within the shared length limits.
 5. Set `WOWMOCK` to the installed mock library and run `python3 tools/screenshots.py`
    twice, requiring identical output bytes. Inspect the actual images at readable
