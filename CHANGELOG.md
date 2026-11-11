@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **Switching tabs in the Professions window no longer leaves Commissions drawn over another addon's page.** Commissions now gives its side tab and page to Forever Core's shared tab set, which shows one page at a time, places every Forever tab under the game's own, and keeps the window at one width without moving it. (#197, cjber/forever-core#382)
+
 ### For addon authors
 
 - `CommissionsForever.API` is now listed by `ForeverCore.APIKit.Addons()`. The addon hands its API table to `ForeverCore.APIKit.Publish` at load on ForeverCore 1.3.2 or later, so a suite-wide reader finds it the same way it finds every other Forever addon's API. Version and minor are unchanged: publishing is not an API change. (#219)

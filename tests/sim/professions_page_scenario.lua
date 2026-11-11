@@ -183,12 +183,10 @@ local function press(sim, tab)
 	sim:advance(0.05)
 end
 
--- A native tab pressed with the gamepad: the client's tab indicator runs the tab's mixin OnClick with no mouse-up.
--- The method switches the native page, and the Commissions post-hook on that method hands the window back.
+-- A native tab pressed without the mouse-down/mouse-up pair a real click sends, the way the gamepad's tab indicator
+-- reaches the tab. The shared owner hands the window back from the tab's mouse-up script, not from its OnClick.
 local function click(sim, tab)
-	sim:input(function()
-		tab:OnClick()
-	end)
+	sim.widgets.dispatch(tab, "OnMouseUp", "LeftButton", true)
 	sim:advance(0.05)
 end
 
@@ -467,37 +465,117 @@ scenario("the search box keeps every native SearchBoxTemplate handler", function
 	check(rows(sim) == "Dark Iron Ore, Fiery Core, Lava Core", "clearing did not restore the rows: " .. rows(sim))
 end)
 
-scenario("another addon's side tabs keep their slots and the Commissions tab goes under them", function(sim)
+-- cjber/forever-core#382: the shared owner places every registered tab under the client's own in registration
+-- order. A SkillUp-like second tab, the client's own tab, a profession change and the way back each leave exactly
+-- one page shown, and the window keeps one width and its anchor throughout.
+scenario("Commissions and a second registered tab keep one page and one window", function(sim)
 	world(sim)
 	sim:login()
-	sim:openProfessions(164)
-	expectTabSlots(sim, "before the other addon")
-	-- Another addon stacks two tabs under the native ones, outside Blizzard's array, as side-tab addons do.
+	local pf = sim:openProfessions(164)
 	sim:runAs(
-		"OtherSideTabs",
+		"SkillUpForever",
 		[[
-		local pf = ProfessionsFrame
-		local last = pf.rightProfessionTabs[2]
-		for i = 1, 2 do
-			local tab = CreateFrame("Frame", "OtherSideTab" .. i, pf, "LargeSideTabButtonTemplate")
-			tab.tooltipText = "Other " .. i
-			tab:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, -2)
-			tab:Show()
-			last = tab
-		end
+		local page = CreateFrame("Frame", "SkillUpScenarioPage", UIParent)
+		local tab = ForeverCore.ProfessionTabs.Register("skillup", {
+			icon = "Interface\\Icons\\INV_Misc_Note_01",
+			tooltip = "SkillUp Forever",
+			page = page,
+		})
+		SkillUpScenario = { page = page, tab = tab }
 	]]
 	)
-	sim:closeProfessions()
-	sim:openProfessions(164)
-	expectTabSlots(sim, "after the other addon's tabs")
+	local second = sim.G.SkillUpScenario
+	check(second and second.page and second.tab, "the second registered tab was not built")
+	local secondPage, secondTab = second.page, second.tab
+
+	-- The window keeps the client's own width and its anchor while tabs and professions change.
+	local width, point = pf:GetWidth(), { pf:GetPoint(1) }
+	check(width > 1, "the client gave the window a width")
+	local function stable(why)
+		check(pf:GetWidth() == width, why .. ": the window width changed to " .. tostring(pf:GetWidth()))
+		local now = { pf:GetPoint(1) }
+		check(#now == #point, why .. ": the window anchor changed")
+		for index = 1, #point do
+			check(now[index] == point[index], why .. ": the window anchor changed at " .. index)
+		end
+	end
+	local function only(expected, why)
+		local count, actual = 0, nil
+		for _, candidate in ipairs({ page(sim), secondPage }) do
+			if candidate:IsShown() then
+				count, actual = count + 1, candidate
+			end
+		end
+		check(count == 1 and actual == expected, why .. ": exactly one registered page must be shown")
+	end
+
+	-- Both tabs sit in their own slots, in registration order under the lowest client tab.
+	local tabs = sideTabs(sim)
+	for i = 1, #tabs do
+		for j = i + 1, #tabs do
+			sim:expectNoOverlap(tabs[i], tabs[j])
+		end
+	end
+	local lowest
+	for _, tab in ipairs(pf.rightProfessionTabs) do
+		if tab:IsShown() and (not lowest or tab:GetBottom() < lowest:GetBottom()) then
+			lowest = tab
+		end
+	end
+	check(lowest, "the client has no side tab to place the registered tabs under")
+	local ours = commissionsTab(sim)
 	check(
-		commissionsTab(sim):GetTop() < sim.G.OtherSideTab2:GetBottom(),
-		"the Commissions tab is not under the other addon's tabs"
+		math.abs(ours:GetLeft() - lowest:GetLeft()) < 1 and math.abs(ours:GetTop() - (lowest:GetBottom() - 2)) < 1,
+		"the Commissions tab at "
+			.. sim.describeRect(ours)
+			.. " is not directly under the client's own side tab at "
+			.. sim.describeRect(lowest)
+	)
+	check(
+		math.abs(secondTab:GetLeft() - ours:GetLeft()) < 1 and math.abs(secondTab:GetTop() - (ours:GetBottom() - 2)) < 1,
+		"the second registered tab at "
+			.. sim.describeRect(secondTab)
+			.. " is not directly under the Commissions tab at "
+			.. sim.describeRect(ours)
 	)
 
-	press(sim, commissionsTab(sim))
-	expectCommissionsPage(sim, "with the other addon's tabs")
-	check(sim.G.OtherSideTab1:IsVisible() and sim.G.OtherSideTab2:IsVisible(), "the other addon's tabs were hidden")
+	press(sim, ours)
+	only(page(sim), "after the Commissions tab")
+	check(checked(ours) and not checked(secondTab), "the Commissions tab is not the only selected tab")
+	stable("after the Commissions tab")
+
+	press(sim, secondTab)
+	only(secondPage, "after the second tab")
+	check(checked(secondTab) and not checked(ours), "the second tab is not the only selected tab")
+	stable("after the second tab")
+
+	press(sim, pf.rightProfessionTabs[1])
+	check(not page(sim):IsShown() and not secondPage:IsShown(), "a client tab left a registered page shown")
+	check(pf.CraftingPage:IsShown(), "a client tab did not show its own page")
+	check(not checked(ours) and not checked(secondTab), "a client tab left a registered tab selected")
+	stable("after a client tab")
+
+	-- A profession change hands the window back to the client and keeps the one width and anchor.
+	sim:openProfessions(186)
+	sim:advance(0.2)
+	check(not page(sim):IsShown() and not secondPage:IsShown(), "a profession change left a registered page shown")
+	stable("after a profession change")
+
+	press(sim, ours)
+	only(page(sim), "back on Commissions")
+	stable("back on Commissions")
+
+	press(sim, secondTab)
+	only(secondPage, "back on the second tab")
+	stable("back on the second tab")
+
+	-- A skill-up refreshes the client's own tabs without taking the selected registered page away.
+	sim.events.fire("SKILL_LINES_CHANGED")
+	sim:advance(0.05)
+	only(secondPage, "after a skill-up")
+	stable("after a skill-up")
+
+	sim:expectNoErrors(ADDON)
 end)
 
 scenario("closing on the Commissions page reopens the native window on its own page", function(sim)
@@ -559,10 +637,20 @@ scenario("in combat, after a secret unit tooltip, a material row's tooltip still
 	sim:hover(row)
 	check(sim.G.GameTooltip:IsShown() and sim.G.GameTooltip:GetOwner() == row, "the row's item tooltip did not show")
 	sim:leave()
+	-- A client tab hands the window back at once in the shared owner's checks, while the pages wait for combat to
+	-- end: the protected native window and this addon's secure children refuse the swap under our taint.
 	click(sim, sim.G.ProfessionsFrame.ProfessionsOverviewTab)
-	expectNativePage(sim, "BookPage", "the overview tab in combat")
+	check(not checked(commissionsTab(sim)), "the overview tab in combat left the Commissions tab selected")
+	check(page(sim):IsShown(), "combat hid the Commissions page before combat ended")
+	check(sim.G.ProfessionsFrame.BookPage:IsShown(), "the overview tab in combat did not show the book page")
+	sim:leaveCombat()
+	sim:advance(0.2)
+	expectNativePage(sim, "BookPage", "the overview tab after combat")
+
+	sim:enterCombat()
 	press(sim, commissionsTab(sim))
-	expectCommissionsPage(sim, "the Commissions tab in combat")
+	check(checked(commissionsTab(sim)), "the Commissions tab in combat is not selected")
+	check(not page(sim):IsShown(), "combat showed the Commissions page before combat ended")
 	check(
 		sim.G.ProfessionsFrame.BookPage:IsShown(),
 		"the book page should stay shown under the Commissions page in combat"
