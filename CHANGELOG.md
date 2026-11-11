@@ -8,6 +8,12 @@
 
 - `CommissionsForever.API` is version 2, minor 0: `Leaderboard(limit)` is removed along with its guild and group stat sharing. `Stats()` still returns this character's own recorded total.
 
+## [0.3.9] - 2026-11-11
+
+<!-- forever-core-sync -->
+
+- Ships with the same shared code as your other Forever addons, so they keep working together.
+
 ## [0.3.8] - 2026-11-11
 
 - **Tells you which addon to update.** If another Forever addon you have installed is older than this one and stops it starting, the message now names that addon, so you know exactly what to update.
