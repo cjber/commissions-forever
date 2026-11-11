@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-11-11
+
+- **Forever Core now installs alongside it.** Forever Core is on CurseForge, so the CurseForge app installs and updates it with this addon instead of the addon carrying its own copy. On Wago, install Forever Core from its own page.
+
 ## [0.3.4] - 2026-11-10
 
 - **Commissions now finds every commission in your quest log, and only those.** A quest that merely shares part of a turn-in's name is no longer listed or routed, and a commission with an unusual name is now listed and routed. (#200)
