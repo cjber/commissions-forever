@@ -16,17 +16,10 @@ WINDOW_SOURCES = [
     "Integrations/Questie.lua",
     "Locales/enUS.lua",
 ]
-# The leaderboard window itself is ForeverCore's UI/Leaderboards.lua; this addon supplies its board's rows and labels.
-LEADERBOARD_SOURCES = [
-    "tools/screenshots.py",
-    "Core/Stats.lua",
-    "Locales/enUS.lua",
-]
 SCENES = {
     "window.png": lambda: files(ROOT, WINDOW_SOURCES),
     "window-search.png": lambda: files(ROOT, WINDOW_SOURCES),
-    "leaderboard.png": lambda: files(ROOT, LEADERBOARD_SOURCES),
-    "leaderboard-all-time.png": lambda: files(ROOT, LEADERBOARD_SOURCES),
+    "window-bags.png": lambda: files(ROOT, WINDOW_SOURCES),
 }
 
 if __name__ == "__main__":

@@ -105,27 +105,20 @@ end
 frame.OnEvent(frame, "BAG_UPDATE_DELAYED")
 assert(announced == "refresh" and ns.Refreshed == true, "a refresh is announced to the API's hub")
 
--- The leaderboard command opens the shared window on this addon's tab and writes nothing to chat.
+-- Any command the shared report does not claim opens the Commissions page, including the commands Forever
+-- Leaderboards used to have.
 _G.SlashCmdList = {}
-local opened, shared
-ns.Stats = {
-	Open = function()
-		opened = true
-	end,
-	SetEnabled = function(enabled)
-		shared = enabled
+local toggled
+ns.Window = {
+	Toggle = function()
+		toggled = true
 	end,
 }
 frame.OnEvent(frame, "PLAYER_LOGIN")
 assert(attached == CommissionsForeverDB, "PLAYER_LOGIN hands the saved table to Forever Core")
-SlashCmdList.COMMISSIONSFOREVER("leaderboard")
-assert(opened, "leaderboard opens Forever Leaderboards")
-opened = false
-SlashCmdList.COMMISSIONSFOREVER("stats")
-assert(opened, "stats is an alias")
-opened = false
-SlashCmdList.COMMISSIONSFOREVER("share off")
-assert(shared == false and not opened, "share off turns sharing off without opening the window")
-SlashCmdList.COMMISSIONSFOREVER("share on")
-assert(shared == true, "share on turns sharing back on")
+for _, command in ipairs({ "leaderboard", "stats", "share off" }) do
+	toggled = false
+	SlashCmdList.COMMISSIONSFOREVER(command)
+	assert(toggled, command .. " falls through to opening the Commissions page")
+end
 print("Commissions Forever core specs passed")

@@ -9,11 +9,11 @@ end
 -- ForeverCore too old to have the kit, so it is always here.
 local APIKit = assert(ForeverCore.APIKit)
 
--- Public read-only answers and one navigation request for other addons (docs/api.md). `minor` rises with each
--- addition (1: the first three members, 2: Stats and Leaderboard, 3: each read's not-ready reason, 4: the category
--- classifier, the window's rows and the change subscription); a caller checks a member before using it, because an
--- older Commissions Forever may not have it yet.
-local API = { version = 1, minor = 4 }
+-- Public read-only answers and one navigation request for other addons (docs/api.md). `version` rises when a member
+-- breaks (2: Leaderboard removed) and `minor` with each addition (1: the first three members, 2: Stats and
+-- Leaderboard, 3: each read's not-ready reason, 4: the category classifier, the window's rows and the change
+-- subscription); a caller checks a member before using it, because an older Commissions Forever may not have it yet.
+local API = { version = 2, minor = 0 }
 
 -- A recipe's raw materials, from SkillUp Forever, the source of truth for a recipe's reagents. Nothing to answer
 -- ("none") when it is not installed, is too old to read recipes, or does not know the recipe.
@@ -76,18 +76,10 @@ function API.NavigateActiveAssignments()
 	return ns.NavigateActiveAssignments()
 end
 
--- Fresh local observations and a bounded, current-ruleset guild/group view.
+-- Fresh local observations of this character's own completion record.
 ---@return CommissionsAPIStatsRow[]
 function API.Stats()
 	return ns.Stats.Activity()
-end
-
--- This character, its guild and its group, one row per ranked player. `nil, "invalid"` for a limit that is not a
--- whole number of zero or more: the argument is wrong rather than the data unready.
----@param limit? integer How many top rows, ten unless given, 25 at most.
----@return CommissionsAPILeaderboard?, "invalid"?
-function API.Leaderboard(limit)
-	return ns.Stats.Leaderboard(limit)
 end
 
 -- Subscribe's hub (ForeverCore.APIKit): "materials" and "objectives" compare a key of what the last refresh built, so

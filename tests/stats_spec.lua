@@ -3,28 +3,16 @@ local function check(value, label)
 	checks = checks + 1
 	assert(value, label)
 end
-local Toc = dofile("tests/toc.lua")
-local function boot(saved, mode, hardcore, guid)
-	local frames, timers, sent, lines = {}, {}, {}, {}
+
+-- Core/Stats.lua alone: the local completion record, its client events and the dead Forever Leaderboards data it
+-- clears on load. Chat delivery is gone with the board, so the harness stubs no addon channel.
+local function boot(saved, guid)
+	local frames = {}
 	local notifications = {}
 	local now = 2000
-	local env = setmetatable({ SlashCmdList = {} }, { __index = _G })
-	env._G = env
-	Toc.install(env, "CommissionsForever")
+	local env = setmetatable({}, { __index = _G })
 	env.GetServerTime = function()
 		return now
-	end
-	env.GetTime = function()
-		return now
-	end
-	env.GetNormalizedRealmName = function()
-		return "Home"
-	end
-	env.UnitName = function()
-		return "Me"
-	end
-	env.UnitClass = function()
-		return "Me", "WARRIOR"
 	end
 	env.UnitGUID = function()
 		if guid == false then
@@ -32,34 +20,6 @@ local function boot(saved, mode, hardcore, guid)
 		end
 		return guid or "Player-1"
 	end
-	env.IsInGuild = function()
-		return true
-	end
-	env.IsInGroup = function()
-		return false
-	end
-	env.IsInRaid = function()
-		return false
-	end
-	env.C_GameRules = {
-		GetCurrentGameModeRecordID = function()
-			return mode
-		end,
-		IsHardcoreActive = function()
-			return hardcore
-		end,
-	}
-	env.C_Timer = {
-		After = function(_, callback)
-			timers[#timers + 1] = callback
-		end,
-	}
-	env.C_ChatInfo = {
-		SendAddonMessage = function(_, payload, channel)
-			sent[#sent + 1] = { payload = payload, channel = channel }
-			return true
-		end,
-	}
 	env.CreateFrame = function()
 		local frame = { events = {} }
 		function frame:RegisterEvent(event)
@@ -71,54 +31,18 @@ local function boot(saved, mode, hardcore, guid)
 		frames[#frames + 1] = frame
 		return frame
 	end
-	env.strtrim = function(text)
-		return text:match("^%s*(.-)%s*$")
-	end
-	-- The client pieces ForeverCore's journal and log install against.
-	env.geterrorhandler = function()
-		return error
-	end
-	env.seterrorhandler = function() end
-	env.date = function()
-		return "2026-11-08 12:00:00"
-	end
 	env.CommissionsForeverDB = saved or {}
-	-- ForeverCore first, as the client loads a required dependency, then the addon's own files.
-	local core = dofile("tests/forever_core.lua")
-	core.install(env, {
-		"Core/SafeCall.lua",
-		"Core/Log.lua",
-		"Core/PeerStats.lua",
-		"Core/LeaderboardsData.lua",
-		"UI/Report.lua",
-		"UI/MapCanvas.lua",
-		"UI/Leaderboards.lua",
-		"Expose.lua",
-	})
 	local ns = {}
-	ns.core = env.ForeverCore.Register("CommissionsForever", {})
-	-- Core/API.lua publishes this; the completion record is the one place that counts a hand-in.
 	ns.APIChanged = function(kind)
 		notifications[kind] = (notifications[kind] or 0) + 1
 	end
-	-- Core/Core.lua reads this from the TOC; the spec loads Core/Stats.lua alone, so it reads the same value.
-	ns.ICON = Toc.get("CommissionsForever", "X-Forever-Icon")
-	assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 	ns.Questie = {
 		CommissionCategory = function(id)
 			return id == 123 and "thoriumBrotherhood" or nil
 		end,
-		Available = function()
-			return true
-		end,
-	}
-	env.DEFAULT_CHAT_FRAME = {
-		AddMessage = function(_, text)
-			lines[#lines + 1] = text
-		end,
 	}
 	setfenv(assert(loadfile("Core/Stats.lua")), env)("CommissionsForever", ns)
-	local kit = { ns = ns, env = env, sent = sent, lines = lines, notifications = notifications }
+	local kit = { ns = ns, env = env, notifications = notifications }
 	function kit.fire(event, ...)
 		for _, frame in ipairs(frames) do
 			if frame.events[event] and frame.callback then
@@ -126,142 +50,65 @@ local function boot(saved, mode, hardcore, guid)
 			end
 		end
 	end
-	function kit.flush()
-		local rounds = 0
-		while #timers > 0 do
-			rounds = rounds + 1
-			assert(rounds < 100, "bounded timer work")
-			local due = timers
-			timers = {}
-			for _, callback in ipairs(due) do
-				callback()
-			end
-		end
-	end
-	function kit.hear(sender, subject, value, eventUnix)
-		now = now + 2
-		kit.fire(
-			"CHAT_MSG_ADDON",
-			"WFAStats",
-			("1|commissions|commission_turnin|%s|%d|%d"):format(subject, value, eventUnix or 1000),
-			"GUILD",
-			sender
-		)
-	end
 	return kit
 end
 
-local kit = boot(nil, 1, false)
+-- The saved peer table and sharing switch are dead data: load clears them and keeps the local total.
+local saved = {
+	statsShare = true,
+	completionRecords = {
+		["Player-1"] = { total = 4, eventUnix = 900, peers = { { identity = "Bob", value = 9 } } },
+		["Player-2"] = { total = 2, peers = {} },
+		foreign = "not a record",
+	},
+}
+local kit = boot(saved)
 local stats = kit.ns.Stats
-check(stats.Participating(), "sharing defaults on")
+check(
+	stats.Leaderboard == nil and stats.Participating == nil and stats.SetEnabled == nil,
+	"the shared board's members are gone"
+)
 kit.fire("PLAYER_LOGIN")
-kit.flush()
-check(#kit.sent == 0, "login does not invent past completions")
+check(kit.env.CommissionsForeverDB.statsShare == nil, "the saved sharing switch is dropped on load")
+check(saved.completionRecords["Player-1"].peers == nil, "the saved peer table is dropped on load")
+check(saved.completionRecords["Player-2"].peers == nil, "every character's peer table is dropped")
+check(saved.completionRecords.foreign == "not a record", "a save that is not a record is left alone")
+check(stats.Activity()[1].value == 4, "the local total survives the cleanup")
+
 kit.fire("QUEST_TURNED_IN", 123)
 kit.fire("QUEST_TURNED_IN", 123)
-kit.flush()
-check(stats.Activity()[1].value == 2, "two events for the same ID in one second count twice")
+check(stats.Activity()[1].value == 6, "two events for the same ID in one second count twice")
 check(kit.notifications.turnin == 2, "each recorded completion tells the API's hub")
 for _, event in ipairs({ "BAG_UPDATE_DELAYED", "QUEST_LOG_UPDATE", "QUEST_COMPLETE", "QUEST_REMOVED" }) do
 	kit.fire(event, 123)
 end
 kit.fire("QUEST_TURNED_IN", 124)
 kit.fire("QUEST_TURNED_IN", "123")
-check(stats.Activity()[1].value == 2, "unrelated quests and non-completion events cannot advance totals")
+check(stats.Activity()[1].value == 6, "unrelated quests and non-completion events cannot advance totals")
 check(kit.notifications.turnin == 2, "only a recorded completion tells the API's hub")
-kit.hear("Bob-Home", "1_0", 8)
-kit.hear("Alice-Home", "1_0", 8)
-kit.hear("Hardcore-Home", "1_1", 99)
-local board = stats.Leaderboard(1)
-check(
-	#board.rows == 2 and board.rows[1].name == "Alice" and board.rows[2].self,
-	"deterministic tied rank, matching ruleset and personal row below the limit"
-)
-board.rows[1].value = 999
-check(stats.Leaderboard().rows[1].value == 8, "public reads return fresh copies")
-check(stats.Leaderboard(-1) == nil and stats.Leaderboard("1") == nil, "invalid limits fail explicitly")
 
--- The shared Forever Leaderboards registration.
-local leaderboards = kit.env.ForeverCore.Leaderboards
-check(type(leaderboards) == "table" and type(leaderboards.boards.commissions) == "table", "shares a board")
-local spec = leaderboards.boards.commissions
-check(spec.title == "Commissions Forever", "the tab carries the addon's title")
-check(spec.metric == "Commission turn-ins", "the board names its metric")
-check(
-	spec.icon == kit.env.C_AddOns.GetAddOnMetadata("CommissionsForever", "X-Forever-Icon"),
-	"the tab wears the TOC's identity icon"
-)
-check(type(spec.revision) == "function" and spec.revision() >= 0, "the board has a revision callback")
-check(spec.sharing(), "sharing reads the saved switch")
-local allRows = spec.board("all")
-check(allRows[1].name == "Alice" and allRows[1].value == 8, "the all-time board ranks the peers")
-check(allRows[1].class == nil, "a peer's class stays unknown")
-check(
-	allRows[3].you == true and allRows[3].class == nil,
-	"the player's own row is marked and left for the shared window"
-)
-kit.hear("Bob-Home", "1_0", 12, 1500)
-local weeklyRows = spec.board("week")
-local bobRow
-for _, row in ipairs(weeklyRows) do
-	if row.name == "Bob" then
-		bobRow = row
-	end
-end
-check(bobRow and bobRow.value == 4 and bobRow.extra == "12 total", "the weekly board shows progress and the total")
-local opened
-leaderboards.Open = function(_, key)
-	opened = key
-end
-stats.Open()
-check(opened == "commissions", "the addon opens the shared window on its own tab")
-
-check(not stats.SetEnabled("false"), "switch accepts booleans only")
-check(stats.SetEnabled(false) and not stats.Participating(), "saved false stays false")
-check(not spec.sharing(), "the shared board reads the saved opt-out")
-kit.flush()
-local sent = #kit.sent
-kit.fire("QUEST_TURNED_IN", 123)
-kit.flush()
-check(stats.Activity()[1].value == 3 and #kit.sent == sent, "opt-out keeps local history without publishing")
-kit.hear("Ignored-Home", "1_0", 50)
-check(#stats.Leaderboard().rows == 1, "opt-out hides peers and stops receiving")
-local restored = boot(kit.env.CommissionsForeverDB, 1, false)
+local restored = boot(kit.env.CommissionsForeverDB)
 restored.fire("PLAYER_LOGIN")
-restored.flush()
-check(
-	not restored.ns.Stats.Participating() and restored.ns.Stats.Activity()[1].value == 3,
-	"reload preserves opt-out and does not replay completions"
-)
-local unknown = boot(nil, nil, false)
-unknown.fire("QUEST_TURNED_IN", 123)
-unknown.flush()
-check(
-	unknown.ns.Stats.Activity()[1].value == 1 and #unknown.sent == 0,
-	"unknown client ruleset records personal events without publishing a guessed category"
-)
-local unavailable = boot(nil, 1, false, false)
+check(restored.ns.Stats.Activity()[1].value == 6, "a reload keeps the local total without replaying completions")
+
+local unavailable = boot(nil, false)
 unavailable.fire("QUEST_TURNED_IN", 123)
 check(unavailable.ns.Stats.Activity()[1].value == 0, "missing character identity fails closed")
-local queued = boot(nil, 1, false)
-queued.fire("QUEST_TURNED_IN", 123)
-queued.ns.Stats.SetEnabled(false)
-queued.flush()
-check(#queued.sent == 0, "opting out cancels an already queued snapshot")
-queued.ns.Stats.SetEnabled(true)
-queued.flush()
-check(#queued.sent == 1 and queued.sent[1].payload:find("|1|2000$"), "re-enable publishes the preserved local total")
-local secret = boot(nil, 1, false, "secret")
+
+local secret = boot(nil, "secret")
 secret.env.issecretvalue = function(value)
 	return value == "secret"
 end
 secret.fire("QUEST_TURNED_IN", 123)
 check(secret.ns.Stats.Activity()[1].value == 0, "secret character identity is never indexed")
-local noClock = boot(nil, 1, false)
+
+local noClock = boot(nil)
 noClock.env.GetServerTime = function()
 	return nil
 end
 noClock.fire("QUEST_TURNED_IN", 123)
 check(noClock.ns.Stats.Activity()[1].value == 0, "an unavailable event timestamp is not invented")
-check(#kit.lines == 0, "the shared board writes nothing to chat")
-print(("Commissions stats adapter: %d checks passed"):format(checks))
+
+local anonymous = boot(nil)
+check(anonymous.ns.Stats.Activity()[1].eventUnix == nil, "no completion leaves no event time")
+print(("Commissions stats: %d checks passed"):format(checks))

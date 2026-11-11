@@ -234,18 +234,9 @@ _G.C_Item = {
 	end,
 }
 local available = true
-local opened = false
 local ns = {
 	-- Core/Core.lua reads this from the TOC before UI/Window.lua loads.
 	ICON = Toc.get("CommissionsForever", "X-Forever-Icon"),
-	Stats = {
-		Participating = function()
-			return true
-		end,
-		Open = function()
-			opened = true
-		end,
-	},
 	Questie = {
 		Available = function()
 			return available
@@ -473,9 +464,7 @@ assert(requested[1] and window.rows[1].name.text == "Item 1", "uncached items re
 cached = true
 window.Refresh()
 assert(window.rows[1].name.text == "Cached item 1", "cached names replace the item-ID fallback")
-window.leaderboard.scripts.OnClick()
-assert(opened, "the Leaderboard button opens the shared window on this addon's tab")
-assert(window.share.Text.text == "Share my progress", "the share switch names the opt-out setting")
+assert(window.leaderboard == nil and window.share == nil, "the board and sharing controls are gone")
 
 local function Fire(event)
 	for _, frame in ipairs(frames) do

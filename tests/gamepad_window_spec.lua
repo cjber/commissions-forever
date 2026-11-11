@@ -234,12 +234,6 @@ _G.InputUtil = {
 local ns = {
 	-- Core/Core.lua reads this from the TOC before UI/Window.lua loads.
 	ICON = Toc.get("CommissionsForever", "X-Forever-Icon"),
-	Stats = {
-		Participating = function()
-			return true
-		end,
-		Open = function() end,
-	},
 	Questie = {
 		Available = function()
 			return true

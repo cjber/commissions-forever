@@ -4,9 +4,8 @@ if ns.broken then
 	return
 end
 
--- Commissions Forever's own lines in /cf report: whether each optional addon answered, what the ledger holds and
--- whether progress is shared, so a bug report says what state the addon was in. English throughout, like the other
--- shared report lines.
+-- Commissions Forever's own lines in /cf report: whether each optional addon answered and what the ledger holds, so
+-- a bug report says what state the addon was in. English throughout, like the other shared report lines.
 
 ns.ReportTitle = ns.L["Commissions Forever report"]
 
@@ -31,12 +30,10 @@ function ns.ReportLines()
 			objectives = objectives + 1
 		end
 	end
-	local sharing = ns.Stats and ns.Stats.Participating and ns.Stats.Participating() == true
 	return {
 		("QuestieDB: %s"):format(Loaded(ns.Questie and ns.Questie.Available and ns.Questie.Available())),
 		("Shortest Path Forever: %s"):format(Loaded(HasAPI(ShortestPathForever, "NavigateRoute"))),
 		("SkillUp Forever: %s"):format(Loaded(HasAPI(SkillUpForever, "RequiredMaterials"))),
 		("%d active commission objectives, %d inventory rows"):format(objectives, #(ns.Rows or {})),
-		("Progress sharing: %s"):format(sharing and "on" or "off"),
 	}
 end

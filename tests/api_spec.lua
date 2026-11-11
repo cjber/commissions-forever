@@ -83,13 +83,6 @@ local ns = {
 		Activity = function()
 			return { { addon = "CommissionsForever", metric = "commission_turnin", subject = "all", value = 3 } }
 		end,
-		Leaderboard = function(limit)
-			if limit == "bad" then
-				return nil, "invalid"
-			end
-			assert(limit == 5, "forwards the limit")
-			return { metric = "commission_turnin", scope = "guild_group", sharing = true, total = 1, rows = {} }
-		end,
 	},
 	SkillUp = {
 		RequiredMaterials = function(recipeID, crafts)
@@ -134,7 +127,8 @@ end
 local chunk = assert(loadfile("Core/API.lua"))
 local API = chunk("CommissionsForever", ns)
 
-assert(API.version == 1 and API.minor == 4, "publishes version 1, minor 4")
+assert(API.version == 2 and API.minor == 0, "publishes version 2, minor 0")
+assert(API.Leaderboard == nil, "the board member is removed")
 assert(_G.CommissionsForever.API == API and ns.API == API, "publishes the table on the addon's global")
 
 -- The kit's own list finds this addon through the real kit, with the API's own version, minor and table.
@@ -156,7 +150,6 @@ assert(API.ActiveObjectives()[1].questID == 99, "returns the log's live item obj
 routed = true
 assert(API.NavigateActiveAssignments(), "forwards turn-in routes to Shortest Path Forever")
 assert(API.Stats()[1].value == 3, "exposes local completion observations")
-assert(API.Leaderboard(5).total == 1, "forwards bounded leaderboard requests")
 routed = false
 assert(API.NavigateActiveAssignments() == false, "no route is false, never nil")
 
@@ -181,11 +174,6 @@ questieAvailable = true
 objectives = {}
 local empty = API.ActiveObjectives()
 assert(type(empty) == "table" and #empty == 0, "QuestieDB present with nothing asked: an empty list, not a reason")
-
--- Leaderboard's bad limit is an argument error, not a not-ready reason: the existing reason stays as it was.
-local badLimit, badLimitReason = API.Leaderboard("bad")
-same(badLimit, nil, "a limit that is not a number has no board")
-same(badLimitReason, "invalid", "and keeps its own reason")
 
 -- Materials: loading before the first refresh, then the window's rows as fresh rows. The internal turn-in table never
 -- leaves the addon.
@@ -290,24 +278,6 @@ ns.L = setmetatable({}, {
 	end,
 })
 ns.ICON = Toc.get("CommissionsForever", "X-Forever-Icon")
-foreverCore.PeerStats = {
-	New = function()
-		return {
-			Sync = function() end,
-			SetEnabled = function() end,
-			Revision = function()
-				return 0
-			end,
-			Board = function()
-				return {}
-			end,
-			WeekBoard = function()
-				return {}
-			end,
-		}
-	end,
-}
-foreverCore.Leaderboards = { Register = function() end }
 rawset(_G, "UnitGUID", function()
 	return "Player-1"
 end)
@@ -353,7 +323,7 @@ foreverCore.APIKit = olderKit
 local olderChunk = assert(loadfile("Core/API.lua"))
 local olderAPI = olderChunk("CommissionsForever", ns)
 assert(#published == 0, "a kit at minor 1 is never asked to publish")
-assert(olderAPI.version == 1 and olderAPI.minor == 4, "and the API loads unchanged")
+assert(olderAPI.version == 2 and olderAPI.minor == 0, "and the API loads unchanged")
 foreverCore.APIKit = kit
 _G.CommissionsForever.API = API
 
