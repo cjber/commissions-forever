@@ -1,8 +1,8 @@
 # CommissionsForever.API
 
 Other addons read Commissions Forever's commission materials, its live quest objectives, its turn-in route and its
-completion totals through the global `CommissionsForever.API`. It is version 1, minor 4. The full types are in
-[`types/API.lua`](../types/API.lua).
+completion totals through the global `CommissionsForever.API`. It is version 1, minor 4. On ForeverCore 1.3.2 or later
+it is also listed by `ForeverCore.APIKit.Addons()`. The full types are in [`types/API.lua`](../types/API.lua).
 
 Every read that returns a table returns a fresh one that you may keep or change. The reads never write: the only member
 that acts outside the addon is `NavigateActiveAssignments()`, which sends a route to Shortest Path Forever.
