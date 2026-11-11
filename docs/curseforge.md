@@ -61,6 +61,12 @@ For help, ideas and each day's release notes, join [cjber's Workshop on Discord]
 
 Data comes from the WoW client and QuestieDB at runtime. The addon does not bundle QuestieDB data.
 
+<!-- forever-credits:start -->
+
+Thanks to everyone who reports a bug or asks for a feature.
+
+<!-- forever-credits:end -->
+
 Source code and issues: [github.com/cjber/commissions-forever](https://github.com/cjber/commissions-forever). Licence: GPL-3.0-or-later.
 
 Built with AI assistance.

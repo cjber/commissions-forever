@@ -12,6 +12,7 @@ checks:
   # check_screenshots.py is left out: it hashes the addon's sources, so any refactor fails it until
   # the screenshots re-render, which a run checkout cannot do.
   - { name: layout, run: "python3 tools/visual_audit.py" }
+  - { name: credits, run: "python3 tools/forever_tools/credits.py --check" }
 focus: [Core/**, UI/**, Integrations/**]
 ignore: [Data/**, Locales/**, Libs/**, tools/forever_tools/**]
 guards: { maxFiles: 8, maxLines: 400 }

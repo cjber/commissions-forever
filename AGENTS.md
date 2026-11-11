@@ -19,6 +19,7 @@ python3 tools/check_screenshots.py
 python3 tools/visual_audit.py
 python3 tools/deadcode.py --check
 python3 tools/changelog.py --check
+python3 tools/forever_tools/credits.py --check # Data/Credits.lua and both thanks blocks are current (WFA-31)
 python3 tools/check_api_docs.py # every function Core/API.lua publishes, and its minor, are in docs/api.md
 python3 tools/check_menu_scroll.py # menus built from a list scroll (WFA-36); CI runs it in core-shared
 python3 tools/repo_rules.py # rules no linter covers; CI runs it in project-rules

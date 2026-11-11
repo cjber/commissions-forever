@@ -21,6 +21,7 @@ Core\ForeverRequire.lua
 Core\Require.lua
 Locales\enUS.lua
 Data\TurnIns.lua
+Data\Credits.lua
 Core\Model.lua
 Integrations\Questie.lua
 Integrations\SkillUp.lua
