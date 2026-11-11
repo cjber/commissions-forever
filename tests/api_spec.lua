@@ -137,6 +137,17 @@ local API = chunk("CommissionsForever", ns)
 assert(API.version == 1 and API.minor == 4, "publishes version 1, minor 4")
 assert(_G.CommissionsForever.API == API and ns.API == API, "publishes the table on the addon's global")
 
+-- The kit's own list finds this addon through the real kit, with the API's own version, minor and table.
+local listed
+for _, entry in ipairs(kit.Addons()) do
+	if entry.name == "CommissionsForever" then
+		listed = entry
+	end
+end
+assert(listed ~= nil, "ForeverCore.APIKit.Addons() lists CommissionsForever")
+assert(listed.version == API.version and listed.minor == API.minor, "with the API's own version and minor")
+assert(listed.api == API, "and the API's own table, not a copy")
+
 -- A read with an answer is unchanged: the kit is only read when there is nothing to answer.
 materials = { { itemID = 17203, count = 2 } }
 assert(API.RequiredMaterials(1234, 2) == materials, "returns SkillUp Forever's fresh materials")
@@ -321,6 +332,30 @@ counts[11370] = 6
 fire("BAG_UPDATE_DELAYED")
 nextFrame()
 assert(#heard == 5, "an unsubscribed caller hears nothing")
+
+-- A core whose kit is older than minor 2 has no Publish: the addon still loads and publishes nothing. The stub records
+-- any call, so an unguarded Publish would fail here rather than on a player's older ForeverCore.
+local published = {}
+local olderKit = {
+	minor = 1,
+	Hub = function()
+		return {
+			Subscribe = function() end,
+			Queue = function() end,
+		}
+	end,
+	NotReady = kit.NotReady,
+	Publish = function(addonName)
+		published[#published + 1] = addonName
+	end,
+}
+foreverCore.APIKit = olderKit
+local olderChunk = assert(loadfile("Core/API.lua"))
+local olderAPI = olderChunk("CommissionsForever", ns)
+assert(#published == 0, "a kit at minor 1 is never asked to publish")
+assert(olderAPI.version == 1 and olderAPI.minor == 4, "and the API loads unchanged")
+foreverCore.APIKit = kit
+_G.CommissionsForever.API = API
 
 assert(kit.minor >= 1, "the kit's own minor is readable")
 print("Commissions Forever API specs passed")

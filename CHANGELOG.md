@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### For addon authors
+
+- `CommissionsForever.API` is now listed by `ForeverCore.APIKit.Addons()`. The addon hands its API table to `ForeverCore.APIKit.Publish` at load on ForeverCore 1.3.2 or later, so a suite-wide reader finds it the same way it finds every other Forever addon's API. Version and minor are unchanged: publishing is not an API change. (#219)
+
 ## [0.3.5] - 2026-11-11
 
 - **Forever Core now installs alongside it.** Forever Core is on CurseForge, so the CurseForge app installs and updates it with this addon instead of the addon carrying its own copy. On Wago, install Forever Core from its own page.

@@ -164,4 +164,10 @@ _G.CommissionsForever = _G.CommissionsForever or {}
 _G.CommissionsForever.API = API --[[@as CommissionsPublicAPI]]
 ns.API = API --[[@as CommissionsPublicAPI]]
 
+-- The suite lists every Forever addon's API through ForeverCore.APIKit.Addons() (docs/api.md). The kit gained Publish
+-- in minor 2, so an older core has no member to call and the addon still loads without publishing.
+if (ForeverCore.APIKit.minor or 1) >= 2 then
+	ForeverCore.APIKit.Publish("CommissionsForever", API)
+end
+
 return API
