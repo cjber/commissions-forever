@@ -6,6 +6,9 @@ if GetLocale() ~= "deDE" then
 end
 local L = ns.L
 
+L["%s could not start. Reinstall %s to fix this."] = "%s could not start. Reinstall %s to fix this."
+L["%s: %s are out of date. Update them to fix this."] = "%s: %s are out of date. Update them to fix this."
+L["%s: %s is out of date. Update it to fix this."] = "%s: %s is out of date. Update it to fix this."
 L["Commissions Forever"] = "Commissions Forever"
 L["Commissions Forever report"] = "Commissions Forever report"
 L["Commissions opens in the Professions window. Learn a profession to use it."] = "Commissions opens in the Professions window. Learn a profession to use it."

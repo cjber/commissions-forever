@@ -18,6 +18,11 @@ ns.L = {
 
 	-- The shared report window's title; Forever Core owns its other phrases.
 	["Commissions Forever report"] = true,
+
+	-- The shared out-of-date warning (Core/ForeverRequire.lua).
+	["%s: %s is out of date. Update it to fix this."] = true,
+	["%s: %s are out of date. Update them to fix this."] = true,
+	["%s could not start. Reinstall %s to fix this."] = true,
 }
 
 -- `true` marks a phrase that reads as its own English key.

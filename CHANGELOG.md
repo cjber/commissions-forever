@@ -8,6 +8,10 @@
 
 - `CommissionsForever.API` is version 2, minor 0: `Leaderboard(limit)` is removed along with its guild and group stat sharing. `Stats()` still returns this character's own recorded total.
 
+## [0.3.8] - 2026-11-11
+
+- **Tells you which addon to update.** If another Forever addon you have installed is older than this one and stops it starting, the message now names that addon, so you know exactly what to update.
+
 ## [0.3.7] - 2026-11-11
 
 - **Works again after updating.** Updating to the last version could leave the addon switched off in the game's AddOns list with "ForeverCore: missing", because the update did not bring Forever Core with it. Forever Core now comes inside this addon's download again, from CurseForge, Wago or GitHub alike, so updating is all it takes (cjber/shortest-path-forever#731).
