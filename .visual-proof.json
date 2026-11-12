@@ -1,18 +1,18 @@
 {
-  "input_digest": "d7f90bc04cfa36b771ee1e69e68de7a88ae4103fab378cb093a648d61cc5513b",
-  "runtime_sha256": "d7f90bc04cfa36b771ee1e69e68de7a88ae4103fab378cb093a648d61cc5513b",
-  "candidate": "04c2624aa43832e394e4e872361c0b269df8827370f4356f1cc76e6cc26ae555",
+  "input_digest": "126e174b5ea8098b668a5cb0d5018315473061e7d36943c5a17f9bcee276054d",
+  "runtime_sha256": "126e174b5ea8098b668a5cb0d5018315473061e7d36943c5a17f9bcee276054d",
+  "candidate": "e5faeb4f686fe820f3218bfc335605dddd75c1532c4ddba3d864883f41d92769",
   "tested_artifact": "source-tree",
   "client_build": "1.60.1.70888 (Interface 16001)",
-  "source_commit": "0d902dab19bc20ef04f74e3a305dc6b9a70f3691",
-  "notes": "Recorded on Hel Io in the player's live client from an installed source-tree build of this commit (git archive); visual_proof --compare reported no missing or differing runtime files, the install additionally carries the ignored store icon media/icon-400.png. Every other Forever addon's ForeverCore 1.8.2 sync build was loaded in the same session. BugGrabber recorded no addon errors (the session's two errors were the recorder's own /run lines calling a missing client API).",
+  "source_commit": "71c73029f17a6b580bf38483002b3e724e27e069",
+  "notes": "Recorded on Hel Io in the player's live client from an installed source-tree build of this commit (git archive); --compare reported no missing or differing runtime files, the install additionally carries the ignored store icon. Every other Forever addon's 1.9.0 sync build was loaded in the same session. The only BugGrabber entries this session were the recorder's own over-long /run lines.",
   "flows": [
     {
-      "name": "Commissions page on ForeverCore 1.8.2",
+      "name": "Commissions page on ForeverCore 1.9.0",
       "steps": [
-        "Install the candidate with ForeverCore v1.8.2 and /reload",
-        "Print every Forever addon's loaded version into a chat tab with no channels: ForeverCore v1.8.2 plus this candidate, all loaded",
-        "/cast Cooking, then select the Commissions side tab (ForeverCore.ProfessionTabs.Select)",
+        "Install the candidate with the store ForeverCore v1.9.0 and /reload",
+        "Print every Forever addon's loaded version into a chat tab with no channels: store ForeverCore v1.9.0 plus each 1.9.0 sync build, all loaded, and BugGrabber shows no addon errors this session",
+        "/cast Cooking, then ForeverCore.ProfessionTabs.Select(\"commissions\")",
         "The Commissions page shows widened with no client recipe list or details beneath it"
       ],
       "result": "pass"
@@ -20,12 +20,12 @@
   ],
   "images": [
     {
-      "url": "https://gist.githubusercontent.com/cjber/5cd61b138c1e01654d7aadd509568514/raw/82bfd62fbba753c8cc0a35be3f8e1c07fb2ac713/sync182-commissions-page.png",
-      "sha256": "10d24dcf78f3d35e8de3999fe6a4f104d57fcbdcf760724e6c418dc374637565"
+      "url": "https://gist.githubusercontent.com/cjber/627a1b4cf36d973bb26ba262c81eb601/raw/67bd0b623f26040eed9f66dd363a477dbb684579/sync190-commissions-page.png",
+      "sha256": "ae055aeac49611746db0813f493a29927373ea681b33615967c5fbc42ce63309"
     },
     {
-      "url": "https://gist.githubusercontent.com/cjber/5cd61b138c1e01654d7aadd509568514/raw/82bfd62fbba753c8cc0a35be3f8e1c07fb2ac713/sync182-versions.png",
-      "sha256": "0a95af5dcd4392712f85093832d05c14411d76b4099d3b60185209cbdf0e1e1b"
+      "url": "https://gist.githubusercontent.com/cjber/627a1b4cf36d973bb26ba262c81eb601/raw/67bd0b623f26040eed9f66dd363a477dbb684579/sync190-versions.png",
+      "sha256": "9731b84977a7daf94152f9129b9ea996b4c467006f822f7acc430332fa8f08ec"
     }
   ]
 }
