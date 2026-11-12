@@ -1,7 +1,7 @@
 -- Run from the repository root: luajit tests/core_dependency_spec.lua
 -- Commissions Forever requires ForeverCore. This spec covers the shared out-of-date warning: Core/Require.lua checks
--- the post-API-1 members this addon calls and hands one boolean to Core/ForeverRequire.lua, which core's own
--- tests/forever_require_spec.lua holds to the naming and plural rules.
+-- the post-API-1 members and module minors this addon calls and hands one boolean to Core/ForeverRequire.lua, which
+-- core's own tests/forever_require_spec.lua holds to the naming and plural rules.
 local Toc = dofile("tests/toc.lua")
 
 local THIS = "CommissionsForever"
@@ -103,7 +103,18 @@ local missing, missingLines = Require(nil)
 assert(missing.broken == true, "a missing ForeverCore stops the addon")
 assert(#missingLines == 1, "and the shared warning says so in one error line")
 
-local ready, readyLines = Require({ API = 1, APIKit = {}, ProfessionTabs = {} })
+-- ProfessionTabs minor 2, from ForeverCore 1.8.1, hides the client's own page beneath the addon page. An earlier
+-- tabs module draws the two pages over each other.
+local oldTabs, oldTabsLines = Require({ API = 1, APIKit = {}, ProfessionTabs = { minor = 1 } })
+assert(oldTabs.broken == true, "a ForeverCore with ProfessionTabs minor 1 stops the addon")
+assert(#oldTabsLines == 1, "and the shared warning says so in one error line")
+
+-- A tabs module that predates the minor counter is older still, and a missing minor counts as 0.
+local unversionedTabs, unversionedLines = Require({ API = 1, APIKit = {}, ProfessionTabs = {} })
+assert(unversionedTabs.broken == true, "a ForeverCore with an unversioned ProfessionTabs stops the addon")
+assert(#unversionedLines == 1, "and the shared warning says so in one error line")
+
+local ready, readyLines = Require({ API = 1, APIKit = {}, ProfessionTabs = { minor = 2 } })
 assert(ready.broken == nil, "a core with every member the addon calls runs it")
 assert(#readyLines == 0, "and says nothing")
 

@@ -1,0 +1,40 @@
+{
+  "input_digest": "5f2b54da7de2d05317bd7689853597eefe5e634d860cd09515a529e8cf795877",
+  "runtime_sha256": "5f2b54da7de2d05317bd7689853597eefe5e634d860cd09515a529e8cf795877",
+  "candidate": "e4cc87abd1cf951dde2020b70394d2ba2c08e8aac393a0d59e85048134011a00",
+  "tested_artifact": "release-package",
+  "client_build": "1.60.1.70888 (Interface 16001)",
+  "flows": [
+    {
+      "name": "Commissions page hides the client's profession page on ForeverCore 1.8.1",
+      "steps": [
+        "Install the packaged candidate with its bundled ForeverCore v1.8.1 and /reload",
+        "Print the loaded versions: ForeverCore v1.8.1 and CommissionsForever v0.4.3-5-g35e93ae, both loaded, ProfessionTabs.minor 2",
+        "Open Cooking: the client's own page shows at its own width",
+        "Click the Commissions side tab",
+        "Confirm the Commissions page shows widened with no client recipe list or details beneath it",
+        "Click the Cooking side tab",
+        "Confirm the client's own Cooking page shows again at its own width"
+      ],
+      "result": "pass"
+    }
+  ],
+  "images": [
+    {
+      "url": "https://gist.githubusercontent.com/cjber/328823e9708f8e8ea7847dc01bd53905/raw/55de9fd8b9c4d5fdf425aa1a72db5386128d3749/sync181-versions.png",
+      "sha256": "68bb8f958f2dab34bbf7a541f311f8141db7ebeaca4a51e39fbe9bf4c725e7c6"
+    },
+    {
+      "url": "https://gist.githubusercontent.com/cjber/328823e9708f8e8ea7847dc01bd53905/raw/55de9fd8b9c4d5fdf425aa1a72db5386128d3749/sync181-cooking-native.png",
+      "sha256": "64301f9c7f8d5f5b98600b5c274612c8973fca1b5457d9d632e3ecc71e28b88e"
+    },
+    {
+      "url": "https://gist.githubusercontent.com/cjber/328823e9708f8e8ea7847dc01bd53905/raw/55de9fd8b9c4d5fdf425aa1a72db5386128d3749/sync181-commissions-page-e4cc87a.png",
+      "sha256": "4c1208e8912962f331ed09c49d20096e634403d3c1b87bc7dbcf1f324565c650"
+    },
+    {
+      "url": "https://gist.githubusercontent.com/cjber/328823e9708f8e8ea7847dc01bd53905/raw/55de9fd8b9c4d5fdf425aa1a72db5386128d3749/sync181-cooking-handback.png",
+      "sha256": "3a4fdd1d17d3065002ce6935da7a3e38530321c0f66e20fe97a229dfda23f71c"
+    }
+  ]
+}
