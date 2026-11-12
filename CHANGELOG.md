@@ -7,6 +7,7 @@
 <!-- forever-core-sync -->
 
 - Ships with the same shared code as your other Forever addons, so they keep working together.
+- **An older ForeverCore can no longer put the client's page back under Commissions.** If another addon brings a ForeverCore from before 1.8.1, Commissions stops and says it needs updating instead of drawing its page over the Professions window's own page.
 
 ## [0.4.3] - 2026-11-11
 

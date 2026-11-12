@@ -16,6 +16,9 @@ local function scenario(name, options, fn)
 end
 
 local TAB_TEXT = "Commissions Forever"
+-- The width the shared owner gives the window while one of its pages is selected; the client's own pages keep the
+-- native width, and handing the window back restores it.
+local CUSTOM_WIDTH = 850
 local SEARCH_SCRIPTS = {
 	"OnEscapePressed",
 	"OnEnterPressed",
@@ -467,7 +470,8 @@ end)
 
 -- cjber/forever-core#382: the shared owner places every registered tab under the client's own in registration
 -- order. A SkillUp-like second tab, the client's own tab, a profession change and the way back each leave exactly
--- one page shown, and the window keeps one width and its anchor throughout.
+-- one page shown; the window keeps its anchor throughout and takes the shared width only while a registered page is
+-- selected.
 scenario("Commissions and a second registered tab keep one page and one window", function(sim)
 	world(sim)
 	sim:login()
@@ -488,16 +492,35 @@ scenario("Commissions and a second registered tab keep one page and one window",
 	check(second and second.page and second.tab, "the second registered tab was not built")
 	local secondPage, secondTab = second.page, second.tab
 
-	-- The window keeps the client's own width and its anchor while tabs and professions change.
-	local width, point = pf:GetWidth(), { pf:GetPoint(1) }
-	check(width > 1, "the client gave the window a width")
+	-- The window keeps the client's anchor while tabs and professions change. It stays at the client's own width on
+	-- the client's pages, and takes the shared 850 while a registered page is selected.
+	local nativeWidth = pf:GetWidth()
+	check(nativeWidth > 1 and nativeWidth ~= CUSTOM_WIDTH, "the client gave the window its own width")
+	local point = { pf:GetPoint(1) }
 	local function stable(why)
-		check(pf:GetWidth() == width, why .. ": the window width changed to " .. tostring(pf:GetWidth()))
 		local now = { pf:GetPoint(1) }
 		check(#now == #point, why .. ": the window anchor changed")
 		for index = 1, #point do
 			check(now[index] == point[index], why .. ": the window anchor changed at " .. index)
 		end
+	end
+	local function widthIs(expected, why)
+		check(
+			pf:GetWidth() == expected,
+			why .. ": the window width is " .. tostring(pf:GetWidth()) .. ", not " .. tostring(expected)
+		)
+	end
+	-- A selected registered page covers the client's own page: the shared owner alpha-hides the native page rather
+	-- than hiding it, so the client keeps its page and gamepad bookkeeping, and restores it on hand-back.
+	local function nativePageHidden(why)
+		local native = pf.CraftingPage
+		check(native:IsShown(), why .. ": the client's own page is not shown")
+		check(native:GetAlpha() == 0, why .. ": the client's own page is not hidden under the registered page")
+	end
+	local function nativePageVisible(why)
+		local native = pf.CraftingPage
+		check(native:IsShown(), why .. ": the client's own page is not shown")
+		check(native:GetAlpha() == 1, why .. ": the client's own page is not visible")
 	end
 	local function only(expected, why)
 		local count, actual = 0, nil
@@ -539,41 +562,54 @@ scenario("Commissions and a second registered tab keep one page and one window",
 			.. sim.describeRect(ours)
 	)
 
+	-- The client's own page is visible before a registered page covers it.
+	nativePageVisible("on the client's own page")
+
 	press(sim, ours)
 	only(page(sim), "after the Commissions tab")
 	check(checked(ours) and not checked(secondTab), "the Commissions tab is not the only selected tab")
 	stable("after the Commissions tab")
+	widthIs(CUSTOM_WIDTH, "after the Commissions tab")
+	nativePageHidden("after the Commissions tab")
 
 	press(sim, secondTab)
 	only(secondPage, "after the second tab")
 	check(checked(secondTab) and not checked(ours), "the second tab is not the only selected tab")
 	stable("after the second tab")
+	widthIs(CUSTOM_WIDTH, "after the second tab")
+	nativePageHidden("after the second tab")
 
 	press(sim, pf.rightProfessionTabs[1])
 	check(not page(sim):IsShown() and not secondPage:IsShown(), "a client tab left a registered page shown")
 	check(pf.CraftingPage:IsShown(), "a client tab did not show its own page")
 	check(not checked(ours) and not checked(secondTab), "a client tab left a registered tab selected")
 	stable("after a client tab")
+	widthIs(nativeWidth, "after a client tab")
+	nativePageVisible("after a client tab")
 
-	-- A profession change hands the window back to the client and keeps the one width and anchor.
+	-- A profession change hands the window back to the client, with its own width and the anchor.
 	sim:openProfessions(186)
 	sim:advance(0.2)
 	check(not page(sim):IsShown() and not secondPage:IsShown(), "a profession change left a registered page shown")
 	stable("after a profession change")
+	widthIs(nativeWidth, "after a profession change")
 
 	press(sim, ours)
 	only(page(sim), "back on Commissions")
 	stable("back on Commissions")
+	widthIs(CUSTOM_WIDTH, "back on Commissions")
 
 	press(sim, secondTab)
 	only(secondPage, "back on the second tab")
 	stable("back on the second tab")
+	widthIs(CUSTOM_WIDTH, "back on the second tab")
 
 	-- A skill-up refreshes the client's own tabs without taking the selected registered page away.
 	sim.events.fire("SKILL_LINES_CHANGED")
 	sim:advance(0.05)
 	only(secondPage, "after a skill-up")
 	stable("after a skill-up")
+	widthIs(CUSTOM_WIDTH, "after a skill-up")
 
 	sim:expectNoErrors(ADDON)
 end)
