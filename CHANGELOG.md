@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.4.7] - 2026-11-13
+
+<!-- forever-core-sync -->
+
+- Ships with the same shared code as your other Forever addons, so they keep working together.
+
 ## [0.4.6] - 2026-11-12
 
 <!-- forever-core-sync -->
