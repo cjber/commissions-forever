@@ -11,7 +11,7 @@ python3 tools/doctor.py   # first on a new machine: every tool pin below, with a
 stylua --check .
 luacheck .
 for spec in tests/*_spec.lua; do luajit "$spec" || exit 1; done
-bash tools/typecheck.sh   # load graph, the shared lints and their tests, LuaLS 3.19.1
+bash tools/typecheck.sh   # load graph, the shared lints and their tests, LuaLS at tools/toolchain.json's pin
 python3 tools/forever_sim/fetch.py
 luajit tools/forever_sim/run.lua
 python3 tools/screenshots.py
@@ -26,7 +26,10 @@ python3 tools/repo_rules.py # rules no linter covers; CI runs it in project-rule
 ```
 
 CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `project-rules` (changelog and
-`tools/repo_rules.py`), `workflows`, `secrets` and `package`, each on every pull request. `tools/typecheck.sh` also
+`tools/repo_rules.py`), `workflows`, `secrets` and `package`, each on every pull request. Every tool a job installs
+comes from `tools/toolchain.json` through `cjber/forever-core/.github/actions/toolchain`, so no workflow names a tool
+version, and the Python tools run from `tools/pyproject.toml`'s dev group with
+`uv run --project tools --frozen --group dev <tool>`. `tools/typecheck.sh` also
 runs the shared lints (`tools/lint_art.py`, `tools/lint_multivalue.py`, `tools/lint_secret.py`) over every
 TOC-loaded file and the `tools/*_test.py` cases beside them; `tools/doctor.py` checks this machine against the pins
 those files read. `tools/deadcode.py`, `tools/deadcode-allow.txt`, `tools/forever_sim/` and `tools/forever_tools/`
