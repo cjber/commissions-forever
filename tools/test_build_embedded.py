@@ -12,11 +12,12 @@ from build_embedded import FOLDER, ROOT, plan, producer
 
 SOURCE = Path(os.environ["CORE_REVIEWED_SOURCE"])
 LEGACY = Path(os.environ["CORE_LEGACY_SOURCE"])
-CACHE = Path.home() / ".cache/agent-scratch/sweep/wow/commissions-consumer"
+CACHE = Path(os.environ.get("CORE_BUNDLE_TEST_ROOT", ROOT / "tools/.cache/embedded-consumer"))
 
 
 class ConsumerTests(unittest.TestCase):
     def test_real_graph(self):
+        CACHE.mkdir(parents=True, exist_ok=True)
         root = Path(tempfile.mkdtemp(prefix="actual-consumer-", dir=CACHE))
         files = plan(SOURCE, "1.12.1")
         original = (ROOT / (FOLDER + ".toc")).read_text()
