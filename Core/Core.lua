@@ -63,25 +63,37 @@ function ns.NavigateActiveAssignments()
 	return #stops > 0 and ns.ShortestPath.Navigate("CommissionsForever", stops)
 end
 
+local started = false
+function ns.Start()
+	if started then
+		return
+	end
+	started = true
+	CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
+	ns.core.Attach(CommissionsForeverDB)
+	if ns.StartStats then
+		ns.StartStats()
+	end
+	_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
+	SlashCmdList.COMMISSIONSFOREVER = function(message)
+		local command = (message or ""):lower():match("^%s*(.-)%s*$")
+		if ns.core.Report.Command(command) then
+			return
+		end
+		ns.Toggle()
+	end
+	ns.Refresh()
+end
+
 addon:RegisterEvent("PLAYER_LOGIN")
 addon:RegisterEvent("BAG_UPDATE_DELAYED")
 addon:RegisterEvent("QUEST_LOG_UPDATE")
 addon:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGIN" then
-		CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
-		-- The journal and the log ring are ForeverCore's now, under `errors` and `log` in this same table, which
-		-- Attach makes when they are missing and merges into when an older save has them.
-		ns.core.Attach(CommissionsForeverDB)
-		_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
-		SlashCmdList.COMMISSIONSFOREVER = function(message)
-			local command = (message or ""):lower():match("^%s*(.-)%s*$")
-			if ns.core.Report.Command(command) then
-				return
-			end
-			ns.Toggle()
-		end
+		ns.Start()
+	else
+		ns.Refresh()
 	end
-	ns.Refresh()
 end)
 
 _G.CommissionsForever_OnAddonCompartmentClick = function()
