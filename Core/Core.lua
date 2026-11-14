@@ -69,7 +69,7 @@ addon:RegisterEvent("QUEST_LOG_UPDATE")
 addon:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGIN" then
 		CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
-		-- The journal and the log ring are Forever Core's now, under `errors` and `log` in this same table, which
+		-- The journal and the log ring are ForeverCore's now, under `errors` and `log` in this same table, which
 		-- Attach makes when they are missing and merges into when an older save has them.
 		ns.core.Attach(CommissionsForeverDB)
 		_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"

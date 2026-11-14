@@ -16,7 +16,7 @@ local function Addons()
 			version = Toc.get(THIS, "X-Forever-Core"),
 			deps = { "ForeverCore" },
 		},
-		{ name = "ForeverCore", title = "Forever Core", version = "v1.5.0", deps = {} },
+		{ name = "ForeverCore", title = "ForeverCore", version = "v1.5.0", deps = {} },
 	}
 	local function At(index)
 		return entries[index]

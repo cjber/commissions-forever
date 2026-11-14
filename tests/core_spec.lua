@@ -115,10 +115,10 @@ ns.Window = {
 	end,
 }
 frame.OnEvent(frame, "PLAYER_LOGIN")
-assert(attached == CommissionsForeverDB, "PLAYER_LOGIN hands the saved table to Forever Core")
+assert(attached == CommissionsForeverDB, "PLAYER_LOGIN hands the saved table to ForeverCore")
 for _, command in ipairs({ "leaderboard", "stats", "share off" }) do
 	toggled = false
 	SlashCmdList.COMMISSIONSFOREVER(command)
 	assert(toggled, command .. " falls through to opening the Commissions page")
 end
-print("Commissions Forever core specs passed")
+print("Commissions Forever specs passed")
