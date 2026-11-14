@@ -31,3 +31,6 @@ externals:
 
 move-folders:
   CommissionsForever/ForeverCore: ForeverCore
+
+required-dependencies:
+  - forevercore
