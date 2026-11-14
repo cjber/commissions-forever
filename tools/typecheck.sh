@@ -33,6 +33,7 @@ python3 tools/check_store_page.py
 python3 tools/check_copy.py docs/curseforge.md README.md
 python3 tools/check_locales.py
 python3 tools/lint_secret.py
+python3 tools/lint_client_calls.py
 # A fresh output path prevents a crashed server from reusing an earlier clean report.
 report_dir=$(mktemp -d)
 trap 'rm -rf "$report_dir"' EXIT
