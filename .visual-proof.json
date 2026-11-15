@@ -1,13 +1,13 @@
 {
-  "input_digest": "d9ba4e67fb22067beae49daa9ab208fafcf82a03f3f8e38124a7891dbf7d04ba",
-  "runtime_sha256": "d9ba4e67fb22067beae49daa9ab208fafcf82a03f3f8e38124a7891dbf7d04ba",
-  "candidate": "d8802093025512c013a057c4ead00fe811d4a9a902043d17b90f64b57e62818f",
+  "input_digest": "9312b18700892a9f61e7f433b1463f843f1721e963fb8725fab4196d3687c8ef",
+  "runtime_sha256": "9312b18700892a9f61e7f433b1463f843f1721e963fb8725fab4196d3687c8ef",
+  "candidate": "41426630d6224392ce5818b1168d14b4ff765725aae277840f535242f4e2a59c",
   "client_build": "1.60.1.70938 (Interface 16001)",
   "tested_artifact": "source-tree",
-  "source_commit": "a056f34ec77f1bdcf00a1afe984eb7e08c0b0cbd",
+  "source_commit": "b9489724cb603c9dc2f7f2a3d2c99497fe5f220b",
   "flows": [
     {
-      "name": "commissions report",
+      "name": "client",
       "steps": [
         "/commissions report"
       ],
@@ -16,8 +16,8 @@
   ],
   "images": [
     {
-      "url": "https://gist.githubusercontent.com/cjber/456678bcecfffcb1cadaabed2b08f2fe/raw/f9cfb23706b4cc315e543fb5fc79992f1532a234/1-commissions-report.png",
-      "sha256": "289d28fb5f428af0a95e75e01dd80736c099af087ef5ea5e5c3170b7cfd44656"
+      "url": "https://gist.githubusercontent.com/cjber/e3a2b07882e21df37e35b50b96722df0/raw/acfca6b651e9ef571107627b3a23ea158fcb581b/1-client.png",
+      "sha256": "eaad87629921e6220d6907112721c0077a3082f037b19ffe2f58e35d2b7a536e"
     }
   ]
 }
