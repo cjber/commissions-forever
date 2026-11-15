@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "fetches": {
+    "https://deb.debian.org/debian/pool/main/l/luajit/libluajit-5.1-2_2.1.0+openresty20250117-2_amd64.deb": "sha256-v/QLOV0wNt62nlXSXM94DgG06HTHc4vqPhqCS+AcPwk=",
+    "https://deb.debian.org/debian/pool/main/l/luajit/luajit_2.1.0+openresty20250117-2_amd64.deb": "sha256-GqwX8GINvObn13M7A7UO9VNZUBnou0fN1XHcfdAb68w="
+  }
+}

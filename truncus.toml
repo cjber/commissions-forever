@@ -1,0 +1,20 @@
+# A separate hosted model-spec trial. GitHub Actions remains the release gate.
+[[rule]]
+paths = ["*"]
+land = "proposal"
+approvals = 1
+checks = ["model"]
+
+[[rule]]
+paths = ["truncus.toml"]
+land = "direct"
+
+[[pipeline]]
+name = "model"
+image = "node-24@1"
+reads = ["/Core/Model.lua", "/Data/TurnIns.lua", "/tests/model_spec.lua", "/tools/truncus-model.mjs", "/fetch.lock"]
+run = ["node tools/truncus-model.mjs"]
+fetch_lock = "fetch.lock"
+network = ["deb.debian.org"]
+size = "standard-2"
+timeout_minutes = 5
