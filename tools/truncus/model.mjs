@@ -6,7 +6,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const lock = JSON.parse(readFileSync("fetch.lock", "utf8"));
+const lock = JSON.parse(readFileSync("tools/truncus/fetch.lock", "utf8"));
 const runtime = mkdtempSync(join(tmpdir(), "truncus-luajit-"));
 try {
   for (const [url, integrity] of Object.entries(lock.fetches)) {

@@ -12,8 +12,6 @@ ignore:
   - docs
   - ruff.toml
   - stylua.toml
-  - truncus.toml
-  - fetch.lock
   - .agents
   - forever-core
   - media/icon.svg

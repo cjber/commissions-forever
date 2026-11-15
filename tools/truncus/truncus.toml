@@ -12,9 +12,9 @@ land = "direct"
 [[pipeline]]
 name = "model"
 image = "node-24@1"
-reads = ["/Core/Model.lua", "/Data/TurnIns.lua", "/tests/model_spec.lua", "/tools/truncus-model.mjs", "/fetch.lock"]
-run = ["node tools/truncus-model.mjs"]
-fetch_lock = "fetch.lock"
+reads = ["/Core/Model.lua", "/Data/TurnIns.lua", "/tests/model_spec.lua", "/tools/truncus/model.mjs", "/tools/truncus/fetch.lock"]
+run = ["node tools/truncus/model.mjs"]
+fetch_lock = "tools/truncus/fetch.lock"
 network = ["deb.debian.org"]
 size = "standard-2"
 timeout_minutes = 5
