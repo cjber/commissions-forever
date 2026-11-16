@@ -6,6 +6,7 @@
 
 <!-- forever-core-sync -->
 
+- Commissions Forever now loads without ForeverCore and says on screen what to do when ForeverCore is missing, turned off or out of date.
 - Ships with the same shared code as your other Forever addons, so they keep working together.
 
 ## [0.4.7] - 2026-11-16
