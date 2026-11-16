@@ -6,9 +6,10 @@ local Toc = dofile("tests/toc.lua")
 
 local THIS = "CommissionsForever"
 
--- The client's addon list: this addon and ForeverCore, both loaded. GetAddOnDependencies returns its names as
--- varargs, as the client does, not a table.
-local function Addons()
+-- The client's addon list: both loaded by default, with options for an absent or disabled ForeverCore.
+-- GetAddOnDependencies returns its names as varargs, as the client does, not a table.
+local function Addons(options)
+	options = options or {}
 	local entries = {
 		{
 			name = THIS,
@@ -16,8 +17,17 @@ local function Addons()
 			version = Toc.get(THIS, "X-Forever-Core"),
 			deps = { "ForeverCore" },
 		},
-		{ name = "ForeverCore", title = "ForeverCore", version = "v1.5.0", deps = {} },
 	}
+	if not options.missing then
+		entries[#entries + 1] = {
+			name = "ForeverCore",
+			title = "ForeverCore",
+			version = "v1.5.0",
+			deps = {},
+			disabled = options.disabled,
+			project = "1796337",
+		}
+	end
 	local function At(index)
 		return entries[index]
 	end
@@ -32,10 +42,12 @@ local function Addons()
 			end
 		end,
 		IsAddOnLoaded = function(index)
-			return At(index) ~= nil
+			local entry = At(index)
+			return entry ~= nil and not entry.disabled
 		end,
 		GetAddOnEnableState = function(index)
-			return At(index) and 2 or 0
+			local entry = At(index)
+			return entry and not entry.disabled and 2 or 0
 		end,
 		GetAddOnDependencies = function(index)
 			local entry = At(index)
@@ -48,9 +60,12 @@ local function Addons()
 				return Toc.get(THIS, field)
 			end
 			for _, entry in ipairs(entries) do
-				if entry.name == addon then
+				if entry.name == addon or entry == At(addon) then
 					if field == "Title" then
 						return entry.title
+					end
+					if field == "X-Curse-Project-ID" then
+						return entry.project
 					end
 					if field == "X-Forever-Core" then
 						return entry.version
@@ -61,7 +76,7 @@ local function Addons()
 	}
 end
 
-local function Require(foreverCore)
+local function Require(foreverCore, options)
 	local lines = {}
 	local env = {
 		UIErrorsFrame = {
@@ -70,7 +85,7 @@ local function Require(foreverCore)
 			end,
 		},
 		ForeverCore = foreverCore,
-		C_AddOns = Addons(),
+		C_AddOns = Addons(options),
 		UnitName = function()
 			return "Tester"
 		end,
@@ -102,6 +117,24 @@ assert(
 local missing, missingLines = Require(nil)
 assert(missing.broken == true, "a missing ForeverCore stops the addon")
 assert(#missingLines == 1, "and the shared warning says so in one error line")
+
+local absent, absentLines = Require(nil, { missing = true })
+assert(absent.broken == true, "an uninstalled ForeverCore stops the addon")
+assert(#absentLines == 1, "an uninstalled ForeverCore gives exactly one error line")
+assert(
+	absentLines[1].text
+		== "Commissions Forever needs ForeverCore. Install it from CurseForge, "
+			.. "or choose Reinstall on ForeverCore in the CurseForge app.",
+	absentLines[1].text
+)
+
+local disabled, disabledLines = Require(nil, { disabled = true })
+assert(disabled.broken == true, "a disabled ForeverCore stops the addon")
+assert(#disabledLines == 1, "a disabled ForeverCore gives exactly one error line")
+assert(
+	disabledLines[1].text == "Commissions Forever: ForeverCore is turned off. Enable it in the AddOns list to fix this.",
+	disabledLines[1].text
+)
 
 -- ProfessionTabs minor 2, from ForeverCore 1.8.1, hides the client's own page beneath the addon page. An earlier
 -- tabs module draws the two pages over each other.
