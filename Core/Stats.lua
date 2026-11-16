@@ -67,6 +67,8 @@ local function DropLeaderboardData()
 	end
 end
 
+ns.StartStats = DropLeaderboardData
+
 local events = CreateFrame("Frame")
 events:RegisterEvent("PLAYER_LOGIN")
 events:RegisterEvent("QUEST_TURNED_IN")

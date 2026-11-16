@@ -1,23 +1,23 @@
 {
-  "input_digest": "d9ba4e67fb22067beae49daa9ab208fafcf82a03f3f8e38124a7891dbf7d04ba",
-  "runtime_sha256": "d9ba4e67fb22067beae49daa9ab208fafcf82a03f3f8e38124a7891dbf7d04ba",
-  "candidate": "d8802093025512c013a057c4ead00fe811d4a9a902043d17b90f64b57e62818f",
+  "input_digest": "e414bfbb756e9fd838ac8f9398d5e25c684ab641058e80bc26d7d25f0077c1e7",
+  "runtime_sha256": "e414bfbb756e9fd838ac8f9398d5e25c684ab641058e80bc26d7d25f0077c1e7",
+  "candidate": "ecdad9e83fec8b8e4b98f3878c5810487760ae7cb4f00f1fad79fa73c23841e7",
   "client_build": "1.60.1.70938 (Interface 16001)",
   "tested_artifact": "source-tree",
-  "source_commit": "a056f34ec77f1bdcf00a1afe984eb7e08c0b0cbd",
+  "source_commit": "f17de7acf1495598fe531fd1bd079f806ebdd9ae",
   "flows": [
     {
-      "name": "commissions report",
+      "name": "report",
       "steps": [
-        "/commissions report"
+        "shepherd-114-report.lua sha256:ab3f4f517cb27c6dbf3d3ac2a6c2da661549f96eff1936e6554595d8362685ee"
       ],
       "result": "pass"
     }
   ],
   "images": [
     {
-      "url": "https://gist.githubusercontent.com/cjber/456678bcecfffcb1cadaabed2b08f2fe/raw/f9cfb23706b4cc315e543fb5fc79992f1532a234/1-commissions-report.png",
-      "sha256": "289d28fb5f428af0a95e75e01dd80736c099af087ef5ea5e5c3170b7cfd44656"
+      "url": "https://gist.githubusercontent.com/cjber/847c06c37001f5f8b7348bbb790bcabc/raw/7b10112badd698c0ae8fbdb1031375641e970330/1-report.png",
+      "sha256": "1fd1778d98339a59a01f20f52cbf88e7e99ee011ce3d2f6ea75234ad8c86b85b"
     }
   ]
 }

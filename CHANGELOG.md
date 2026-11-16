@@ -2,10 +2,18 @@
 
 ## [Unreleased]
 
-## [0.4.7] - 2026-11-13
+## [0.4.8] - 2026-11-16
 
 <!-- forever-core-sync -->
 
+- Commissions Forever now loads without ForeverCore and says on screen what to do when ForeverCore is missing, turned off or out of date.
+- Ships with the same shared code as your other Forever addons, so they keep working together.
+
+## [0.4.7] - 2026-11-16
+
+<!-- forever-core-sync -->
+
+- **This is the last update published on Wago.** Future updates come from CurseForge only. If you installed this addon through Wago or the WowUp Wago source, install it from CurseForge to keep getting updates; your settings stay.
 - Ships with the same shared code as your other Forever addons, so they keep working together.
 
 ## [0.4.6] - 2026-11-12

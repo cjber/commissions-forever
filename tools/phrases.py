@@ -23,7 +23,7 @@ local L = ns.L
 # The phrase as written in the source, escapes included, so it pastes back into Lua unchanged.
 PHRASE = re.compile(r'\bL\["((?:\\.|[^"\\\n])*)"\]')
 # ForeverCore's shared warning passes its phrase through `phrase(key, ...)` instead of indexing `L`.
-SHARED = re.compile(r'\bphrase\("((?:\\.|[^"\\\n])*)"')
+SHARED = re.compile(r'\bphrase\(\s*"((?:\\.|[^"\\\n])*)"')
 # A shared window may choose a phrase in a bracket expression: `L[count == 1 and "board" or "boards"]` uses both,
 # so each string alternative is a phrase too.
 ALTERNATIVE = re.compile(r"\bL\[([^\]]*)\]")
