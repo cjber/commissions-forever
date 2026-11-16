@@ -65,7 +65,7 @@ rawset(_G, "C_Item", {
 	end,
 })
 
--- Core/Core.lua reads the TOC's identity icon and hands the saved table to Forever Core.
+-- Core/Core.lua reads the TOC's identity icon and hands the saved table to ForeverCore.
 local Toc = dofile("tests/toc.lua")
 Toc.install(_G, "CommissionsForever")
 

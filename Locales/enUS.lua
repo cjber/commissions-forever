@@ -16,7 +16,7 @@ ns.L = {
 	["Need"] = true,
 	["Item %d"] = true,
 
-	-- The shared report window's title; Forever Core owns its other phrases.
+	-- The shared report window's title; ForeverCore owns its other phrases.
 	["Commissions Forever report"] = true,
 
 	-- The shared out-of-date warning (Core/ForeverRequire.lua).
