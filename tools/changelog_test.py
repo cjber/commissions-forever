@@ -4,11 +4,9 @@ import contextlib
 import io
 import unittest
 
-from tools.changelog import check, section
+from tools.forever_tools.changelog import check, section
 
 CHANGELOG = """# Changelog
-
-## [Unreleased]
 
 ## [0.3.9] - 2026-11-12
 
