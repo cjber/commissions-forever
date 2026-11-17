@@ -12,6 +12,14 @@ Free, open source, and nothing is locked behind it.
 
 <a href="https://ko-fi.com/cjber"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi"></a>
 
+## Known limitations
+
+- Stop locations and finishers come from QuestieDB, so without it the list counts your materials but cannot name where to hand in.
+- Needs come from your quest log, so an assignment you have not picked up yet shows no required counts.
+- Forever commerce work orders are not tracked, because nothing marks them as repeatable turn-ins.
+- Completion totals start the day you install the addon, and earlier hand-ins cannot be recovered.
+- The Commissions page lives in the Professions window, so it opens only once you know a profession and waits until combat ends.
+
 ## Features
 
 - **Repeatable turn-ins.** One list covers Argent Dawn writs, Cenarion Circle Logistics, Thorium Brotherhood, Timbermaw Hold, and Morrowgrain research.
