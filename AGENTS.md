@@ -25,6 +25,10 @@ python3 tools/check_menu_scroll.py # menus built from a list scroll (WFA-36); CI
 python3 tools/repo_rules.py # rules no linter covers; CI runs it in project-rules
 ```
 
+A change's player-facing notes go in `changes/<issue>.md` as bold-lead bullets, with an optional `### For addon
+authors` section after them. The release commit gathers them with `python3 tools/changelog.py release X.Y.Z`; no
+other pull request edits `CHANGELOG.md`, and CI's `--check --base` fails one that does.
+
 CI runs the same gate in the jobs `deadcode`, `check`, `python`, `typecheck`, `project-rules` (changelog and
 `tools/repo_rules.py`), `workflows`, `secrets` and `package`, each on every pull request. Every tool a job installs
 comes from `tools/toolchain.json` through `cjber/forever-core/.github/actions/toolchain`, so no workflow names a tool
