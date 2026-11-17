@@ -9,7 +9,6 @@
 ## X-Website: https://github.com/cjber/commissions-forever
 ## X-Donate: https://github.com/sponsors/cjber
 ## X-Curse-Project-ID: 1794367
-## X-Wago-ID: kNMPkEGz
 ## SavedVariables: CommissionsForeverDB
 ## OptionalDeps: QuestieDB, SkillUpForever, ShortestPathForever, ForeverCore
 ## IconTexture: Interface\AddOns\CommissionsForever\media\Icon
