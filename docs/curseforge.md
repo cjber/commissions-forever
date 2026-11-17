@@ -8,11 +8,9 @@ Free, with nothing locked behind it. If it saves you time, you can [sponsor me o
 
 **Known limitations**
 
-- Stop locations and finishers come from QuestieDB, so without it the list counts your materials but cannot name where to hand in.
-- Needs come from your quest log, so an assignment you have not picked up yet shows no required counts.
-- Forever commerce work orders are not tracked, because nothing marks them as repeatable turn-ins.
-- Completion totals start the day you install the addon, and earlier hand-ins cannot be recovered.
-- The Commissions page lives in the Professions window, so it opens only once you know a profession and waits until combat ends.
+- Hand-in places, your active turn-ins and completion counts all need QuestieDB. Without it the window asks you to install it.
+- A turn-in you have not picked up yet shows no row, because the quest log is the only place the game gives its item counts.
+- The Commissions page lives in the Professions window. It opens only once you know a profession, waits until combat ends, and `/commissions` cannot open the Professions window for you.
 
 ![Commissions Forever lists turn-in materials with what you have and what each assignment needs](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/window.png)
 
