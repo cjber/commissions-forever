@@ -1,0 +1,91 @@
+{
+  "policy": "Only reviewed phrase-to-widget contracts with confirmed FontObjects are checked. Source digests pin producers; review callers, template inheritance and later font setters before refreshing a digest. Buttons bind all declared font states. Bindings check translated wording, excluding dynamic placeholder values. Tooltips, menus, chat, custom font files, dynamic text and unlisted producers have no coverage claim. Empty bindings record reviewed exclusions, not glyph coverage.",
+  "producers": [
+    {
+      "source": "UI/Window.lua",
+      "sha256": "44038f501a6e7fc235822b0b6447277a4ab1c728be17b834ba6a698273b582ae",
+      "review": "Read Text, Row, Refresh, Attach, Open, Toggle and event callbacks, plus Core/Core.lua Refresh and toggle callers. Text explicitly assigns GameFontNormalLarge to the page heading, GameFontDisableSmall to notice/empty, GameFontNormalSmall to column headings, and GameFontHighlight to row.name including the Item %d fallback. No later font setters occur. Pinned Blizzard client b401e0332adfbf0460d319b06d8ea29279a941f1, Blizzard_SharedXML/Shared/Button/ThreeSliceButtonTemplate.xml: SharedButtonSmallTemplate declares normal/highlight/disabled GameFontNormal/GameFontHighlight/GameFontDisable for route. Tooltip/tab tooltip, chat and UIErrorsFrame messages, user search input, dynamic item/faction names and counts are excluded. AGENTS.md declares no custom font files; no custom font-file assignments occur in this repo.",
+      "bindings": [
+        {
+          "font": "GameFontNormalLarge",
+          "widget": "Attach page heading",
+          "phrase": "Commissions Forever"
+        },
+        {
+          "font": "GameFontDisableSmall",
+          "widget": "Window.notice",
+          "phrase": "Install QuestieDB to see your active turn-ins."
+        },
+        {
+          "font": "GameFontDisableSmall",
+          "widget": "Window.empty",
+          "phrase": "No tracked materials found"
+        },
+        {
+          "font": "GameFontNormalSmall",
+          "widget": "Attach inset column headings",
+          "phrase": "Material"
+        },
+        {
+          "font": "GameFontNormalSmall",
+          "widget": "Attach inset column headings",
+          "phrase": "Turn-in"
+        },
+        {
+          "font": "GameFontNormalSmall",
+          "widget": "Attach inset column headings",
+          "phrase": "Have"
+        },
+        {
+          "font": "GameFontNormalSmall",
+          "widget": "Attach inset column headings",
+          "phrase": "Need"
+        },
+        {
+          "font": "GameFontHighlight",
+          "widget": "Row row.name fallback via Refresh",
+          "phrase": "Item %d"
+        },
+        {
+          "font": "GameFontNormal",
+          "widget": "Attach route button",
+          "phrase": "Open turn-in route"
+        },
+        {
+          "font": "GameFontHighlight",
+          "widget": "Attach route button",
+          "phrase": "Open turn-in route"
+        },
+        {
+          "font": "GameFontDisable",
+          "widget": "Attach route button",
+          "phrase": "Open turn-in route"
+        }
+      ]
+    },
+    {
+      "source": "Core/Report.lua",
+      "sha256": "338b16e72881874f3cd15e6ac04ac856c1d885a895ca9436c39b9e82836070c6",
+      "review": "Read ReportTitle, ReportLines and Core/Core.lua registration. Report title and lines are delegated to ForeverCore.Register and the shared report window, whose final FontObjects are not established by this producer; excluded. Dynamic integration status and counts are excluded.",
+      "bindings": []
+    },
+    {
+      "source": "Core/Core.lua",
+      "sha256": "b224f67b3f41653463610d0d90c0fa65dd9e364c650664752ca21ddfa2b753ec",
+      "review": "Read Register, Refresh, Toggle, Start and navigation callbacks. Credits and report text are delegated to ForeverCore modules; no local FontObject is established. Dynamic NPC names, shared Thanks/report widgets and slash command handling are excluded.",
+      "bindings": []
+    },
+    {
+      "source": "Core/ForeverRequire.lua",
+      "sha256": "a96284036fe6ecd261be126d4d32089e65d85d5c2c191c0a0d5fdbb07cd6f1c3",
+      "review": "Read phrase, show, ForeverRequire and delayed PLAYER_ENTERING_WORLD callback. Warnings go to the client-owned UIErrorsFrame via AddMessage; no exact final FontObject is established here. All warning text and inserted addon titles are excluded.",
+      "bindings": []
+    },
+    {
+      "source": "UI/RowArt.lua",
+      "sha256": "3e4a7a470457246e496fe6d7bec4d116fc71e78471862b680b92dc1e60547e1f",
+      "review": "Read RowAtlas and UI/Window.lua callers. This file creates only textures and no text; no bindings.",
+      "bindings": []
+    }
+  ]
+}
