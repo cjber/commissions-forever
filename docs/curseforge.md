@@ -6,6 +6,14 @@ Free, with nothing locked behind it. If it saves you time, you can [sponsor me o
 
 [![Join me on Discord](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/discord-button.png)](https://discord.gg/FpHugGxRJY) [![Sponsor me on GitHub](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/github-sponsors-button.png)](https://github.com/sponsors/cjber) [![Support me on Ko-fi](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/kofi-button.png)](https://ko-fi.com/cjber)
 
+**Known limitations**
+
+- Stop locations and finishers come from QuestieDB, so without it the list counts your materials but cannot name where to hand in.
+- Needs come from your quest log, so an assignment you have not picked up yet shows no required counts.
+- Forever commerce work orders are not tracked, because nothing marks them as repeatable turn-ins.
+- Completion totals start the day you install the addon, and earlier hand-ins cannot be recovered.
+- The Commissions page lives in the Professions window, so it opens only once you know a profession and waits until combat ends.
+
 ![Commissions Forever lists turn-in materials with what you have and what each assignment needs](https://raw.githubusercontent.com/cjber/commissions-forever/main/docs/screenshots/window.png)
 
 Active assignments come first, with the count in your bags beside what the quest still asks for.
