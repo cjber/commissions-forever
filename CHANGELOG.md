@@ -1,7 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
 ## [0.4.10] - 2026-11-17
 
 <!-- forever-core-sync -->
