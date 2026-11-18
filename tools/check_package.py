@@ -12,7 +12,9 @@ except ModuleNotFoundError:
 ROOT = Path(__file__).resolve().parent.parent
 POLICY = package.Policy(
     addons=("CommissionsForever", "ForeverCore"),
-    specs=tuple(sorted(path.relative_to(ROOT).as_posix() for path in ROOT.glob("tests/*_spec.lua"))),
+    specs=tuple(sorted(path.relative_to(ROOT).as_posix() for path in ROOT.glob("tests/*_spec.lua")))
+    + ("tests/embedded_scenario.lua",),
+    support=("tests", "tools/forever_sim"),
 )
 
 if __name__ == "__main__":
