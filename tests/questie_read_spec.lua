@@ -1,6 +1,6 @@
 -- QuestieDB is read once: the library is fitted once, its zone tables run once per installed library, and a
 -- quest's row is read once however many bag and log events ask for it.
-local fits, zoneReads, questReads, parses = 0, 0, 0, 0
+local fits, zoneReads, questReads, parses, npcReads = 0, 0, 0, 0, 0
 local loadString = loadstring
 rawset(_G, "loadstring", function(source)
 	parses = parses + 1
@@ -45,6 +45,7 @@ local function Database(options)
 		},
 		Npc = {
 			GetAll = function()
+				npcReads = npcReads + 1
 				return { "Quartermaster", options.spawns or { [120] = { { 43, 61 } } }, 120 }
 			end,
 		},
@@ -91,6 +92,9 @@ parses = 0
 assert(ns.Questie.Available(), "the fitted library is available")
 assert(ns.Questie.NPC(42).map == 1, "an NPC reads its area's map")
 assert(ns.Questie.NPC(43).map == 1, "the next NPC reads the same tables")
+npcReads = 0
+assert(ns.Questie.NPC(42).name == "Quartermaster", "a cached NPC still names it")
+assert(npcReads == 0, "a second read of the same NPC does not read QuestieDB again")
 assert(fits == 1 and zoneReads == 1, "later reads fit no library again")
 assert(parses == 0, "later reads run no zone source again")
 

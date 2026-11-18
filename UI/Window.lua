@@ -326,7 +326,8 @@ events:SetScript("OnEvent", function(_, event, name)
 	if event == "ADDON_LOADED" and name == "Blizzard_Professions" then
 		Attach()
 	elseif event == "GET_ITEM_INFO_RECEIVED" and (requestedItems[name] or IsTrackedItem(name)) then
-		ns.Refresh()
+		-- A name that just cached can be the one the quest log scan matches objectives by, so rescan it.
+		ns.Refresh(true)
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		if pendingOpen then
 			pendingOpen = false

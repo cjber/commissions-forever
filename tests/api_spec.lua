@@ -72,6 +72,7 @@ Toc.install(_G, "CommissionsForever")
 -- Fresh rows every call, as the modules under the API hand them out.
 local materials
 local objectives = {}
+local objectiveScans = 0
 local categories = {}
 local questieAvailable = true
 local routed = false
@@ -95,6 +96,7 @@ local ns = {
 			return questieAvailable
 		end,
 		ActiveObjectives = function()
+			objectiveScans = objectiveScans + 1
 			return objectives
 		end,
 		CommissionCategory = function(questID)
@@ -221,6 +223,7 @@ local unsubscribe = API.Subscribe(function(changes)
 	heard[#heard + 1] = changes
 end)
 assert(type(unsubscribe) == "function", "Subscribe returns an unsubscribe function")
+objectiveScans = 0
 counts[11370] = 5
 fire("BAG_UPDATE_DELAYED")
 assert(#heard == 0, "nothing is reported in the same frame as the change")
@@ -230,6 +233,7 @@ assert(heard[1].objectives == nil and heard[1].turnin == nil, "and only that cha
 fire("BAG_UPDATE_DELAYED")
 nextFrame()
 assert(#heard == 1, "a refresh that changes no row stays quiet")
+assert(objectiveScans == 0, "bag changes recount the bags without rescanning the quest log")
 
 -- A quest whose title contains a turn-in's name but whose QuestieDB row is not a commission adds no material row
 -- (cjber/commissions-forever#200); it is still an objective change.
@@ -246,6 +250,7 @@ objectives = {
 fire("QUEST_LOG_UPDATE")
 nextFrame()
 assert(#heard == 2 and heard[2].objectives == true, "a changed quest log reports objectives")
+assert(objectiveScans == 1, "a quest log change rescans the quest log")
 assert(heard[2].materials == nil, "an unclassified quest is no material change")
 assert(#API.Materials() == 1, "an unclassified quest adds no material row")
 

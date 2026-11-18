@@ -69,6 +69,11 @@ local quests = {}
 ---@type table<integer, string|false>
 local categories = {}
 
+-- Each NPC's name and place, kept per NPC ID for the session like the quest rows: a route re-asks for the same
+-- finishers, and an NPC does not move while the library stays installed. false is an NPC QuestieDB does not have.
+---@type table<integer, {name: string, map: integer?, x: number?, y: number?}|false>
+local npcs = {}
+
 -- QuestieDB as this file reads it, fitted once so the contract check and its zone tables cost one pass. A
 -- library that replaces the one held is fitted again, so one that loads later is picked up.
 ---@type table?
@@ -82,7 +87,7 @@ local libraryZones
 local function Library()
 	local lib = LibQuestieDB
 	if lib ~= fitted then
-		fitted, library, libraryZones, quests, categories = lib, nil, nil, {}, {}
+		fitted, library, libraryZones, quests, categories, npcs = lib, nil, nil, {}, {}, {}
 		if type(lib) == "table" and type(lib.RequireContract) == "function" then
 			local ok, compatible = pcall(lib.RequireContract, CONTRACT)
 			if ok and compatible and type(lib.Quest) == "table" and type(lib.Quest.GetAll) == "function" then
@@ -129,36 +134,43 @@ end
 ---@return {name: string, map: integer?, x: number?, y: number?}?
 function Questie.NPC(npcID)
 	local db, zones = Library()
-	if not (db and type(db.Npc) == "table" and type(db.Npc.GetAll) == "function") then
+	if not db then
 		return nil
 	end
-	local fields = Fields(db, "Npc", { "name", "spawns", "zoneID" })
-	if not fields then
-		return nil
+	local cached = npcs[npcID]
+	if cached ~= nil then
+		return cached or nil
 	end
-	local ok, values = pcall(db.Npc.GetAll, npcID, fields)
-	if not ok or type(values) ~= "table" or type(values[1]) ~= "string" then
-		return nil
-	end
-	local spawns = values[2]
-	if type(spawns) ~= "table" then
-		return { name = values[1] }
-	end
-	local area
-	for candidate, points in pairs(spawns) do
-		if type(candidate) == "number" and type(points) == "table" and (not area or candidate < area) then
-			area = candidate
+	local npc
+	if type(db.Npc) == "table" and type(db.Npc.GetAll) == "function" then
+		local fields = Fields(db, "Npc", { "name", "spawns", "zoneID" })
+		local ok, values
+		if fields then
+			ok, values = pcall(db.Npc.GetAll, npcID, fields)
+		end
+		if ok and type(values) == "table" and type(values[1]) == "string" then
+			npc = { name = values[1] }
+			local spawns = values[2]
+			if type(spawns) == "table" then
+				local area
+				for candidate, points in pairs(spawns) do
+					if type(candidate) == "number" and type(points) == "table" and (not area or candidate < area) then
+						area = candidate
+					end
+				end
+				local spot = area and spawns[area] and spawns[area][1]
+				local mapID = Map(zones, area)
+				if type(spot) == "table" and mapID then
+					local x, y = tonumber(spot[1]), tonumber(spot[2])
+					if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
+						npc.map, npc.x, npc.y = mapID, x / 100, y / 100
+					end
+				end
+			end
 		end
 	end
-	local spot = area and spawns[area] and spawns[area][1]
-	local mapID = Map(zones, area)
-	if type(spot) == "table" and mapID then
-		local x, y = tonumber(spot[1]), tonumber(spot[2])
-		if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
-			return { name = values[1], map = mapID, x = x / 100, y = y / 100 }
-		end
-	end
-	return { name = values[1] }
+	npcs[npcID] = npc or false
+	return npc
 end
 
 -- QuestieDB is the only source of quest requirements and NPC places, so the window says when it is missing.

@@ -28,8 +28,16 @@ local function ItemCount(itemID)
 	return C_Item.GetItemCount(itemID) or 0
 end
 
-function ns.Refresh()
-	ns.ActiveObjectives = ns.Questie.ActiveObjectives()
+-- True once a scan read QuestieDB: a bag change cannot change the quest log, so it reuses that scan and only
+-- recounts the bags. A scan made without the library settles nothing, so the next refresh scans again until it can.
+local objectivesScanned = false
+
+---@param scanObjectives boolean? true when the quest log or the item names it matches on may have changed
+function ns.Refresh(scanObjectives)
+	if scanObjectives or not objectivesScanned then
+		ns.ActiveObjectives = ns.Questie.ActiveObjectives()
+		objectivesScanned = ns.Questie.Available()
+	end
 	ns.Rows = ns.Model.Inventory(ItemCount, ns.ActiveObjectives)
 	ns.Refreshed = true
 	ns.APIChanged("refresh")
@@ -82,7 +90,7 @@ function ns.Start()
 		end
 		ns.Toggle()
 	end
-	ns.Refresh()
+	ns.Refresh(true)
 end
 
 addon:RegisterEvent("PLAYER_LOGIN")
@@ -91,6 +99,8 @@ addon:RegisterEvent("QUEST_LOG_UPDATE")
 addon:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_LOGIN" then
 		ns.Start()
+	elseif event == "QUEST_LOG_UPDATE" then
+		ns.Refresh(true)
 	else
 		ns.Refresh()
 	end
