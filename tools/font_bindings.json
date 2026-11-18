@@ -77,8 +77,8 @@
     },
     {
       "source": "Core/ForeverRequire.lua",
-      "sha256": "a96284036fe6ecd261be126d4d32089e65d85d5c2c191c0a0d5fdbb07cd6f1c3",
-      "review": "Read phrase, show, ForeverRequire and delayed PLAYER_ENTERING_WORLD callback. Warnings go to the client-owned UIErrorsFrame via AddMessage; no exact final FontObject is established here. All warning text and inserted addon titles are excluded.",
+      "sha256": "8eb6aed5cb39a69fa0a28cc02b9c0ba9a7b0ca2f330fbdf91712d4b18f427dc7",
+      "review": "Read phrase, show, answer, ForeverRequire and delayed PLAYER_ENTERING_WORLD callback; answer's compartment and slash handlers only call show. Warnings go to the client-owned UIErrorsFrame via AddMessage; no exact final FontObject is established here. All warning text and inserted addon titles are excluded.",
       "bindings": []
     },
     {
