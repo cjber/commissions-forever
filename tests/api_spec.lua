@@ -73,6 +73,7 @@ Toc.install(_G, "CommissionsForever")
 local materials
 local objectives = {}
 local objectiveScans = 0
+local generation = 0
 local categories = {}
 local questieAvailable = true
 local routed = false
@@ -94,6 +95,9 @@ local ns = {
 	Questie = {
 		Available = function()
 			return questieAvailable
+		end,
+		Generation = function()
+			return generation
 		end,
 		ActiveObjectives = function()
 			objectiveScans = objectiveScans + 1
@@ -234,6 +238,10 @@ fire("BAG_UPDATE_DELAYED")
 nextFrame()
 assert(#heard == 1, "a refresh that changes no row stays quiet")
 assert(objectiveScans == 0, "bag changes recount the bags without rescanning the quest log")
+generation = generation + 1
+fire("BAG_UPDATE_DELAYED")
+nextFrame()
+assert(objectiveScans == 1, "a replaced QuestieDB library makes the next bag refresh rescan")
 
 -- A quest whose title contains a turn-in's name but whose QuestieDB row is not a commission adds no material row
 -- (cjber/commissions-forever#200); it is still an objective change.
@@ -250,7 +258,7 @@ objectives = {
 fire("QUEST_LOG_UPDATE")
 nextFrame()
 assert(#heard == 2 and heard[2].objectives == true, "a changed quest log reports objectives")
-assert(objectiveScans == 1, "a quest log change rescans the quest log")
+assert(objectiveScans == 2, "a quest log change rescans the quest log")
 assert(heard[2].materials == nil, "an unclassified quest is no material change")
 assert(#API.Materials() == 1, "an unclassified quest adds no material row")
 

@@ -98,6 +98,21 @@ assert(npcReads == 0, "a second read of the same NPC does not read QuestieDB aga
 assert(fits == 1 and zoneReads == 1, "later reads fit no library again")
 assert(parses == 0, "later reads run no zone source again")
 
+-- A failed NPC read settles nothing: the same library is asked again once it can answer.
+local flaky = Database({ zones = Zones("return {[120] = 1}", "return {}") })
+local flakyRead = flaky.Npc.GetAll
+local down = true
+flaky.Npc.GetAll = function(...)
+	if down then
+		error("reader down")
+	end
+	return flakyRead(...)
+end
+rawset(_G, "LibQuestieDB", flaky)
+assert(ns.Questie.NPC(77) == nil, "a failed NPC read has no answer")
+down = false
+assert(ns.Questie.NPC(77).name == "Quartermaster", "a recovered NPC reader is read again, not kept absent")
+
 -- The map comes from ZoneDB's tables with the overrides QuestieDB applies in front of them.
 local function Place(spawns, area, parent, areaOverride, parentOverride)
 	local installed = Database({ zones = Zones(area, parent, areaOverride, parentOverride), spawns = spawns })

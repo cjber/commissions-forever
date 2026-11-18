@@ -29,14 +29,18 @@ local function ItemCount(itemID)
 end
 
 -- True once a scan read QuestieDB: a bag change cannot change the quest log, so it reuses that scan and only
--- recounts the bags. A scan made without the library settles nothing, so the next refresh scans again until it can.
+-- recounts the bags. A scan made without the library settles nothing, so the next refresh scans again until it can,
+-- and a scan from a library since replaced is not reused either.
 local objectivesScanned = false
+local scannedGeneration ---@type integer?
 
 ---@param scanObjectives boolean? true when the quest log or the item names it matches on may have changed
 function ns.Refresh(scanObjectives)
-	if scanObjectives or not objectivesScanned then
+	local generation = ns.Questie.Generation and ns.Questie.Generation()
+	if scanObjectives or not objectivesScanned or generation ~= scannedGeneration then
 		ns.ActiveObjectives = ns.Questie.ActiveObjectives()
 		objectivesScanned = ns.Questie.Available()
+		scannedGeneration = generation
 	end
 	ns.Rows = ns.Model.Inventory(ItemCount, ns.ActiveObjectives)
 	ns.Refreshed = true

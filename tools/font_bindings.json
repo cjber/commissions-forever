@@ -71,7 +71,7 @@
     },
     {
       "source": "Core/Core.lua",
-      "sha256": "e61b4034378ebf8eb44f750fa90c1ac2207a8a5590bc8e17b488d7368fb81925",
+      "sha256": "feef36f7aabadebdaec053934fae03209de0f89d38d6f88d5dcaf069c0ab7cb6",
       "review": "Read Register, Refresh, Toggle, Start and navigation callbacks. Credits and report text are delegated to ForeverCore modules; no local FontObject is established. Dynamic NPC names, shared Thanks/report widgets and slash command handling are excluded.",
       "bindings": []
     },

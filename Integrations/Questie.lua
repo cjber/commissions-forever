@@ -82,11 +82,14 @@ local fitted
 local library
 ---@type CommissionsQuestieZones?
 local libraryZones
+-- Rises every time a different library is fitted, so a caller holding answers from the old one can tell.
+local generation = 0
 
 ---@return table?, CommissionsQuestieZones?
 local function Library()
 	local lib = LibQuestieDB
 	if lib ~= fitted then
+		generation = generation + 1
 		fitted, library, libraryZones, quests, categories, npcs = lib, nil, nil, {}, {}, {}
 		if type(lib) == "table" and type(lib.RequireContract) == "function" then
 			local ok, compatible = pcall(lib.RequireContract, CONTRACT)
@@ -141,30 +144,36 @@ function Questie.NPC(npcID)
 	if cached ~= nil then
 		return cached or nil
 	end
+	-- Only a reader that answered settles the cache: a missing reader, missing fields or a failed read is asked
+	-- again next time, never kept as "no such NPC".
+	if not (type(db.Npc) == "table" and type(db.Npc.GetAll) == "function") then
+		return nil
+	end
+	local fields = Fields(db, "Npc", { "name", "spawns", "zoneID" })
+	if not fields then
+		return nil
+	end
+	local ok, values = pcall(db.Npc.GetAll, npcID, fields)
+	if not ok then
+		return nil
+	end
 	local npc
-	if type(db.Npc) == "table" and type(db.Npc.GetAll) == "function" then
-		local fields = Fields(db, "Npc", { "name", "spawns", "zoneID" })
-		local ok, values
-		if fields then
-			ok, values = pcall(db.Npc.GetAll, npcID, fields)
-		end
-		if ok and type(values) == "table" and type(values[1]) == "string" then
-			npc = { name = values[1] }
-			local spawns = values[2]
-			if type(spawns) == "table" then
-				local area
-				for candidate, points in pairs(spawns) do
-					if type(candidate) == "number" and type(points) == "table" and (not area or candidate < area) then
-						area = candidate
-					end
+	if type(values) == "table" and type(values[1]) == "string" then
+		npc = { name = values[1] }
+		local spawns = values[2]
+		if type(spawns) == "table" then
+			local area
+			for candidate, points in pairs(spawns) do
+				if type(candidate) == "number" and type(points) == "table" and (not area or candidate < area) then
+					area = candidate
 				end
-				local spot = area and spawns[area] and spawns[area][1]
-				local mapID = Map(zones, area)
-				if type(spot) == "table" and mapID then
-					local x, y = tonumber(spot[1]), tonumber(spot[2])
-					if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
-						npc.map, npc.x, npc.y = mapID, x / 100, y / 100
-					end
+			end
+			local spot = area and spawns[area] and spawns[area][1]
+			local mapID = Map(zones, area)
+			if type(spot) == "table" and mapID then
+				local x, y = tonumber(spot[1]), tonumber(spot[2])
+				if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
+					npc.map, npc.x, npc.y = mapID, x / 100, y / 100
 				end
 			end
 		end
@@ -177,6 +186,14 @@ end
 ---@return boolean
 function Questie.Available()
 	return Library() ~= nil
+end
+
+-- The fitted library's generation: it rises when a different library is fitted, so a scan held from the old one
+-- is not reused.
+---@return integer
+function Questie.Generation()
+	Library()
+	return generation
 end
 
 -- An item objective's words without its count ("Runecloth: 3/10" reads "Runecloth"), so it can be matched by name.
