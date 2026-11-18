@@ -139,7 +139,7 @@ assert(npc.map == 2, "a subzone uses its overridden parent's map")
 local installed = rawget(_G, "LibQuestieDB")
 rawset(_G, "LibQuestieDB", nil)
 assert(not ns.Questie.Available(), "no library is unavailable")
-assert(next(ns.Questie.ActiveObjectives()) == nil, "no library lists no objectives")
+assert(next((ns.Questie.ActiveObjectives())) == nil, "no library lists no objectives")
 rawset(_G, "LibQuestieDB", installed)
 questReads = 0
 assert(#ns.Questie.ActiveObjectives() == 2 and questReads == 2, "a library that loads later is read again")

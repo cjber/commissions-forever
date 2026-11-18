@@ -251,13 +251,16 @@ local function Finishers(ids)
 	return copy
 end
 
----@return table[] active quest item objectives and finisher NPC IDs
+---@return table[] rows active quest item objectives and finisher NPC IDs
+---@return boolean read whether QuestieDB's quest fields were read, so the rows can stand until the log changes
+---@return table<integer, true> waiting the objective items whose names the client has not cached yet
 function Questie.ActiveObjectives()
 	local db = Library()
 	local fields = db and Fields(db, "Quest", { "name", "objectives", "finishedBy" })
 	if not (db and fields and C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo) then
-		return {}
+		return {}, false, {}
 	end
+	local waiting = {}
 	-- Older compatible contracts may omit this optional field.
 	local questMeta = db.Meta and db.Meta.QuestMeta
 	if questMeta and questMeta.questKeys and questMeta.questKeys.sourceItemId then
@@ -277,6 +280,9 @@ function Questie.ActiveObjectives()
 					local itemID = tonumber(itemObjective[1])
 					if itemID then
 						local name = C_Item.GetItemNameByID(itemID)
+						if not name then
+							waiting[itemID] = true
+						end
 						local objective = name and liveItems[name]
 						rows[#rows + 1] = {
 							questID = questID,
@@ -292,7 +298,7 @@ function Questie.ActiveObjectives()
 			end
 		end
 	end
-	return rows
+	return rows, true, waiting
 end
 
 -- Classify the completed ID after it has left the quest log. Titles never establish a completion.

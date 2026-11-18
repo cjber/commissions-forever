@@ -1,3 +1,3 @@
 ### Fixed
 
-- **Bag changes no longer rescan the whole quest log.** Moving or looting an item only recounts your bags now, so the materials ledger stays quick when your bags change often; the quest log is still rescanned the moment it changes or a new item name arrives.
+- **Bag changes no longer rescan the whole quest log.** Moving or looting an item only recounts your bags when the last quest scan is still current. The quest log is rescanned the moment it changes, when QuestieDB loads or is replaced, and when the name of a quest item the scan was waiting on arrives.

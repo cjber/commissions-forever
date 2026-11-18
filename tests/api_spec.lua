@@ -73,6 +73,7 @@ Toc.install(_G, "CommissionsForever")
 local materials
 local objectives = {}
 local objectiveScans = 0
+local waitingNames = {}
 local generation = 0
 local categories = {}
 local questieAvailable = true
@@ -101,7 +102,7 @@ local ns = {
 		end,
 		ActiveObjectives = function()
 			objectiveScans = objectiveScans + 1
-			return objectives
+			return objectives, questieAvailable, waitingNames
 		end,
 		CommissionCategory = function(questID)
 			return categories[questID]
@@ -341,4 +342,24 @@ foreverCore.APIKit = kit
 _G.CommissionsForever.API = API
 
 assert(kit.minor >= 1, "the kit's own minor is readable")
+-- An objective item whose name had not cached at the scan rescans when its name arrives; any other item does not.
+objectiveScans = 0
+waitingNames = { [4321] = true }
+fire("QUEST_LOG_UPDATE")
+objectiveScans = 0
+fire("GET_ITEM_INFO_RECEIVED", 9999)
+assert(objectiveScans == 0, "an unrelated item name does not rescan")
+fire("GET_ITEM_INFO_RECEIVED", 4321)
+assert(objectiveScans == 1, "a waited-on objective item's name rescans the quest log")
+waitingNames = {}
+-- QuestieDB loading after a scan that could not read it rescans once it can answer.
+questieAvailable = false
+fire("QUEST_LOG_UPDATE")
+questieAvailable = true
+objectiveScans = 0
+fire("ADDON_LOADED", "QuestieDB")
+assert(objectiveScans == 1, "a late QuestieDB rescans the quest log")
+fire("ADDON_LOADED", "SomeOtherAddon")
+assert(objectiveScans == 1, "a later addon load with a current scan does not rescan")
+
 print("Commissions Forever API specs passed")

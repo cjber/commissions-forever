@@ -55,7 +55,7 @@ function API.ActiveObjectives()
 	if not ns.Questie.Available() then
 		return APIKit.NotReady("loading")
 	end
-	return ns.Questie.ActiveObjectives()
+	return (ns.Questie.ActiveObjectives())
 end
 
 -- The window's have-versus-need rows as fresh rows; the internal turnIn table never leaves the addon. Before the first
