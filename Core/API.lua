@@ -73,7 +73,8 @@ end
 -- active, no finisher has a known place, Shortest Path Forever is not installed, or it declined to start.
 ---@return boolean
 function API.NavigateActiveAssignments()
-	return ns.NavigateActiveAssignments()
+	local started = ns.NavigateActiveAssignments()
+	return started
 end
 
 -- Fresh local observations of this character's own completion record.

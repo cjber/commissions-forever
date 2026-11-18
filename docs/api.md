@@ -48,8 +48,9 @@ Reconstructed from `git log -- Core/API.lua`.
 - `ActiveObjectives()` returns one fresh row per item objective of every quest in the current log that QuestieDB
   knows, commission or not, or `nil, reason`.
 - `Materials()` returns the window's have-versus-need rows as fresh rows, or `nil, reason`.
-- `NavigateActiveAssignments()` returns `true` when Shortest Path Forever accepted the active commissions' finishers
-  as one route, else `false`. It routes the addon's last refresh, which follows the game's bag and quest log events.
+- `NavigateActiveAssignments()` returns `true` when Shortest Path Forever accepted the finishers of every commission
+  in the quest log as one route, else `false`. It reads the log when called, so a commission with no item objective
+  is routed too.
 - `Stats()` returns one fresh local activity row.
 - `Subscribe(callback)` calls `callback(changes)` on the frame after the rows or completions it names changed, and
   returns an unsubscribe function.

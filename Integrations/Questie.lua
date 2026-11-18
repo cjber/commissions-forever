@@ -144,14 +144,24 @@ function Questie.NPC(npcID)
 	if type(spawns) ~= "table" then
 		return { name = values[1] }
 	end
-	local area
+	-- The lowest numbered area QuestieDB places on a map: an area with no map (an instance, or one QuestieDB
+	-- suppresses) leaves the NPC's other spawns to place it.
+	local areas = {}
 	for candidate, points in pairs(spawns) do
-		if type(candidate) == "number" and type(points) == "table" and (not area or candidate < area) then
-			area = candidate
+		if type(candidate) == "number" and type(points) == "table" then
+			areas[#areas + 1] = candidate
 		end
 	end
-	local spot = area and spawns[area] and spawns[area][1]
-	local mapID = Map(zones, area)
+	table.sort(areas)
+	local area, mapID
+	for _, candidate in ipairs(areas) do
+		mapID = Map(zones, candidate)
+		if mapID then
+			area = candidate
+			break
+		end
+	end
+	local spot = area and spawns[area][1]
 	if type(spot) == "table" and mapID then
 		local x, y = tonumber(spot[1]), tonumber(spot[2])
 		if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
@@ -222,47 +232,67 @@ local function Finishers(ids)
 	return copy
 end
 
----@return table[] active quest item objectives and finisher NPC IDs
-function Questie.ActiveObjectives()
+-- Calls `visit(info, quest)` for every quest in the log that QuestieDB has a row for.
+---@param visit fun(info: table, quest: CommissionsQuestieQuest)
+local function EachLogQuest(visit)
 	local db = Library()
 	local fields = db and Fields(db, "Quest", { "name", "objectives", "finishedBy" })
 	if not (db and fields and C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo) then
-		return {}
+		return
 	end
 	-- Older compatible contracts may omit this optional field.
 	local questMeta = db.Meta and db.Meta.QuestMeta
 	if questMeta and questMeta.questKeys and questMeta.questKeys.sourceItemId then
 		fields[#fields + 1] = "sourceItemId"
 	end
-	local shown = C_QuestLog.GetNumQuestLogEntries()
-	local rows = {}
-	for index = 1, shown do
+	for index = 1, C_QuestLog.GetNumQuestLogEntries() do
 		local info = C_QuestLog.GetInfo(index)
 		if info and not info.isHeader and info.questID then
-			local questID = info.questID
-			local quest = QuestRow(db, fields, questID)
+			local quest = QuestRow(db, fields, info.questID)
 			if quest then
-				local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
-				local liveItems = LiveItemsByName(live)
-				for _, itemObjective in ipairs(quest.objectives) do
-					local itemID = tonumber(itemObjective[1])
-					if itemID then
-						local name = C_Item.GetItemNameByID(itemID)
-						local objective = name and liveItems[name]
-						rows[#rows + 1] = {
-							questID = questID,
-							sourceItemID = quest.sourceItemID,
-							questName = quest.name or info.title or ("Quest " .. questID),
-							itemID = itemID,
-							required = objective and objective.numRequired,
-							finished = objective and objective.finished or false,
-							npcIDs = Finishers(quest.finishers),
-						}
-					end
-				end
+				visit(info, quest)
 			end
 		end
 	end
+end
+
+-- Every commission in the log with its finishers, whatever its objectives: kills and briefings have no item row in
+-- ActiveObjectives and still have someone to hand in to.
+---@return {questID: integer, npcIDs: integer[]}[]
+function Questie.ActiveCommissions()
+	local rows = {}
+	EachLogQuest(function(info, quest)
+		if Questie.CommissionCategory(info.questID) then
+			rows[#rows + 1] = { questID = info.questID, npcIDs = Finishers(quest.finishers) }
+		end
+	end)
+	return rows
+end
+
+---@return table[] active quest item objectives and finisher NPC IDs
+function Questie.ActiveObjectives()
+	local rows = {}
+	EachLogQuest(function(info, quest)
+		local questID = info.questID
+		local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
+		local liveItems = LiveItemsByName(live)
+		for _, itemObjective in ipairs(quest.objectives) do
+			local itemID = tonumber(itemObjective[1])
+			if itemID then
+				local name = C_Item.GetItemNameByID(itemID)
+				local objective = name and liveItems[name]
+				rows[#rows + 1] = {
+					questID = questID,
+					sourceItemID = quest.sourceItemID,
+					questName = quest.name or info.title or ("Quest " .. questID),
+					itemID = itemID,
+					required = objective and objective.numRequired,
+					finished = objective and objective.finished or false,
+					npcIDs = Finishers(quest.finishers),
+				}
+			end
+		end
+	end)
 	return rows
 end
 

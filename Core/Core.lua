@@ -44,23 +44,41 @@ function ns.Toggle()
 	end
 end
 
--- Every active commission's finishers, finished objectives included: those are the quests ready to hand in.
+-- Every commission in the log sends its finishers as one route, whatever its objectives: a kill or briefing
+-- assignment has no item row and still has someone to hand in to. A route that cannot start says why:
+-- "questie" (QuestieDB is not loaded), "none" (no commission in the log), "unplaced" (no finisher has a known place),
+-- "shortestPath" (Shortest Path Forever is not loaded) or "declined" (it would not start the route).
+---@return boolean, ("questie"|"none"|"unplaced"|"shortestPath"|"declined")?
 function ns.NavigateActiveAssignments()
+	if not ns.Questie.Available() then
+		return false, "questie"
+	end
+	local commissions = ns.Questie.ActiveCommissions()
+	if #commissions == 0 then
+		return false, "none"
+	end
 	local stops, seen = {}, {}
-	for _, row in ipairs(ns.ActiveObjectives or {}) do
-		if ns.Questie.CommissionCategory(row.questID) then
-			for _, npcID in ipairs(row.npcIDs or {}) do
-				if not seen[npcID] then
-					local npc = ns.Questie.NPC(npcID)
-					if npc and npc.map and npc.x and npc.y then
-						seen[npcID] = true
-						stops[#stops + 1] = { map = npc.map, x = npc.x, y = npc.y, title = npc.name, kind = "quest" }
-					end
+	for _, commission in ipairs(commissions) do
+		for _, npcID in ipairs(commission.npcIDs) do
+			if not seen[npcID] then
+				seen[npcID] = true
+				local npc = ns.Questie.NPC(npcID)
+				if npc and npc.map and npc.x and npc.y then
+					stops[#stops + 1] = { map = npc.map, x = npc.x, y = npc.y, title = npc.name, kind = "quest" }
 				end
 			end
 		end
 	end
-	return #stops > 0 and ns.ShortestPath.Navigate("CommissionsForever", stops)
+	if #stops == 0 then
+		return false, "unplaced"
+	end
+	if not ns.ShortestPath.Installed() then
+		return false, "shortestPath"
+	end
+	if not ns.ShortestPath.Navigate("CommissionsForever", stops) then
+		return false, "declined"
+	end
+	return true
 end
 
 local started = false
