@@ -1,10 +1,19 @@
 # Changelog
 
-## [0.4.10] - 2026-11-17
+## [0.4.10] - 2026-11-18
 
 <!-- forever-core-sync -->
 
 - Ships with the same shared code as your other Forever addons, so they keep working together.
+
+### Changed
+
+- **Updates are published on CurseForge and GitHub.** Wago publishing has ended, so install and update from CurseForge. (cjber/forever-core#649)
+
+### Fixed
+
+- **A turned-off ForeverCore is named as the problem.** With ForeverCore turned off, Commissions Forever now says so at login, instead of naming every other Forever addon as out of date. (cjber/forever-core#816)
+- **The addon compartment entry says why Commissions Forever stopped.** While Commissions Forever cannot start, clicking its entry repeats the line naming the fix instead of raising a Lua error.
 
 ## [0.4.9] - 2026-11-17
 
