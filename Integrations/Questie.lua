@@ -144,8 +144,8 @@ function Questie.NPC(npcID)
 	if type(spawns) ~= "table" then
 		return { name = values[1] }
 	end
-	-- The lowest numbered area QuestieDB places on a map: an area with no map (an instance, or one QuestieDB
-	-- suppresses) leaves the NPC's other spawns to place it.
+	-- The first valid spawn point of the lowest numbered area QuestieDB places on a map: an area with no map (an
+	-- instance, or one QuestieDB suppresses) or a point off the map leaves the NPC's other spawns to place it.
 	local areas = {}
 	for candidate, points in pairs(spawns) do
 		if type(candidate) == "number" and type(points) == "table" then
@@ -153,19 +153,13 @@ function Questie.NPC(npcID)
 		end
 	end
 	table.sort(areas)
-	local area, mapID
-	for _, candidate in ipairs(areas) do
-		mapID = Map(zones, candidate)
-		if mapID then
-			area = candidate
-			break
-		end
-	end
-	local spot = area and spawns[area][1]
-	if type(spot) == "table" and mapID then
-		local x, y = tonumber(spot[1]), tonumber(spot[2])
-		if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
-			return { name = values[1], map = mapID, x = x / 100, y = y / 100 }
+	for _, area in ipairs(areas) do
+		local mapID = Map(zones, area)
+		for _, spot in ipairs(mapID and spawns[area] or {}) do
+			local x, y = type(spot) == "table" and tonumber(spot[1]), type(spot) == "table" and tonumber(spot[2])
+			if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
+				return { name = values[1], map = mapID, x = x / 100, y = y / 100 }
+			end
 		end
 	end
 	return { name = values[1] }
@@ -257,16 +251,20 @@ local function EachLogQuest(visit)
 end
 
 -- Every commission in the log with its finishers, whatever its objectives: kills and briefings have no item row in
--- ActiveObjectives and still have someone to hand in to.
----@return {questID: integer, npcIDs: integer[]}[]
+-- ActiveObjectives and still have someone to hand in to. nil when QuestieDB cannot classify a quest in the log, so
+-- an unanswered quest never reads as "not a commission".
+---@return {questID: integer, npcIDs: integer[]}[]?
 function Questie.ActiveCommissions()
-	local rows = {}
+	local rows, unknown = {}, false
 	EachLogQuest(function(info, quest)
-		if Questie.CommissionCategory(info.questID) then
+		local category = Questie.Category(info.questID)
+		if category == nil then
+			unknown = true
+		elseif category then
 			rows[#rows + 1] = { questID = info.questID, npcIDs = Finishers(quest.finishers) }
 		end
 	end)
-	return rows
+	return not unknown and rows or nil
 end
 
 ---@return table[] active quest item objectives and finisher NPC IDs
@@ -398,18 +396,17 @@ local function Classify(questID)
 	return matched or false
 end
 
--- The commission category a quest ID belongs to, the same answer the window, the route and the completion record
--- use. Titles never classify a quest. The answer is kept per ID for the session.
+-- A quest's commission category, false for a quest that is not a commission, or nil when QuestieDB cannot answer
+-- yet. The answer is kept per ID for the session.
 ---@param questID integer
----@return string? category
-function Questie.CommissionCategory(questID)
+---@return string|false|nil
+function Questie.Category(questID)
 	if type(questID) ~= "number" or questID <= 0 or questID % 1 ~= 0 then
 		return nil
 	end
 	-- Fit the library first: a library that replaced the one read before clears the session's answers, not just the
 	-- next refresh's.
-	local db = Library()
-	if not db then
+	if not Library() then
 		return nil
 	end
 	---@type string|false|nil
@@ -421,7 +418,15 @@ function Questie.CommissionCategory(questID)
 		end
 		categories[questID] = category
 	end
-	return category or nil
+	return category
+end
+
+-- The commission category a quest ID belongs to, the same answer the window, the route and the completion record
+-- use. Titles never classify a quest.
+---@param questID integer
+---@return string? category
+function Questie.CommissionCategory(questID)
+	return Questie.Category(questID) or nil
 end
 
 return Questie

@@ -104,6 +104,7 @@ end
 questie = false
 Refused({ { questID = 7, npcIDs = { 7 } } }, "questie", "no QuestieDB")
 questie = true
+Refused(nil, "unclassified", "QuestieDB cannot classify a quest in the log")
 Refused({}, "none", "no commission in the log")
 assert(sent == nil, "no commission sends nothing")
 local npc = ns.Questie.NPC

@@ -23,6 +23,7 @@ local requestedItems = {}
 -- What the player can do about each reason the route did not start (ns.NavigateActiveAssignments).
 local ROUTE_REASONS = {
 	questie = L["Install QuestieDB to find where your commissions are handed in."],
+	unclassified = L["QuestieDB cannot tell which of your quests are commissions. Update QuestieDB."],
 	none = L["No quest in your log is a commission. Accept one, then try again."],
 	unplaced = L["QuestieDB does not know where your commissions are handed in."],
 	shortestPath = L["Install Shortest Path Forever to get a turn-in route."],
@@ -173,15 +174,9 @@ function Window.Refresh()
 	end
 	Window.list:SetHeight(math.max(1, shown * ROW_HEIGHT))
 	Window.empty:SetShown(shown == 0)
+	-- The last press's reason describes the log and bags before this refresh, so it goes with them.
+	Window.routeStatus:Hide()
 	Window.notice:SetShown(not ns.Questie.Available())
-end
-
--- A fresh visit to the page starts without the last press's reason.
-function Window.Selected()
-	if Window.routeStatus then
-		Window.routeStatus:Hide()
-	end
-	Window.Refresh()
 end
 
 local function Attach()
@@ -264,7 +259,7 @@ local function Attach()
 		tooltip = L["Commissions Forever"],
 		page = page,
 		minWidth = WINDOW_WIDTH,
-		onSelect = Window.Selected,
+		onSelect = Window.Refresh,
 		safeCall = ns.core.SafeCall,
 	})
 	-- A command asked for the page while the window was closed. The player opens the window with their own

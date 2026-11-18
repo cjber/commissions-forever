@@ -337,7 +337,7 @@ local commission = ProfessionTabs.registered.commissions
 assert(commission, "the window did not register its page with the shared tab owner")
 assert(commission.spec.page == window.page, "the registered page is not the materials page")
 assert(commission.spec.minWidth == 654, "the page did not ask for the window width its 584 list needs")
-assert(commission.spec.onSelect == window.Selected, "selecting the tab no longer goes through the page's own select")
+assert(commission.spec.onSelect == window.Refresh, "selecting the tab no longer refreshes the page")
 assert(commission.spec.safeCall == ns.core.SafeCall, "the page's selection callback is not in the addon journal")
 ns.Rows = {}
 for index = 1, 30 do
@@ -568,6 +568,7 @@ assert(not window.page.shown, "a character with no profession got a page waiting
 local routeChat = #chat
 for reason, phrase in pairs({
 	questie = "Install QuestieDB to find where your commissions are handed in.",
+	unclassified = "QuestieDB cannot tell which of your quests are commissions. Update QuestieDB.",
 	none = "No quest in your log is a commission. Accept one, then try again.",
 	unplaced = "QuestieDB does not know where your commissions are handed in.",
 	shortestPath = "Install Shortest Path Forever to get a turn-in route.",
@@ -592,7 +593,7 @@ ns.NavigateActiveAssignments = function()
 	return false, "none"
 end
 window.route.scripts.OnClick(window.route)
-window.Selected()
-assert(not window.routeStatus.shown, "a fresh visit to the page kept the last press's reason")
+window.Refresh()
+assert(not window.routeStatus.shown, "a refresh of the log or bags kept the last press's reason")
 
 print("Commissions Forever window specs passed")

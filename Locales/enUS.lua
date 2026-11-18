@@ -6,6 +6,7 @@ ns.L = {
 	["No tracked materials found"] = true,
 	["Open turn-in route"] = true,
 	["Install QuestieDB to find where your commissions are handed in."] = true,
+	["QuestieDB cannot tell which of your quests are commissions. Update QuestieDB."] = true,
 	["No quest in your log is a commission. Accept one, then try again."] = true,
 	["QuestieDB does not know where your commissions are handed in."] = true,
 	["Install Shortest Path Forever to get a turn-in route."] = true,

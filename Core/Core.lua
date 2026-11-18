@@ -46,14 +46,18 @@ end
 
 -- Every commission in the log sends its finishers as one route, whatever its objectives: a kill or briefing
 -- assignment has no item row and still has someone to hand in to. A route that cannot start says why:
--- "questie" (QuestieDB is not loaded), "none" (no commission in the log), "unplaced" (no finisher has a known place),
+-- "questie" (QuestieDB is not loaded), "unclassified" (it cannot classify a quest in the log), "none" (no commission
+-- in the log), "unplaced" (no finisher has a known place),
 -- "shortestPath" (Shortest Path Forever is not loaded) or "declined" (it would not start the route).
----@return boolean, ("questie"|"none"|"unplaced"|"shortestPath"|"declined")?
+---@return boolean, ("questie"|"unclassified"|"none"|"unplaced"|"shortestPath"|"declined")?
 function ns.NavigateActiveAssignments()
 	if not ns.Questie.Available() then
 		return false, "questie"
 	end
 	local commissions = ns.Questie.ActiveCommissions()
+	if not commissions then
+		return false, "unclassified"
+	end
 	if #commissions == 0 then
 		return false, "none"
 	end
