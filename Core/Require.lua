@@ -17,4 +17,4 @@ local ready = ForeverCore ~= nil
 	and type(tabsMinor) == "number"
 	and tabsMinor >= 2
 
-ns.ForeverRequire(ready)
+ns.ForeverRequire(ready, { key = "COMMISSIONSFOREVER", "/commissions" })
