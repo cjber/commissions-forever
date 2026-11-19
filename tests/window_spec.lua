@@ -564,4 +564,36 @@ assert(#chat == chatBefore, "the no-profession message went to chat")
 ProfessionsFrame:Show()
 assert(not window.page.shown, "a character with no profession got a page waiting for a window that cannot come")
 
+-- A press that sends no route names its reason in the window, never in chat (cjber/commissions-forever#350).
+local routeChat = #chat
+for reason, phrase in pairs({
+	questie = "Install QuestieDB to find where your commissions are handed in.",
+	unclassified = "QuestieDB cannot tell which of your quests are commissions. Update QuestieDB.",
+	none = "No quest in your log is a commission. Accept one, then try again.",
+	unplaced = "QuestieDB does not know where your commissions are handed in.",
+	shortestPath = "Install Shortest Path Forever to get a turn-in route.",
+	declined = "Shortest Path Forever could not start the route.",
+}) do
+	ns.NavigateActiveAssignments = function()
+		return false, reason
+	end
+	window.route.scripts.OnClick(window.route)
+	assert(
+		window.routeStatus.shown and window.routeStatus.text == ns.L[phrase],
+		reason .. " is not named in the window"
+	)
+end
+assert(#chat == routeChat, "a route that did not start wrote to chat")
+ns.NavigateActiveAssignments = function()
+	return true
+end
+window.route.scripts.OnClick(window.route)
+assert(not window.routeStatus.shown, "a started route still shows the last reason")
+ns.NavigateActiveAssignments = function()
+	return false, "none"
+end
+window.route.scripts.OnClick(window.route)
+window.Refresh()
+assert(not window.routeStatus.shown, "a refresh of the log or bags kept the last press's reason")
+
 print("Commissions Forever window specs passed")

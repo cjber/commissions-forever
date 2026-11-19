@@ -118,8 +118,9 @@ end""",
     return rows
 
 
-def window(ui, *, query="", bag_only=False):
-    rows = sample_rows("{}" if bag_only else OBJECTIVES)
+def window(ui, *, query="", bag_only=False, route_reason=None):
+    # A route reason is pressed with no commission in the log, so only bag materials are listed.
+    rows = sample_rows("{}" if bag_only or route_reason else OBJECTIVES)
     if query:
         needle = query.lower()
         rows = [row for row in rows if needle in ui.item(row["itemID"]).name.lower() or needle in row["source"].lower()]
@@ -180,6 +181,17 @@ def window(ui, *, query="", bag_only=False):
     )
     bx, by = px + WIDTH - 8 - 14 - 190, Y + HEIGHT - 4 - 10 - 24
     wowmock.ui_panel_button(canvas, bx, by, 190, 24, "Open turn-in route")
+    if route_reason:
+        # Window.routeStatus: 410 wide, its RIGHT 12 left of the button's LEFT, right-justified.
+        canvas.text(
+            bx - 12 - 410,
+            by,
+            route_reason,
+            wowmock.FONTS["GameFontHighlightSmall"],
+            box_height=24,
+            justify="RIGHT",
+            width=410,
+        )
     layout = {
         "frame": {"x": X, "y": Y, "w": WIDTH, "h": HEIGHT},
         "widgets": [
@@ -203,6 +215,9 @@ def main():
         "window.png": window(ui),
         "window-search.png": window(ui, query="Favor"),
         "window-bags.png": window(ui, bag_only=True),
+        "window-route.png": window(
+            ui, route_reason="No quest in your log is a commission. Accept one, then try again."
+        ),
     }
     scene_layouts = {}
     for name, (canvas, layout) in variants.items():

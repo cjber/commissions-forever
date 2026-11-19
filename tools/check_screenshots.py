@@ -20,6 +20,7 @@ SCENES = {
     "window.png": lambda: files(ROOT, WINDOW_SOURCES),
     "window-search.png": lambda: files(ROOT, WINDOW_SOURCES),
     "window-bags.png": lambda: files(ROOT, WINDOW_SOURCES),
+    "window-route.png": lambda: files(ROOT, WINDOW_SOURCES),
 }
 
 if __name__ == "__main__":

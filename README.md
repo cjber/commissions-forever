@@ -60,6 +60,8 @@ Install Commissions Forever from its GitHub release. QuestieDB, SkillUp Forever 
 
 Use `/commissions` to open its page in the Professions window. Choose **Open turn-in route** to send the active commission stops to Shortest Path Forever.
 
+The route needs QuestieDB, to know which quests in your log are commissions and where they are handed in, and Shortest Path Forever, to travel there. A commission counts whatever its objectives, kills and briefings included. When no route starts, the page says why beside the button.
+
 ## Data
 
 Turn-in materials are listed by item ID. Active quest requirements and NPC locations come from the current quest log and QuestieDB at runtime. Variable logistics assignments and writs are not guessed from their names.

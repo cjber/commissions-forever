@@ -152,6 +152,11 @@ assert(API.NavigateActiveAssignments(), "forwards turn-in routes to Shortest Pat
 assert(API.Stats()[1].value == 3, "exposes local completion observations")
 routed = false
 assert(API.NavigateActiveAssignments() == false, "no route is false, never nil")
+-- The internal route also says why it did not start; the published member stays one boolean.
+ns.NavigateActiveAssignments = function()
+	return false, "none"
+end
+assert(select("#", API.NavigateActiveAssignments()) == 1, "the route's reason stays inside the addon")
 
 -- Each not-ready reason goes through ForeverCore.APIKit.NotReady, so a caller reads it exactly as the suite's kit
 -- publishes it. An older caller that reads only the first value still sees nil.
