@@ -101,7 +101,7 @@
     },
     {
       "source": "Core/Core.lua",
-      "sha256": "198d672a106e81e7fed6e64f9a061274cee8ba4661bd2aeb3c10f4578b974e42",
+      "sha256": "554dd47044f62a3a49447d33f635acdfa759b91778759162e7f990944c48ca36",
       "review": "Read Register, Refresh, Toggle, Start and navigation callbacks. NavigateActiveAssignments returns reason keys only; UI/Window.lua owns their phrases. Credits and report text are delegated to ForeverCore modules; no local FontObject is established. Dynamic NPC names, shared Thanks/report widgets and slash command handling are excluded.",
       "bindings": []
     },
