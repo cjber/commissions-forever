@@ -69,11 +69,7 @@ function ns.Start()
 		return
 	end
 	started = true
-	CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
-	ns.core.Attach(CommissionsForeverDB)
-	if ns.StartStats then
-		ns.StartStats()
-	end
+	-- The slash command goes in first, so a startup error below still leaves /commissions answering.
 	_G.SLASH_COMMISSIONSFOREVER1 = "/commissions"
 	SlashCmdList.COMMISSIONSFOREVER = function(message)
 		local command = (message or ""):lower():match("^%s*(.-)%s*$")
@@ -81,6 +77,11 @@ function ns.Start()
 			return
 		end
 		ns.Toggle()
+	end
+	CommissionsForeverDB = type(CommissionsForeverDB) == "table" and CommissionsForeverDB or {}
+	ns.core.Attach(CommissionsForeverDB)
+	if ns.StartStats then
+		ns.StartStats()
 	end
 	ns.Refresh()
 end
