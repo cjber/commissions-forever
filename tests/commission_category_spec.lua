@@ -130,6 +130,38 @@ rawset(_G, "LibQuestieDB", replacement)
 assert(ns.Questie.CommissionCategory(cached) == nil, "a replaced library forgets the old classifications")
 row = Objective(59, 11370)
 
+-- The route lists a briefing commission whose only objective is a kill through the real classifier, from the log
+-- (cjber/commissions-forever#350): it has no item row, and QuestieDB still names it a commission.
+keys.name = #fields + 1
+local logID = NewID()
+row = { 1, { { 42 } }, { { 609, 10 } }, { [1] = { { 11880, "Twilight Avenger slain" } } }, 20807, { [3] = { 20807 } } }
+reverseID = logID
+replacement.Quest = {
+	GetAll = function(_, requested)
+		if requested[1] == "name" then
+			return { "Combat Assignment", row[4], row[2] }
+		end
+		return db.Quest.GetAll(_, requested)
+	end,
+}
+rawset(_G, "C_QuestLog", {
+	GetNumQuestLogEntries = function()
+		return 1
+	end,
+	GetInfo = function()
+		return { questID = logID, title = "Combat Assignment" }
+	end,
+})
+local listedCommissions = ns.Questie.ActiveCommissions()
+assert(
+	listedCommissions and #listedCommissions == 1 and listedCommissions[1].questID == logID,
+	"a kill-only briefing commission in the log is listed"
+)
+assert(listedCommissions[1].npcIDs[1] == 42, "with its finisher")
+reverseID = nil
+rawset(_G, "C_QuestLog", nil)
+keys.name = nil
+
 rawset(_G, "LibQuestieDB", nil)
 Check(nil, "missing companion records nothing")
 print("Commissions stable-ID category specs passed")

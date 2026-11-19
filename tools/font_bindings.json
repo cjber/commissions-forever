@@ -3,8 +3,8 @@
   "producers": [
     {
       "source": "UI/Window.lua",
-      "sha256": "44038f501a6e7fc235822b0b6447277a4ab1c728be17b834ba6a698273b582ae",
-      "review": "Read Text, Row, Refresh, Attach, Open, Toggle and event callbacks, plus Core/Core.lua Refresh and toggle callers. Text explicitly assigns GameFontNormalLarge to the page heading, GameFontDisableSmall to notice/empty, GameFontNormalSmall to column headings, and GameFontHighlight to row.name including the Item %d fallback. No later font setters occur. Pinned Blizzard client b401e0332adfbf0460d319b06d8ea29279a941f1, Blizzard_SharedXML/Shared/Button/ThreeSliceButtonTemplate.xml: SharedButtonSmallTemplate declares normal/highlight/disabled GameFontNormal/GameFontHighlight/GameFontDisable for route. Tooltip/tab tooltip, chat and UIErrorsFrame messages, user search input, dynamic item/faction names and counts are excluded. AGENTS.md declares no custom font files; no custom font-file assignments occur in this repo.",
+      "sha256": "ad1b85767ebf821c092c9bccab747e006bf0e123dc1511e6ea879094c53b38ca",
+      "review": "Read Text, Row, Refresh, Attach, Open, Toggle and event callbacks, plus Core/Core.lua Refresh and toggle callers. Text explicitly assigns GameFontNormalLarge to the page heading, GameFontDisableSmall to notice/empty, GameFontNormalSmall to column headings, and GameFontHighlight to row.name including the Item %d fallback, and GameFontHighlightSmall to Window.routeStatus, whose only text is a ROUTE_REASONS phrase set in the route button OnClick. No later font setters occur. Pinned Blizzard client b401e0332adfbf0460d319b06d8ea29279a941f1, Blizzard_SharedXML/Shared/Button/ThreeSliceButtonTemplate.xml: SharedButtonSmallTemplate declares normal/highlight/disabled GameFontNormal/GameFontHighlight/GameFontDisable for route. Tooltip/tab tooltip, chat and UIErrorsFrame messages, user search input, dynamic item/faction names and counts are excluded. AGENTS.md declares no custom font files; no custom font-file assignments occur in this repo.",
       "bindings": [
         {
           "font": "GameFontNormalLarge",
@@ -60,6 +60,36 @@
           "font": "GameFontDisable",
           "widget": "Attach route button",
           "phrase": "Open turn-in route"
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.routeStatus",
+          "phrase": "Install QuestieDB to find where your commissions are handed in."
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.routeStatus",
+          "phrase": "QuestieDB cannot tell which of your quests are commissions. Update QuestieDB."
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.routeStatus",
+          "phrase": "No quest in your log is a commission. Accept one, then try again."
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.routeStatus",
+          "phrase": "QuestieDB does not know where your commissions are handed in."
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.routeStatus",
+          "phrase": "Install Shortest Path Forever to get a turn-in route."
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.routeStatus",
+          "phrase": "Shortest Path Forever could not start the route."
         }
       ]
     },
@@ -71,8 +101,8 @@
     },
     {
       "source": "Core/Core.lua",
-      "sha256": "b224f67b3f41653463610d0d90c0fa65dd9e364c650664752ca21ddfa2b753ec",
-      "review": "Read Register, Refresh, Toggle, Start and navigation callbacks. Credits and report text are delegated to ForeverCore modules; no local FontObject is established. Dynamic NPC names, shared Thanks/report widgets and slash command handling are excluded.",
+      "sha256": "198d672a106e81e7fed6e64f9a061274cee8ba4661bd2aeb3c10f4578b974e42",
+      "review": "Read Register, Refresh, Toggle, Start and navigation callbacks. NavigateActiveAssignments returns reason keys only; UI/Window.lua owns their phrases. Credits and report text are delegated to ForeverCore modules; no local FontObject is established. Dynamic NPC names, shared Thanks/report widgets and slash command handling are excluded.",
       "bindings": []
     },
     {

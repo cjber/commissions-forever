@@ -47,7 +47,8 @@
   "scenes": [
     "window.png",
     "window-search.png",
-    "window-bags.png"
+    "window-bags.png",
+    "window-route.png"
   ],
   "scene_layouts": {
     "window.png": {
@@ -145,6 +146,53 @@
       }
     },
     "window-bags.png": {
+      "frame": {
+        "x": 24,
+        "y": 24,
+        "w": 673,
+        "h": 594
+      },
+      "widgets": [
+        {
+          "name": "search",
+          "role": "input",
+          "x": 50,
+          "y": 100,
+          "w": 250,
+          "h": 20
+        },
+        {
+          "name": "ledger",
+          "role": "list",
+          "x": 42,
+          "y": 130,
+          "w": 637,
+          "h": 440
+        },
+        {
+          "name": "route",
+          "role": "button",
+          "x": 489,
+          "y": 580,
+          "w": 190,
+          "h": 24
+        },
+        {
+          "name": "page tab",
+          "role": "tabs",
+          "x": 697,
+          "y": 140,
+          "w": 55,
+          "h": 55
+        }
+      ],
+      "canvas": {
+        "width": 765,
+        "height": 642,
+        "scale": 2
+      }
+    },
+    "window-route.png": {
       "frame": {
         "x": 24,
         "y": 24,
