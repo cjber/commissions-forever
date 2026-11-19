@@ -20,6 +20,16 @@ local pendingOpen = false -- a command during combat, retried when combat ends
 local pendingPage = false -- a command's page, waiting for the player to open their profession
 local requestedItems = {}
 
+-- What the player can do about each reason the route did not start (ns.NavigateActiveAssignments).
+local ROUTE_REASONS = {
+	questie = L["Install QuestieDB to find where your commissions are handed in."],
+	unclassified = L["QuestieDB cannot tell which of your quests are commissions. Update QuestieDB."],
+	none = L["No quest in your log is a commission. Accept one, then try again."],
+	unplaced = L["QuestieDB does not know where your commissions are handed in."],
+	shortestPath = L["Install Shortest Path Forever to get a turn-in route."],
+	declined = L["Shortest Path Forever could not start the route."],
+}
+
 local function IsTrackedItem(itemID)
 	for _, row in ipairs(ns.Rows or {}) do
 		if row.itemID == itemID then
@@ -164,6 +174,8 @@ function Window.Refresh()
 	end
 	Window.list:SetHeight(math.max(1, shown * ROW_HEIGHT))
 	Window.empty:SetShown(shown == 0)
+	-- The last press's reason describes the log and bags before this refresh, so it goes with them.
+	Window.routeStatus:Hide()
 	Window.notice:SetShown(not ns.Questie.Available())
 end
 
@@ -227,10 +239,18 @@ local function Attach()
 	route:SetSize(190, 24)
 	route:SetPoint("BOTTOMRIGHT", -14, 10)
 	route:SetText(L["Open turn-in route"])
+	Window.route = route
+	-- Why the last press sent no route, beside the button, so the player sees what to do next.
+	Window.routeStatus = Text(page, "GameFontHighlightSmall", 22, 0, 410)
+	Window.routeStatus:ClearAllPoints()
+	Window.routeStatus:SetPoint("RIGHT", route, "LEFT", -12, 0)
+	Window.routeStatus:SetJustifyH("RIGHT")
+	Window.routeStatus:SetWordWrap(true)
+	Window.routeStatus:Hide()
 	route:SetScript("OnClick", function()
-		if not ns.NavigateActiveAssignments() then
-			DEFAULT_CHAT_FRAME:AddMessage(L["No active commission route is available."])
-		end
+		local started, reason = ns.NavigateActiveAssignments()
+		Window.routeStatus:SetText(started and "" or ROUTE_REASONS[reason])
+		Window.routeStatus:SetShown(not started)
 	end)
 	-- The shared tab owner creates and places the tab under the client's own tabs, and hands the window back from
 	-- every native tab and page. This page only declares what it is and how wide it needs the window.

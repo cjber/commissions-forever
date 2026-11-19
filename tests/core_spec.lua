@@ -68,37 +68,62 @@ local identity = Toc.get("CommissionsForever", "X-Forever-Icon")
 assert(identity and identity ~= "", "the TOC declares the addon's identity icon")
 assert(ns.ICON == identity, "Core reads the TOC's identity icon once onto the namespace")
 
-local function Route(objectives)
-	sent = nil
-	ns.ActiveObjectives = objectives
+-- What the route reads: QuestieDB, the log's commissions with their finishers, and Shortest Path Forever.
+local questie, commissions, installed, accepts = true, {}, true, true
+ns.Questie.Available = function()
+	return questie
+end
+ns.Questie.ActiveCommissions = function()
+	return commissions
+end
+ns.ShortestPath.Installed = function()
+	return installed
+end
+ns.ShortestPath.Navigate = function(_, stops)
+	sent = stops
+	return accepts
+end
+
+local function Route(list)
+	sent, commissions = nil, list
 	return ns.NavigateActiveAssignments()
 end
 
+assert(Route({ { questID = 7, npcIDs = { 7 } } }) and #sent == 1, "a commission routes to its finisher")
+-- The route never reads the window's item rows: a commission with no item objective has none and still routes
+-- (cjber/commissions-forever#350).
+ns.ActiveObjectives = {}
+assert(Route({ { questID = 7, npcIDs = { 7 } } }) and #sent == 1, "a commission with no item row routes")
 assert(
-	Route({ { questID = 7, finished = true, npcIDs = { 7 } } }) and #sent == 1,
-	"a commission ready to hand in routes to its finisher"
+	Route({ { questID = 7, npcIDs = { 7 } }, { questID = 9, npcIDs = { 7, 9 } } }) and #sent == 2,
+	"a finisher shared by two commissions is one stop"
 )
-assert(
-	Route({ { questID = 7, finished = false, npcIDs = { 7 } } }) and #sent == 1,
-	"a commission still being collected routes to its finisher"
-)
-assert(Route({
-	{ questID = 7, finished = true, npcIDs = { 7 } },
-	{ questID = 7, finished = false, npcIDs = { 7 } },
-}) and #sent == 1, "a finisher shared by two objectives is one stop")
--- A title never routes a quest: only QuestieDB's classification of its ID does (cjber/commissions-forever#200).
-assert(
-	not Route({ { questID = 8, questName = "Feathers for Nafien", finished = true, npcIDs = { 8 } } }) and sent == nil,
-	"a quest whose title matches a turn-in but is not classified sends no route"
-)
-assert(
-	Route({ { questID = 7, questName = "The Missing Diplomat", finished = true, npcIDs = { 7 } } }) and #sent == 1,
-	"a classified commission routes whatever its title"
-)
-assert(
-	not Route({ { questID = 8, finished = true, npcIDs = { 8 } } }) and sent == nil,
-	"an unrelated quest sends no route"
-)
+
+-- Each way the route cannot start names its own reason, so the window can tell the player what to do.
+local function Refused(list, want, name)
+	local ok, reason = Route(list)
+	assert(ok == false and reason == want, name .. ": got " .. tostring(ok) .. ", " .. tostring(reason))
+end
+questie = false
+Refused({ { questID = 7, npcIDs = { 7 } } }, "questie", "no QuestieDB")
+questie = true
+Refused(nil, "unclassified", "QuestieDB cannot classify a quest in the log")
+Refused({}, "none", "no commission in the log")
+assert(sent == nil, "no commission sends nothing")
+local npc = ns.Questie.NPC
+ns.Questie.NPC = function(npcID)
+	return { name = "NPC " .. npcID }
+end
+Refused({ { questID = 7, npcIDs = { 7 } } }, "unplaced", "no finisher has a place")
+Refused({ { questID = 7, npcIDs = {} } }, "unplaced", "no finisher at all")
+ns.Questie.NPC = npc
+installed = false
+Refused({ { questID = 7, npcIDs = { 7 } } }, "shortestPath", "no Shortest Path Forever")
+assert(sent == nil, "nothing is sent without Shortest Path Forever")
+installed = true
+accepts = false
+Refused({ { questID = 7, npcIDs = { 7 } } }, "declined", "Shortest Path Forever declined")
+accepts = true
 
 -- Every refresh tells the API's hub that the rows may have changed; the hub compares them itself.
 local announced

@@ -125,6 +125,24 @@ local npcCases = {
 		getAll = Npc({ [120] = { { 101, 50 } } }),
 		want = NAME_ONLY,
 	},
+	{
+		-- An area QuestieDB places on no map (an instance, say) falls through to the next one that is placed.
+		name = "the lowest area with a map wins",
+		getAll = Npc({ [110] = { { 10, 20 } }, [120] = { { 43, 61 } } }),
+		support = ZoneDB("return {[120] = 1}", "return {}"),
+		want = { name = "Quartermaster", map = 1, x = 0.43, y = 0.61 },
+	},
+	{
+		name = "a point off the map falls through to the area's next point",
+		getAll = Npc({ [120] = { { 101, 50 }, { 43, 61 } } }),
+		want = { name = "Quartermaster", map = 1, x = 0.43, y = 0.61 },
+	},
+	{
+		name = "an area with no valid point falls through to the next mapped area",
+		getAll = Npc({ [120] = { { 101, 50 } }, [130] = { { 10, 20 } } }),
+		support = ZoneDB("return {[120] = 1, [130] = 2}", "return {}"),
+		want = { name = "Quartermaster", map = 2, x = 0.1, y = 0.2 },
+	},
 	{ name = "a negative coordinate keeps the name only", getAll = Npc({ [120] = { { 50, -1 } } }), want = NAME_ONLY },
 	{ name = "no spawns keeps the name only", getAll = Npc(nil), want = NAME_ONLY },
 	{
@@ -172,9 +190,38 @@ for _, case in ipairs(npcCases) do
 end
 rawset(_G, "LibQuestieDB", db)
 
+-- The route reads every commission in the log by its ID, item objectives or not: a commission whose objectives are
+-- kills or a briefing alone has no item row, and still has a finisher to hand in to (cjber/commissions-forever#350).
+local classify = ns.Questie.Category
+local unanswered = false
+ns.Questie.Category = function(questID)
+	if unanswered then
+		return nil
+	end
+	return questID == 126 and "cenarionCircle" or false
+end
+questDB.GetAll = function()
+	return { "Combat Assignment", { [1] = { { 11880, "Twilight Avenger slain" } } }, { { 42 }, {} } }
+end
+log.questID = 126
+assert(#ns.Questie.ActiveObjectives() == 0, "a commission with no item objective has no item row")
+local commissions = ns.Questie.ActiveCommissions()
+assert(#commissions == 1 and commissions[1].questID == 126, "a commission with no item objective is still listed")
+assert(commissions[1].npcIDs[1] == 42 and #commissions[1].npcIDs == 1, "it carries its finishers")
+commissions[1].npcIDs[1] = 7
+assert(ns.Questie.ActiveCommissions()[1].npcIDs[1] == 42, "each list is a fresh copy")
+log.questID = 125
+assert(#ns.Questie.ActiveCommissions() == 0, "a quest that is not a commission is not listed")
+-- A quest QuestieDB cannot classify is no answer, never "not a commission".
+unanswered = true
+assert(ns.Questie.ActiveCommissions() == nil, "an unclassifiable quest in the log answers nothing")
+ns.Questie.Category = classify
+questDB.GetAll = questieGetAll
+
 rawset(_G, "LibQuestieDB", nil)
 assert(not ns.Questie.Available(), "QuestieDB is unavailable without the library")
 assert(next((ns.Questie.ActiveObjectives())) == nil, "no library lists no objectives")
+assert(next(ns.Questie.ActiveCommissions()) == nil, "no library lists no commissions")
 assert(ns.Questie.NPC(42) == nil, "no library finds no NPC")
 rawset(_G, "LibQuestieDB", db)
 print("Commissions Forever Questie specs passed")

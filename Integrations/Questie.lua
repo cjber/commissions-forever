@@ -157,29 +157,35 @@ function Questie.NPC(npcID)
 	if not ok then
 		return nil
 	end
-	local npc
+	local npc = false
 	if type(values) == "table" and type(values[1]) == "string" then
 		npc = { name = values[1] }
 		local spawns = values[2]
-		if type(spawns) == "table" then
-			local area
-			for candidate, points in pairs(spawns) do
-				if type(candidate) == "number" and type(points) == "table" and (not area or candidate < area) then
-					area = candidate
-				end
+		-- The first valid spawn point of the lowest numbered area QuestieDB places on a map: an area with no map (an
+		-- instance, or one QuestieDB suppresses) or a point off the map leaves the NPC's other spawns to place it.
+		local areas = {}
+		for candidate, points in pairs(type(spawns) == "table" and spawns or {}) do
+			if type(candidate) == "number" and type(points) == "table" then
+				areas[#areas + 1] = candidate
 			end
-			local spot = area and spawns[area] and spawns[area][1]
+		end
+		table.sort(areas)
+		for _, area in ipairs(areas) do
 			local mapID = Map(zones, area)
-			if type(spot) == "table" and mapID then
-				local x, y = tonumber(spot[1]), tonumber(spot[2])
+			for _, spot in ipairs(mapID and spawns[area] or {}) do
+				local x, y = type(spot) == "table" and tonumber(spot[1]), type(spot) == "table" and tonumber(spot[2])
 				if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
 					npc.map, npc.x, npc.y = mapID, x / 100, y / 100
+					break
 				end
+			end
+			if npc.map then
+				break
 			end
 		end
 	end
-	npcs[npcID] = npc or false
-	return npc
+	npcs[npcID] = npc
+	return npc or nil
 end
 
 -- QuestieDB is the only source of quest requirements and NPC places, so the window says when it is missing.
@@ -251,54 +257,79 @@ local function Finishers(ids)
 	return copy
 end
 
----@return table[] rows active quest item objectives and finisher NPC IDs
----@return boolean read whether QuestieDB's quest fields were read, so the rows can stand until the log changes
----@return table<integer, true> waiting the objective items whose names the client has not cached yet
-function Questie.ActiveObjectives()
+-- Calls `visit(info, quest)` for every quest in the log that QuestieDB has a row for.
+---@param visit fun(info: table, quest: CommissionsQuestieQuest)
+---@return boolean read whether QuestieDB's quest fields could be read
+local function EachLogQuest(visit)
 	local db = Library()
 	local fields = db and Fields(db, "Quest", { "name", "objectives", "finishedBy" })
 	if not (db and fields and C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo) then
-		return {}, false, {}
+		return false
 	end
-	local waiting = {}
 	-- Older compatible contracts may omit this optional field.
 	local questMeta = db.Meta and db.Meta.QuestMeta
 	if questMeta and questMeta.questKeys and questMeta.questKeys.sourceItemId then
 		fields[#fields + 1] = "sourceItemId"
 	end
-	local shown = C_QuestLog.GetNumQuestLogEntries()
-	local rows = {}
-	for index = 1, shown do
+	for index = 1, C_QuestLog.GetNumQuestLogEntries() do
 		local info = C_QuestLog.GetInfo(index)
 		if info and not info.isHeader and info.questID then
-			local questID = info.questID
-			local quest = QuestRow(db, fields, questID)
+			local quest = QuestRow(db, fields, info.questID)
 			if quest then
-				local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
-				local liveItems = LiveItemsByName(live)
-				for _, itemObjective in ipairs(quest.objectives) do
-					local itemID = tonumber(itemObjective[1])
-					if itemID then
-						local name = C_Item.GetItemNameByID(itemID)
-						if not name then
-							waiting[itemID] = true
-						end
-						local objective = name and liveItems[name]
-						rows[#rows + 1] = {
-							questID = questID,
-							sourceItemID = quest.sourceItemID,
-							questName = quest.name or info.title or ("Quest " .. questID),
-							itemID = itemID,
-							required = objective and objective.numRequired,
-							finished = objective and objective.finished or false,
-							npcIDs = Finishers(quest.finishers),
-						}
-					end
-				end
+				visit(info, quest)
 			end
 		end
 	end
-	return rows, true, waiting
+	return true
+end
+
+-- Every commission in the log with its finishers, whatever its objectives: kills and briefings have no item row in
+-- ActiveObjectives and still have someone to hand in to. nil when QuestieDB cannot classify a quest in the log, so
+-- an unanswered quest never reads as "not a commission".
+---@return {questID: integer, npcIDs: integer[]}[]?
+function Questie.ActiveCommissions()
+	local rows, unknown = {}, false
+	EachLogQuest(function(info, quest)
+		local category = Questie.Category(info.questID)
+		if category == nil then
+			unknown = true
+		elseif category then
+			rows[#rows + 1] = { questID = info.questID, npcIDs = Finishers(quest.finishers) }
+		end
+	end)
+	return not unknown and rows or nil
+end
+
+---@return table[] rows active quest item objectives and finisher NPC IDs
+---@return boolean read whether QuestieDB's quest fields were read, so the rows can stand until the log changes
+---@return table<integer, true> waiting the objective items whose names the client has not cached yet
+function Questie.ActiveObjectives()
+	local rows, waiting = {}, {}
+	local read = EachLogQuest(function(info, quest)
+		local questID = info.questID
+		local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
+		local liveItems = LiveItemsByName(live)
+		for _, itemObjective in ipairs(quest.objectives) do
+			local itemID = tonumber(itemObjective[1])
+			if itemID then
+				local name = C_Item.GetItemNameByID(itemID)
+				if not name then
+					waiting[itemID] = true
+				end
+				local objective = name and liveItems[name]
+				rows[#rows + 1] = {
+					questID = questID,
+					sourceItemID = quest.sourceItemID,
+					questName = quest.name or info.title or ("Quest " .. questID),
+					itemID = itemID,
+					required = objective and objective.numRequired,
+					finished = objective and objective.finished or false,
+					npcIDs = Finishers(quest.finishers),
+				}
+			end
+		end
+	end)
+	return rows, read, waiting
 end
 
 -- Classify the completed ID after it has left the quest log. Titles never establish a completion.
@@ -403,18 +434,17 @@ local function Classify(questID)
 	return matched or false
 end
 
--- The commission category a quest ID belongs to, the same answer the window, the route and the completion record
--- use. Titles never classify a quest. The answer is kept per ID for the session.
+-- A quest's commission category, false for a quest that is not a commission, or nil when QuestieDB cannot answer
+-- yet. The answer is kept per ID for the session.
 ---@param questID integer
----@return string? category
-function Questie.CommissionCategory(questID)
+---@return string|false|nil
+function Questie.Category(questID)
 	if type(questID) ~= "number" or questID <= 0 or questID % 1 ~= 0 then
 		return nil
 	end
 	-- Fit the library first: a library that replaced the one read before clears the session's answers, not just the
 	-- next refresh's.
-	local db = Library()
-	if not db then
+	if not Library() then
 		return nil
 	end
 	---@type string|false|nil
@@ -426,7 +456,15 @@ function Questie.CommissionCategory(questID)
 		end
 		categories[questID] = category
 	end
-	return category or nil
+	return category
+end
+
+-- The commission category a quest ID belongs to, the same answer the window, the route and the completion record
+-- use. Titles never classify a quest.
+---@param questID integer
+---@return string? category
+function Questie.CommissionCategory(questID)
+	return Questie.Category(questID) or nil
 end
 
 return Questie
