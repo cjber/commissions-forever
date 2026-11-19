@@ -37,6 +37,13 @@ local scannedGeneration ---@type integer?
 -- arriving for one of them rescans.
 local waitingNames = {} ---@type table<integer, true>
 
+-- Whether the last scan is waiting on this item's name: Core rescans when it arrives, so other listeners leave it.
+---@param itemID integer?
+---@return boolean
+function ns.AwaitingName(itemID)
+	return waitingNames[tonumber(itemID)] == true
+end
+
 ---@param scanObjectives boolean? true when the quest log or the item names it matches on may have changed
 function ns.Refresh(scanObjectives)
 	local generation = ns.Questie.Generation and ns.Questie.Generation()
@@ -121,7 +128,7 @@ addon:SetScript("OnEvent", function(_, event, arg)
 			end
 		end
 	elseif event == "GET_ITEM_INFO_RECEIVED" then
-		if ns.Refreshed and waitingNames[tonumber(arg)] then
+		if ns.Refreshed and ns.AwaitingName(arg) then
 			ns.Refresh(true)
 		end
 	else

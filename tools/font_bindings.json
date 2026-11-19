@@ -3,7 +3,7 @@
   "producers": [
     {
       "source": "UI/Window.lua",
-      "sha256": "71fc03fadfc8dc8e678f9dfdd6771695c50f938dea4ee8a3cf46907a7ffbda26",
+      "sha256": "c02122eaf18cd3072405a8c588954d6b3746a41649f9dcca6ef613732682afe9",
       "review": "Read Text, Row, Refresh, Attach, Open, Toggle and event callbacks, plus Core/Core.lua Refresh and toggle callers. Text explicitly assigns GameFontNormalLarge to the page heading, GameFontDisableSmall to notice/empty, GameFontNormalSmall to column headings, and GameFontHighlight to row.name including the Item %d fallback. No later font setters occur. Pinned Blizzard client b401e0332adfbf0460d319b06d8ea29279a941f1, Blizzard_SharedXML/Shared/Button/ThreeSliceButtonTemplate.xml: SharedButtonSmallTemplate declares normal/highlight/disabled GameFontNormal/GameFontHighlight/GameFontDisable for route. Tooltip/tab tooltip, chat and UIErrorsFrame messages, user search input, dynamic item/faction names and counts are excluded. AGENTS.md declares no custom font files; no custom font-file assignments occur in this repo.",
       "bindings": [
         {
@@ -71,7 +71,7 @@
     },
     {
       "source": "Core/Core.lua",
-      "sha256": "572a3bd9efc24bc2e32b50faf88febf5261fd4b708c2739e6409907500b89b1a",
+      "sha256": "4a73b3e2ecb3586755716226a6cc560f613e5ab9261b5d585ade01643fce88a8",
       "review": "Read Register, Refresh, Toggle, Start and navigation callbacks. Credits and report text are delegated to ForeverCore modules; no local FontObject is established. Dynamic NPC names, shared Thanks/report widgets and slash command handling are excluded.",
       "bindings": []
     },

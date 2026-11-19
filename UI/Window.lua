@@ -326,8 +326,10 @@ events:SetScript("OnEvent", function(_, event, name)
 	if event == "ADDON_LOADED" and name == "Blizzard_Professions" then
 		Attach()
 	elseif event == "GET_ITEM_INFO_RECEIVED" and (requestedItems[name] or IsTrackedItem(name)) then
-		-- A name that just cached can be the one the quest log scan matches objectives by, so rescan it.
-		ns.Refresh(true)
+		-- A name the quest log scan waits on is rescanned by Core's own handler; any other only redraws its row.
+		if not ns.AwaitingName(name) then
+			ns.Refresh()
+		end
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		if pendingOpen then
 			pendingOpen = false
