@@ -1,10 +1,14 @@
 # Changelog
 
-## [0.4.12] - 2026-11-18
+## [0.4.12] - 2026-11-19
 
 <!-- forever-core-sync -->
 
 - Ships with the same shared code as your other Forever addons, so they keep working together.
+
+### Fixed
+
+- **Open turn-in route finds every commission in your quest log.** Commissions whose objectives are kills or a briefing, with no item to bring, were left out, so the button could say no route was available with commissions open. A turn-in NPC whose first listed spawn has no map position is now placed from its other spawns. When no route starts, the page now says why beside the button: QuestieDB or Shortest Path Forever is missing, QuestieDB cannot tell which quests are commissions, no quest in your log is a commission, or QuestieDB does not know where they are handed in. (#350)
 
 ## [0.4.11] - 2026-11-18
 
