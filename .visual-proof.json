@@ -1,15 +1,15 @@
 {
-  "input_digest": "0a5d5067a603e89d46cac4a2a47d3a920085203fef4bff650609826e7705c3bd",
-  "runtime_sha256": "0a5d5067a603e89d46cac4a2a47d3a920085203fef4bff650609826e7705c3bd",
-  "candidate": "04b85b4d8c05db7d7aec8d4528ab81c0baeb5d4616e5feb33e3b2266f1ef5f26",
+  "input_digest": "53a8ead02b1ccacce5944e523de565a1a86153d340d6867a5b2807dbbf209b39",
+  "runtime_sha256": "53a8ead02b1ccacce5944e523de565a1a86153d340d6867a5b2807dbbf209b39",
+  "candidate": "82ecbdb1e4f1d1dd7463a5595a1339d588fc5e4d4d8ae390ce4d8910fa1d4cf5",
   "client_build": "1.60.1.70959 (Interface 16001)",
   "tested_artifact": "source-tree",
-  "source_commit": "db34f11367c0e811502a8e2a1f5f4aca15f4f7bf",
+  "source_commit": "39f23801c240a1beb1c2d9ea475ee7444e76a405",
   "flows": [
     {
       "name": "compartment",
       "steps": [
-        "sha256:834d792696ef5cba2e4354107e19fbd1198526f513def18a062d4b5bfcf39512 commissions-forever.lua"
+        "sha256:d5cbf180999a691d003721ccbc3d8ad3dc4395853d4009068612a86d4bb1a8d9 commissions-forever.lua"
       ],
       "result": "pass"
     },
@@ -23,12 +23,12 @@
   ],
   "images": [
     {
-      "url": "https://gist.githubusercontent.com/cjber/49870f2457420a2712ecc58228549163/raw/92a31414c1e71ba16db58a1642736341aaf3ef23/1-compartment.png",
-      "sha256": "b48b878daa8105ac10b9f27eea0367c3dce72332efed52e7b1f4a5d364d28fce"
+      "url": "https://gist.githubusercontent.com/cjber/2264b7236c6133aba64873035d073d26/raw/7eaa51ef93a1636d6bdae12bad196f3a2d7c5ba6/1-compartment.png",
+      "sha256": "7bb4f8977b54c5f18f6efbc1cfebcc769d293e9a51372381955da8c33fa34924"
     },
     {
-      "url": "https://gist.githubusercontent.com/cjber/49870f2457420a2712ecc58228549163/raw/92a31414c1e71ba16db58a1642736341aaf3ef23/2-window.png",
-      "sha256": "6dca78c75841c76c182f847a40e09cc0a49585bc8a6c5585a1f1bdd4057a570a"
+      "url": "https://gist.githubusercontent.com/cjber/2264b7236c6133aba64873035d073d26/raw/7eaa51ef93a1636d6bdae12bad196f3a2d7c5ba6/2-window.png",
+      "sha256": "e5c6d86dbf1e7563e9da0ef4fb927f4dc53196a3639c0961cb63764ab074dc94"
     }
   ]
 }
