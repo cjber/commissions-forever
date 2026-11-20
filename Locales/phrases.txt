@@ -22,7 +22,6 @@ L["Install QuestieDB to find where your commissions are handed in."] = "Install 
 L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
 L["Install Shortest Path Forever to get a turn-in route."] = "Install Shortest Path Forever to get a turn-in route."
 L["Item %d"] = "Item %d"
-L["Turn-ins recorded on this character: %d"] = "Turn-ins recorded on this character: %d"
 L["Material"] = "Material"
 L["Need"] = "Need"
 L["No quest in your log is a commission. Accept one, then try again."] = "No quest in your log is a commission. Accept one, then try again."
@@ -32,3 +31,4 @@ L["QuestieDB cannot tell which of your quests are commissions. Update QuestieDB.
 L["QuestieDB does not know where your commissions are handed in."] = "QuestieDB does not know where your commissions are handed in."
 L["Shortest Path Forever could not start the route."] = "Shortest Path Forever could not start the route."
 L["Turn-in"] = "Turn-in"
+L["Turn-ins recorded on this character: %d"] = "Turn-ins recorded on this character: %d"
