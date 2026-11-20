@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.13] - 2026-11-20
+
+### Changed
+
+- **Commissions Forever carries ForeverCore inside itself.** It now works with ForeverCore turned off or uninstalled, and your ForeverCore settings carry over. You no longer need to install ForeverCore separately. If you have it installed, you can keep it or remove it. (cjber/forever-core#801)
+
+### Fixed
+
+- **/commissions says why Commissions Forever stopped.** While Commissions Forever cannot start, typing /commissions repeats the line naming the fix instead of reading "Unknown command".
+- **/commissions keeps working after a startup error.** If part of Commissions Forever fails to start, /commissions still answers.
+- **Bag changes no longer rescan the whole quest log.** Moving or looting an item only recounts your bags when the last quest scan is still current. The quest log is rescanned the moment it changes, when QuestieDB loads or is replaced, and when the name of a quest item the scan was waiting on arrives.
+
 ## [0.4.12] - 2026-11-19
 
 <!-- forever-core-sync -->
