@@ -324,6 +324,11 @@ ProfessionTabs.registered = registered
 _G.ForeverCore = { ProfessionTabs = ProfessionTabs }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
+ns.Stats = {
+	Total = function()
+		return 0
+	end,
+}
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 
 -- The command cannot open the client's window from addon code; the player's own profession control does, and the

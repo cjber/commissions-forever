@@ -45,6 +45,11 @@ local function Totals()
 		record and Integer(record.eventUnix, 1, MAX_VALUE * 10) and record.eventUnix or nil
 end
 
+-- This character's recorded completions, for the window.
+function Stats.Total()
+	return (Totals())
+end
+
 function Stats.Activity()
 	local total, eventUnix = Totals()
 	return { { addon = "CommissionsForever", metric = METRIC, subject = "all", value = total, eventUnix = eventUnix } }
@@ -88,6 +93,9 @@ events:SetScript("OnEvent", function(_, event, questID)
 	local total = Totals()
 	record.total, record.eventUnix = math.min(total + 1, MAX_VALUE), stamp
 	ns.APIChanged("turnin")
+	if ns.Window then
+		ns.Window.ShowTotal()
+	end
 end)
 
 return Stats

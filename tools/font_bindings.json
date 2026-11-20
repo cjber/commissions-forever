@@ -3,8 +3,8 @@
   "producers": [
     {
       "source": "UI/Window.lua",
-      "sha256": "ad1b85767ebf821c092c9bccab747e006bf0e123dc1511e6ea879094c53b38ca",
-      "review": "Read Text, Row, Refresh, Attach, Open, Toggle and event callbacks, plus Core/Core.lua Refresh and toggle callers. Text explicitly assigns GameFontNormalLarge to the page heading, GameFontDisableSmall to notice/empty, GameFontNormalSmall to column headings, and GameFontHighlight to row.name including the Item %d fallback, and GameFontHighlightSmall to Window.routeStatus, whose only text is a ROUTE_REASONS phrase set in the route button OnClick. No later font setters occur. Pinned Blizzard client b401e0332adfbf0460d319b06d8ea29279a941f1, Blizzard_SharedXML/Shared/Button/ThreeSliceButtonTemplate.xml: SharedButtonSmallTemplate declares normal/highlight/disabled GameFontNormal/GameFontHighlight/GameFontDisable for route. Tooltip/tab tooltip, chat and UIErrorsFrame messages, user search input, dynamic item/faction names and counts are excluded. AGENTS.md declares no custom font files; no custom font-file assignments occur in this repo.",
+      "sha256": "0224640b8cab4bc880c76319426f84c9b7dcf60043fc16ebda88658e7d6631f4",
+      "review": "Read Text, Row, Refresh, Attach, Open, Toggle and event callbacks, plus Core/Core.lua Refresh and toggle callers. Text explicitly assigns GameFontNormalLarge to the page heading, GameFontDisableSmall to notice/empty, GameFontNormalSmall to column headings, and GameFontHighlight to row.name including the Item %d fallback, GameFontHighlightSmall to Window.total, whose only text is the Turn-ins recorded on this character: %d phrase set in ShowTotal (called from Refresh and Core/Stats.lua on a recorded turn-in), and GameFontHighlightSmall to Window.routeStatus, whose only text is a ROUTE_REASONS phrase set in the route button OnClick. No later font setters occur. Pinned Blizzard client b401e0332adfbf0460d319b06d8ea29279a941f1, Blizzard_SharedXML/Shared/Button/ThreeSliceButtonTemplate.xml: SharedButtonSmallTemplate declares normal/highlight/disabled GameFontNormal/GameFontHighlight/GameFontDisable for route. Tooltip/tab tooltip, chat and UIErrorsFrame messages, user search input, dynamic item/faction names and counts are excluded. AGENTS.md declares no custom font files; no custom font-file assignments occur in this repo.",
       "bindings": [
         {
           "font": "GameFontNormalLarge",
@@ -90,6 +90,11 @@
           "font": "GameFontHighlightSmall",
           "widget": "Window.routeStatus",
           "phrase": "Shortest Path Forever could not start the route."
+        },
+        {
+          "font": "GameFontHighlightSmall",
+          "widget": "Window.total via ShowTotal",
+          "phrase": "Turn-ins recorded on this character: %d"
         }
       ]
     },

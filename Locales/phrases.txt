@@ -22,6 +22,7 @@ L["Install QuestieDB to find where your commissions are handed in."] = "Install 
 L["Install QuestieDB to see your active turn-ins."] = "Install QuestieDB to see your active turn-ins."
 L["Install Shortest Path Forever to get a turn-in route."] = "Install Shortest Path Forever to get a turn-in route."
 L["Item %d"] = "Item %d"
+L["Turn-ins recorded on this character: %d"] = "Turn-ins recorded on this character: %d"
 L["Material"] = "Material"
 L["Need"] = "Need"
 L["No quest in your log is a commission. Accept one, then try again."] = "No quest in your log is a commission. Accept one, then try again."
