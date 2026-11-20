@@ -68,7 +68,7 @@ Turn-in materials are listed by item ID. Active quest requirements and NPC locat
 
 Other addons can read this addon through `CommissionsForever.API`: [docs/api.md](docs/api.md) lists its functions, the rows they return, the not-ready reasons and the minor history.
 
-Completions are recorded from `QUEST_TURNED_IN`, beginning when this version is installed. QuestieDB must identify a repeatable commission with a finisher, matching materials or starter item, and the expected reputation reward. Bag changes, quest titles and route clicks never count. Each actual repeat hand-in counts again. One-time tasks, Forever commerce work orders without repeatable metadata, and missing classification fields are unsupported. Nothing is backfilled from earlier play. See [completion records](docs/completions.md) for scope and client checks.
+Completions are recorded from `QUEST_TURNED_IN`, beginning when this version is installed. QuestieDB must identify a repeatable commission with a finisher, matching materials or starter item, and the expected reputation reward. Bag changes, quest titles and route clicks never count. Each actual repeat hand-in counts again. One-time tasks, Forever commerce work orders (QuestieDB marks none of them repeatable), and missing classification fields are unsupported. Nothing is backfilled from earlier play. See [completion records](docs/completions.md) for scope and client checks.
 
 ## Works alongside
 
