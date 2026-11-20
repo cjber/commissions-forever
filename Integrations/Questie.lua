@@ -157,7 +157,7 @@ function Questie.NPC(npcID)
 	if not ok then
 		return nil
 	end
-	local npc = false
+	local npc = false ---@type {name: string, map: integer?, x: number?, y: number?}|false
 	if type(values) == "table" and type(values[1]) == "string" then
 		npc = { name = values[1] }
 		local spawns = values[2]
