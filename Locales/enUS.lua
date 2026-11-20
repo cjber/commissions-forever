@@ -20,6 +20,7 @@ ns.L = {
 	["Have"] = true,
 	["Need"] = true,
 	["Item %d"] = true,
+	["Turn-ins recorded on this character: %d"] = true,
 
 	-- The shared report window's title; ForeverCore owns its other phrases.
 	["Commissions Forever report"] = true,

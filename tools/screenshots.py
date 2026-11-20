@@ -132,6 +132,15 @@ def window(ui, *, query="", bag_only=False, route_reason=None):
     wowmock.side_tab(canvas, X + WIDTH, Y + 116, COMMISSIONS_ICON, selected=True)
     px, py = X + 4, Y + 28  # page TOPLEFT
     canvas.text(px + 74, py + 12, "Commissions Forever", wowmock.FONTS["GameFontNormalLarge"])
+    # Window.total: 240 wide, TOPRIGHT (-22,-16) on the page, right-justified; 12 is a sample count.
+    canvas.text(
+        px + WIDTH - 8 - 22 - 240,
+        py + 16,
+        "Turn-ins recorded on this character: 12",
+        wowmock.FONTS["GameFontHighlightSmall"],
+        justify="RIGHT",
+        width=240,
+    )
     wowmock.search_box(canvas, px + 22, py + 48, 250, instructions="" if query else "Search")
     if bag_only:
         canvas.text(

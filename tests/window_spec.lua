@@ -323,6 +323,12 @@ ProfessionTabs.registered = registered
 _G.ForeverCore = { ProfessionTabs = ProfessionTabs }
 assert(loadfile("Locales/enUS.lua"))("CommissionsForever", ns)
 assert(loadfile("UI/RowArt.lua"))("CommissionsForever", ns)
+local recorded = 0
+ns.Stats = {
+	Total = function()
+		return recorded
+	end,
+}
 local window = assert(loadfile("UI/Window.lua"))("CommissionsForever", ns)
 local function Visible()
 	local count = 0
@@ -435,6 +441,13 @@ assert(window.rows[1].need.text == "10", "active quest requirements show separat
 available = false
 window.Refresh()
 assert(window.notice.shown, "missing QuestieDB is named while bag counts remain")
+assert(window.total.text == "Turn-ins recorded on this character: 0", "a character with no recorded turn-ins shows 0")
+recorded = 12
+window.Refresh()
+assert(
+	window.total.text == "Turn-ins recorded on this character: 12",
+	"the window shows this character's recorded turn-ins"
+)
 ProfessionsFrame.CraftingPage:Show()
 assert(not window.page.shown and not window.tab.checked, "native profession selection deselects commissions")
 ProfessionsFrame.CraftingPage:Hide()

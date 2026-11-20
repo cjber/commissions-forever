@@ -177,6 +177,7 @@ function Window.Refresh()
 	-- The last press's reason describes the log and bags before this refresh, so it goes with them.
 	Window.routeStatus:Hide()
 	Window.notice:SetShown(not ns.Questie.Available())
+	Window.total:SetText(L["Turn-ins recorded on this character: %d"]:format(ns.Stats.Total()))
 end
 
 local function Attach()
@@ -200,6 +201,11 @@ local function Attach()
 	page:Hide()
 	Window.page = page
 	Text(page, "GameFontNormalLarge", 74, -12, 350):SetText(L["Commissions Forever"])
+	-- Hand-ins from before the addon was installed were never recorded, so the line says what it counts.
+	Window.total = Text(page, "GameFontHighlightSmall", 0, 0, 240)
+	Window.total:ClearAllPoints()
+	Window.total:SetPoint("TOPRIGHT", -22, -16)
+	Window.total:SetJustifyH("RIGHT")
 	Window.search = CreateFrame("EditBox", nil, page, "SearchBoxTemplate")
 	Window.search:SetSize(250, 20)
 	Window.search:SetPoint("TOPLEFT", 22, -48)
