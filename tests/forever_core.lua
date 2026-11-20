@@ -75,7 +75,8 @@ end
 ---@param names string[]?
 ---@return table<string, boolean>
 local function wanted(names)
-	local set = { ["Locales/enUS.lua"] = true }
+	-- Core.lua sets up the namespace every other core file builds on (ns.AtStart among it), so a subset loads it too.
+	local set = { ["Core.lua"] = true, ["Locales/enUS.lua"] = true }
 	for _, name in ipairs(names or {}) do
 		set[name] = true
 	end
