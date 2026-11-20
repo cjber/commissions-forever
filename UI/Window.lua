@@ -141,6 +141,13 @@ local function Row(index)
 	return row
 end
 
+-- This character's recorded turn-ins; Stats calls it on each recorded hand-in so an open page stays current.
+function Window.ShowTotal()
+	if Window.total then
+		Window.total:SetText(L["Turn-ins recorded on this character: %d"]:format(ns.Stats.Total()))
+	end
+end
+
 function Window.Refresh()
 	if not page then
 		return
@@ -177,7 +184,7 @@ function Window.Refresh()
 	-- The last press's reason describes the log and bags before this refresh, so it goes with them.
 	Window.routeStatus:Hide()
 	Window.notice:SetShown(not ns.Questie.Available())
-	Window.total:SetText(L["Turn-ins recorded on this character: %d"]:format(ns.Stats.Total()))
+	Window.ShowTotal()
 end
 
 local function Attach()

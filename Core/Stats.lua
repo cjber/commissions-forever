@@ -93,6 +93,9 @@ events:SetScript("OnEvent", function(_, event, questID)
 	local total = Totals()
 	record.total, record.eventUnix = math.min(total + 1, MAX_VALUE), stamp
 	ns.APIChanged("turnin")
+	if ns.Window then
+		ns.Window.ShowTotal()
+	end
 end)
 
 return Stats
