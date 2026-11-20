@@ -65,11 +65,12 @@ assert(
 materials[1].have = 99
 assert(rows[1].count == 3, "changing a material row does not change the window's rows")
 
--- The shipped catalogue no longer carries titles: a turn-in names its category, faction, place and items only.
+-- The shipped catalogue no longer carries titles: a turn-in names its category, faction and items only.
 local catalogue = {}
 assert(loadfile("Data/TurnIns.lua"))("CommissionsForever", catalogue)
 for _, turnIn in ipairs(catalogue.TurnIns) do
 	assert(turnIn.quest == nil and turnIn.questAliases == nil, "turn-in " .. turnIn.key .. " carries no title matcher")
+	assert(turnIn.place == nil, "turn-in " .. turnIn.key .. " carries no place nothing reads")
 end
 catalogue.Questie = {
 	CommissionCategory = function(questID)

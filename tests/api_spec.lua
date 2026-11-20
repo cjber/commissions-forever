@@ -72,6 +72,9 @@ Toc.install(_G, "CommissionsForever")
 -- Fresh rows every call, as the modules under the API hand them out.
 local materials
 local objectives = {}
+local objectiveScans = 0
+local waitingNames = {}
+local generation = 0
 local categories = {}
 local questieAvailable = true
 local routed = false
@@ -94,8 +97,12 @@ local ns = {
 		Available = function()
 			return questieAvailable
 		end,
+		Generation = function()
+			return generation
+		end,
 		ActiveObjectives = function()
-			return objectives
+			objectiveScans = objectiveScans + 1
+			return objectives, questieAvailable, waitingNames
 		end,
 		CommissionCategory = function(questID)
 			return categories[questID]
@@ -226,6 +233,7 @@ local unsubscribe = API.Subscribe(function(changes)
 	heard[#heard + 1] = changes
 end)
 assert(type(unsubscribe) == "function", "Subscribe returns an unsubscribe function")
+objectiveScans = 0
 counts[11370] = 5
 fire("BAG_UPDATE_DELAYED")
 assert(#heard == 0, "nothing is reported in the same frame as the change")
@@ -235,6 +243,11 @@ assert(heard[1].objectives == nil and heard[1].turnin == nil, "and only that cha
 fire("BAG_UPDATE_DELAYED")
 nextFrame()
 assert(#heard == 1, "a refresh that changes no row stays quiet")
+assert(objectiveScans == 0, "bag changes recount the bags without rescanning the quest log")
+generation = generation + 1
+fire("BAG_UPDATE_DELAYED")
+nextFrame()
+assert(objectiveScans == 1, "a replaced QuestieDB library makes the next bag refresh rescan")
 
 -- A quest whose title contains a turn-in's name but whose QuestieDB row is not a commission adds no material row
 -- (cjber/commissions-forever#200); it is still an objective change.
@@ -251,6 +264,7 @@ objectives = {
 fire("QUEST_LOG_UPDATE")
 nextFrame()
 assert(#heard == 2 and heard[2].objectives == true, "a changed quest log reports objectives")
+assert(objectiveScans == 2, "a quest log change rescans the quest log")
 assert(heard[2].materials == nil, "an unclassified quest is no material change")
 assert(#API.Materials() == 1, "an unclassified quest adds no material row")
 
@@ -333,4 +347,24 @@ foreverCore.APIKit = kit
 _G.CommissionsForever.API = API
 
 assert(kit.minor >= 1, "the kit's own minor is readable")
+-- An objective item whose name had not cached at the scan rescans when its name arrives; any other item does not.
+objectiveScans = 0
+waitingNames = { [4321] = true }
+fire("QUEST_LOG_UPDATE")
+objectiveScans = 0
+fire("GET_ITEM_INFO_RECEIVED", 9999)
+assert(objectiveScans == 0, "an unrelated item name does not rescan")
+fire("GET_ITEM_INFO_RECEIVED", 4321)
+assert(objectiveScans == 1, "a waited-on objective item's name rescans the quest log")
+waitingNames = {}
+-- QuestieDB loading after a scan that could not read it rescans once it can answer.
+questieAvailable = false
+fire("QUEST_LOG_UPDATE")
+questieAvailable = true
+objectiveScans = 0
+fire("ADDON_LOADED", "QuestieDB")
+assert(objectiveScans == 1, "a late QuestieDB rescans the quest log")
+fire("ADDON_LOADED", "SomeOtherAddon")
+assert(objectiveScans == 1, "a later addon load with a current scan does not rescan")
+
 print("Commissions Forever API specs passed")

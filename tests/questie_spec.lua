@@ -220,7 +220,7 @@ questDB.GetAll = questieGetAll
 
 rawset(_G, "LibQuestieDB", nil)
 assert(not ns.Questie.Available(), "QuestieDB is unavailable without the library")
-assert(next(ns.Questie.ActiveObjectives()) == nil, "no library lists no objectives")
+assert(next((ns.Questie.ActiveObjectives())) == nil, "no library lists no objectives")
 assert(next(ns.Questie.ActiveCommissions()) == nil, "no library lists no commissions")
 assert(ns.Questie.NPC(42) == nil, "no library finds no NPC")
 rawset(_G, "LibQuestieDB", db)

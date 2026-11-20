@@ -1,6 +1,6 @@
 -- QuestieDB is read once: the library is fitted once, its zone tables run once per installed library, and a
 -- quest's row is read once however many bag and log events ask for it.
-local fits, zoneReads, questReads, parses = 0, 0, 0, 0
+local fits, zoneReads, questReads, parses, npcReads = 0, 0, 0, 0, 0
 local loadString = loadstring
 rawset(_G, "loadstring", function(source)
 	parses = parses + 1
@@ -45,6 +45,7 @@ local function Database(options)
 		},
 		Npc = {
 			GetAll = function()
+				npcReads = npcReads + 1
 				return { "Quartermaster", options.spawns or { [120] = { { 43, 61 } } }, 120 }
 			end,
 		},
@@ -91,8 +92,26 @@ parses = 0
 assert(ns.Questie.Available(), "the fitted library is available")
 assert(ns.Questie.NPC(42).map == 1, "an NPC reads its area's map")
 assert(ns.Questie.NPC(43).map == 1, "the next NPC reads the same tables")
+npcReads = 0
+assert(ns.Questie.NPC(42).name == "Quartermaster", "a cached NPC still names it")
+assert(npcReads == 0, "a second read of the same NPC does not read QuestieDB again")
 assert(fits == 1 and zoneReads == 1, "later reads fit no library again")
 assert(parses == 0, "later reads run no zone source again")
+
+-- A failed NPC read settles nothing: the same library is asked again once it can answer.
+local flaky = Database({ zones = Zones("return {[120] = 1}", "return {}") })
+local flakyRead = flaky.Npc.GetAll
+local down = true
+flaky.Npc.GetAll = function(...)
+	if down then
+		error("reader down")
+	end
+	return flakyRead(...)
+end
+rawset(_G, "LibQuestieDB", flaky)
+assert(ns.Questie.NPC(77) == nil, "a failed NPC read has no answer")
+down = false
+assert(ns.Questie.NPC(77).name == "Quartermaster", "a recovered NPC reader is read again, not kept absent")
 
 -- The map comes from ZoneDB's tables with the overrides QuestieDB applies in front of them.
 local function Place(spawns, area, parent, areaOverride, parentOverride)
@@ -120,7 +139,7 @@ assert(npc.map == 2, "a subzone uses its overridden parent's map")
 local installed = rawget(_G, "LibQuestieDB")
 rawset(_G, "LibQuestieDB", nil)
 assert(not ns.Questie.Available(), "no library is unavailable")
-assert(next(ns.Questie.ActiveObjectives()) == nil, "no library lists no objectives")
+assert(next((ns.Questie.ActiveObjectives())) == nil, "no library lists no objectives")
 rawset(_G, "LibQuestieDB", installed)
 questReads = 0
 assert(#ns.Questie.ActiveObjectives() == 2 and questReads == 2, "a library that loads later is read again")

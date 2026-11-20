@@ -60,6 +60,9 @@ ns.Model = {
 	end,
 }
 ns.Questie = {
+	Available = function()
+		return true
+	end,
 	ActiveObjectives = function()
 		return {}
 	end,

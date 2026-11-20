@@ -69,6 +69,11 @@ local quests = {}
 ---@type table<integer, string|false>
 local categories = {}
 
+-- Each NPC's name and place, kept per NPC ID for the session like the quest rows: a route re-asks for the same
+-- finishers, and an NPC does not move while the library stays installed. false is an NPC QuestieDB does not have.
+---@type table<integer, {name: string, map: integer?, x: number?, y: number?}|false>
+local npcs = {}
+
 -- QuestieDB as this file reads it, fitted once so the contract check and its zone tables cost one pass. A
 -- library that replaces the one held is fitted again, so one that loads later is picked up.
 ---@type table?
@@ -77,12 +82,15 @@ local fitted
 local library
 ---@type CommissionsQuestieZones?
 local libraryZones
+-- Rises every time a different library is fitted, so a caller holding answers from the old one can tell.
+local generation = 0
 
 ---@return table?, CommissionsQuestieZones?
 local function Library()
 	local lib = LibQuestieDB
 	if lib ~= fitted then
-		fitted, library, libraryZones, quests, categories = lib, nil, nil, {}, {}
+		generation = generation + 1
+		fitted, library, libraryZones, quests, categories, npcs = lib, nil, nil, {}, {}, {}
 		if type(lib) == "table" and type(lib.RequireContract) == "function" then
 			local ok, compatible = pcall(lib.RequireContract, CONTRACT)
 			if ok and compatible and type(lib.Quest) == "table" and type(lib.Quest.GetAll) == "function" then
@@ -129,7 +137,16 @@ end
 ---@return {name: string, map: integer?, x: number?, y: number?}?
 function Questie.NPC(npcID)
 	local db, zones = Library()
-	if not (db and type(db.Npc) == "table" and type(db.Npc.GetAll) == "function") then
+	if not db then
+		return nil
+	end
+	local cached = npcs[npcID]
+	if cached ~= nil then
+		return cached or nil
+	end
+	-- Only a reader that answered settles the cache: a missing reader, missing fields or a failed read is asked
+	-- again next time, never kept as "no such NPC".
+	if not (type(db.Npc) == "table" and type(db.Npc.GetAll) == "function") then
 		return nil
 	end
 	local fields = Fields(db, "Npc", { "name", "spawns", "zoneID" })
@@ -137,38 +154,52 @@ function Questie.NPC(npcID)
 		return nil
 	end
 	local ok, values = pcall(db.Npc.GetAll, npcID, fields)
-	if not ok or type(values) ~= "table" or type(values[1]) ~= "string" then
+	if not ok then
 		return nil
 	end
-	local spawns = values[2]
-	if type(spawns) ~= "table" then
-		return { name = values[1] }
-	end
-	-- The first valid spawn point of the lowest numbered area QuestieDB places on a map: an area with no map (an
-	-- instance, or one QuestieDB suppresses) or a point off the map leaves the NPC's other spawns to place it.
-	local areas = {}
-	for candidate, points in pairs(spawns) do
-		if type(candidate) == "number" and type(points) == "table" then
-			areas[#areas + 1] = candidate
+	local npc = false ---@type {name: string, map: integer?, x: number?, y: number?}|false
+	if type(values) == "table" and type(values[1]) == "string" then
+		npc = { name = values[1] }
+		local spawns = values[2]
+		-- The first valid spawn point of the lowest numbered area QuestieDB places on a map: an area with no map (an
+		-- instance, or one QuestieDB suppresses) or a point off the map leaves the NPC's other spawns to place it.
+		local areas = {}
+		for candidate, points in pairs(type(spawns) == "table" and spawns or {}) do
+			if type(candidate) == "number" and type(points) == "table" then
+				areas[#areas + 1] = candidate
+			end
 		end
-	end
-	table.sort(areas)
-	for _, area in ipairs(areas) do
-		local mapID = Map(zones, area)
-		for _, spot in ipairs(mapID and spawns[area] or {}) do
-			local x, y = type(spot) == "table" and tonumber(spot[1]), type(spot) == "table" and tonumber(spot[2])
-			if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
-				return { name = values[1], map = mapID, x = x / 100, y = y / 100 }
+		table.sort(areas)
+		for _, area in ipairs(areas) do
+			local mapID = Map(zones, area)
+			for _, spot in ipairs(mapID and spawns[area] or {}) do
+				local x, y = type(spot) == "table" and tonumber(spot[1]), type(spot) == "table" and tonumber(spot[2])
+				if x and y and x >= 0 and x <= 100 and y >= 0 and y <= 100 then
+					npc.map, npc.x, npc.y = mapID, x / 100, y / 100
+					break
+				end
+			end
+			if npc.map then
+				break
 			end
 		end
 	end
-	return { name = values[1] }
+	npcs[npcID] = npc
+	return npc or nil
 end
 
 -- QuestieDB is the only source of quest requirements and NPC places, so the window says when it is missing.
 ---@return boolean
 function Questie.Available()
 	return Library() ~= nil
+end
+
+-- The fitted library's generation: it rises when a different library is fitted, so a scan held from the old one
+-- is not reused.
+---@return integer
+function Questie.Generation()
+	Library()
+	return generation
 end
 
 -- An item objective's words without its count ("Runecloth: 3/10" reads "Runecloth"), so it can be matched by name.
@@ -228,11 +259,12 @@ end
 
 -- Calls `visit(info, quest)` for every quest in the log that QuestieDB has a row for.
 ---@param visit fun(info: table, quest: CommissionsQuestieQuest)
+---@return boolean read whether QuestieDB's quest fields could be read
 local function EachLogQuest(visit)
 	local db = Library()
 	local fields = db and Fields(db, "Quest", { "name", "objectives", "finishedBy" })
 	if not (db and fields and C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo) then
-		return
+		return false
 	end
 	-- Older compatible contracts may omit this optional field.
 	local questMeta = db.Meta and db.Meta.QuestMeta
@@ -248,6 +280,7 @@ local function EachLogQuest(visit)
 			end
 		end
 	end
+	return true
 end
 
 -- Every commission in the log with its finishers, whatever its objectives: kills and briefings have no item row in
@@ -267,10 +300,12 @@ function Questie.ActiveCommissions()
 	return not unknown and rows or nil
 end
 
----@return table[] active quest item objectives and finisher NPC IDs
+---@return table[] rows active quest item objectives and finisher NPC IDs
+---@return boolean read whether QuestieDB's quest fields were read, so the rows can stand until the log changes
+---@return table<integer, true> waiting the objective items whose names the client has not cached yet
 function Questie.ActiveObjectives()
-	local rows = {}
-	EachLogQuest(function(info, quest)
+	local rows, waiting = {}, {}
+	local read = EachLogQuest(function(info, quest)
 		local questID = info.questID
 		local live = C_QuestLog.GetQuestObjectives and C_QuestLog.GetQuestObjectives(questID) or {}
 		local liveItems = LiveItemsByName(live)
@@ -278,6 +313,9 @@ function Questie.ActiveObjectives()
 			local itemID = tonumber(itemObjective[1])
 			if itemID then
 				local name = C_Item.GetItemNameByID(itemID)
+				if not name then
+					waiting[itemID] = true
+				end
 				local objective = name and liveItems[name]
 				rows[#rows + 1] = {
 					questID = questID,
@@ -291,7 +329,7 @@ function Questie.ActiveObjectives()
 			end
 		end
 	end)
-	return rows
+	return rows, read, waiting
 end
 
 -- Classify the completed ID after it has left the quest log. Titles never establish a completion.

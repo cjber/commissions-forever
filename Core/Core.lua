@@ -28,8 +28,31 @@ local function ItemCount(itemID)
 	return C_Item.GetItemCount(itemID) or 0
 end
 
-function ns.Refresh()
-	ns.ActiveObjectives = ns.Questie.ActiveObjectives()
+-- True once a scan read QuestieDB's quest fields: a bag change cannot change the quest log, so it reuses that scan and
+-- only recounts the bags. A scan that could not read them settles nothing, so the next refresh scans again until it
+-- can, and a scan from a library since replaced is not reused either.
+local objectivesScanned = false
+local scannedGeneration ---@type integer?
+-- Objective items whose names had not cached at the last scan: the scan matches objectives by name, so a name
+-- arriving for one of them rescans.
+local waitingNames = {} ---@type table<integer, true>
+
+-- Whether the last scan is waiting on this item's name: Core rescans when it arrives, so other listeners leave it.
+---@param itemID integer?
+---@return boolean
+function ns.AwaitingName(itemID)
+	return waitingNames[tonumber(itemID)] == true
+end
+
+---@param scanObjectives boolean? true when the quest log or the item names it matches on may have changed
+function ns.Refresh(scanObjectives)
+	local generation = ns.Questie.Generation and ns.Questie.Generation()
+	if scanObjectives or not objectivesScanned or generation ~= scannedGeneration then
+		local read, waiting
+		ns.ActiveObjectives, read, waiting = ns.Questie.ActiveObjectives()
+		objectivesScanned, waitingNames = read == true, waiting or {}
+		scannedGeneration = generation
+	end
 	ns.Rows = ns.Model.Inventory(ItemCount, ns.ActiveObjectives)
 	ns.Refreshed = true
 	ns.APIChanged("refresh")
@@ -105,15 +128,32 @@ function ns.Start()
 	if ns.StartStats then
 		ns.StartStats()
 	end
-	ns.Refresh()
+	ns.Refresh(true)
 end
 
 addon:RegisterEvent("PLAYER_LOGIN")
 addon:RegisterEvent("BAG_UPDATE_DELAYED")
 addon:RegisterEvent("QUEST_LOG_UPDATE")
-addon:SetScript("OnEvent", function(_, event)
+addon:RegisterEvent("ADDON_LOADED")
+addon:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+addon:SetScript("OnEvent", function(_, event, arg)
 	if event == "PLAYER_LOGIN" then
 		ns.Start()
+	elseif event == "QUEST_LOG_UPDATE" then
+		ns.Refresh(true)
+	elseif event == "ADDON_LOADED" then
+		-- QuestieDB loading after the login scan (late, or replaced) has no quest or bag event of its own, so the rows
+		-- it would change are read once it can answer.
+		if ns.Refreshed and ns.Questie.Available() then
+			local generation = ns.Questie.Generation and ns.Questie.Generation()
+			if not objectivesScanned or generation ~= scannedGeneration then
+				ns.Refresh(true)
+			end
+		end
+	elseif event == "GET_ITEM_INFO_RECEIVED" then
+		if ns.Refreshed and ns.AwaitingName(arg) then
+			ns.Refresh(true)
+		end
 	else
 		ns.Refresh()
 	end

@@ -23,6 +23,9 @@ local ns = {
 		end,
 	},
 	Questie = {
+		Available = function()
+			return true
+		end,
 		CommissionCategory = function(questID)
 			return questID == 7 and "timbermawHold" or nil
 		end,
