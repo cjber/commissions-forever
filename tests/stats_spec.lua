@@ -78,6 +78,7 @@ check(stats.Activity()[1].value == 4, "the local total survives the cleanup")
 kit.fire("QUEST_TURNED_IN", 123)
 kit.fire("QUEST_TURNED_IN", 123)
 check(stats.Activity()[1].value == 6, "two events for the same ID in one second count twice")
+check(stats.Total() == 6, "Total reads the same recorded count as Activity")
 check(kit.notifications.turnin == 2, "each recorded completion tells the API's hub")
 for _, event in ipairs({ "BAG_UPDATE_DELAYED", "QUEST_LOG_UPDATE", "QUEST_COMPLETE", "QUEST_REMOVED" }) do
 	kit.fire(event, 123)
@@ -111,4 +112,13 @@ check(noClock.ns.Stats.Activity()[1].value == 0, "an unavailable event timestamp
 
 local anonymous = boot(nil)
 check(anonymous.ns.Stats.Activity()[1].eventUnix == nil, "no completion leaves no event time")
+local open = boot(nil)
+local shown
+open.ns.Window = {
+	ShowTotal = function()
+		shown = open.ns.Stats.Total()
+	end,
+}
+open.fire("QUEST_TURNED_IN", 123)
+check(shown == 1, "a recorded turn-in updates the open window's count at once")
 print(("Commissions stats: %d checks passed"):format(checks))

@@ -2,6 +2,10 @@
 
 ## [0.4.13] - 2026-11-20
 
+### Added
+
+- **The window shows how many commissions this character has turned in.** The count sits at the top right of the Commissions page and covers turn-ins recorded since the addon was installed. (#334)
+
 ### Changed
 
 - **Commissions Forever carries ForeverCore inside itself.** It now works with ForeverCore turned off or uninstalled, and your ForeverCore settings carry over. You no longer need to install ForeverCore separately. If you have it installed, you can keep it or remove it. (cjber/forever-core#801)
