@@ -17,4 +17,8 @@ local ready = ForeverCore ~= nil
 	and type(tabsMinor) == "number"
 	and tabsMinor >= 2
 
-ns.ForeverRequire(ready, { key = "COMMISSIONSFOREVER", "/commissions" })
+-- Core/Core.lua's slash words; the pin gate (forever_tools.require_slash) keeps the two lists equal. A
+-- stopped addon still answers them with the line that names the fix, as its addon compartment entry does.
+ns.Slash = { key = "COMMISSIONSFOREVER", "/commissions" }
+
+ns.ForeverRequire(ready, ns.Slash)

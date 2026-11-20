@@ -23,6 +23,9 @@ local ns = {
 		end,
 	},
 	Questie = {
+		Available = function()
+			return true
+		end,
 		CommissionCategory = function(questID)
 			return questID == 7 and "timbermawHold" or nil
 		end,
@@ -139,7 +142,13 @@ ns.Window = {
 		toggled = true
 	end,
 }
-frame.OnEvent(frame, "PLAYER_LOGIN")
+-- A startup step that fails after the slash command still leaves /commissions answering.
+local startStats = ns.StartStats
+ns.StartStats = function()
+	error("stats failed")
+end
+assert(not pcall(frame.OnEvent, frame, "PLAYER_LOGIN"), "the startup error reaches the client")
+ns.StartStats = startStats
 assert(attached == CommissionsForeverDB, "PLAYER_LOGIN hands the saved table to ForeverCore")
 for _, command in ipairs({ "leaderboard", "stats", "share off" }) do
 	toggled = false
