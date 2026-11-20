@@ -112,8 +112,8 @@
     },
     {
       "source": "Core/ForeverRequire.lua",
-      "sha256": "ed07dd86da95e485883786e825107e3bf30f209a9d2cf3400d90e4ab3f22f303",
-      "review": "Read phrase, show, answer, embeddedFailure, standaloneFailure, ForeverRequire and delayed PLAYER_ENTERING_WORLD callback; answer's compartment and slash handlers only call show. Warnings go to the client-owned UIErrorsFrame via AddMessage; no exact final FontObject is established here. All warning text and inserted addon titles are excluded.",
+      "sha256": "7e7c1d8744071644643e73bf7f9a01489f63d9cd38ff6b17685083a599f9ba15",
+      "review": "Read phrase, show, answer, embeddedFailure, standaloneFailure, OnFilesLoaded (queues or defers a callback, no text), ForeverRequire and delayed PLAYER_ENTERING_WORLD callback; answer's compartment and slash handlers only call show. Warnings go to the client-owned UIErrorsFrame via AddMessage; no exact final FontObject is established here. All warning text and inserted addon titles are excluded.",
       "bindings": []
     },
     {
