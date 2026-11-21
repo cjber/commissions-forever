@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The fast local gate: format, lint, the headless specs and the changelog check.
+# The fast local gate: format, lint, the offline specs and the changelog check.
 #   tools/gate.sh            the whole set
 #   tools/gate.sh --changed  lint only the Lua files this branch changed against origin/main, and run the specs
 #                            only when a Lua or TOC file changed
