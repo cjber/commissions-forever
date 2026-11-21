@@ -17,4 +17,4 @@ they return and the reasons a read can return. Completion records stay local.
 
 With QuestieDB installed, run `/etrace`, hand in a supported repeatable quest twice, and confirm each `QUEST_TURNED_IN` carries its quest ID and increases the total from `CommissionsForever.API.Stats()[1].value` by one. Reload and confirm the total survives. Complete a one-time or unrelated quest and confirm it adds nothing.
 
-Check the native profession tabs, scrolling and gamepad navigation at the UI scales you use. No live turn-in is claimed by the headless tests.
+Check the native profession tabs, scrolling and gamepad navigation at the UI scales you use. No live turn-in is claimed by the offline specs.
