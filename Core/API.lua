@@ -36,7 +36,7 @@ end
 ---@return string?, CommissionsAPIReason|"invalid"?
 function API.CommissionCategory(questID)
 	if type(questID) ~= "number" or questID <= 0 or questID % 1 ~= 0 then
-		return nil, "invalid"
+		return APIKit.Invalid()
 	end
 	if not ns.Questie.Available() then
 		return APIKit.NotReady("loading")
