@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.21] - 2026-11-26
+
+<!-- forever-core-sync -->
+
+- Ships with the same shared code as your other Forever addons, so they keep working together.
+
 ## [0.4.20] - 2026-11-25
 
 <!-- forever-core-sync -->
