@@ -1,5 +1,5 @@
 ## Interface: 16001
-## X-Forever-Core: v1.17.4
+## X-Forever-Core: v1.17.5
 ## Title: Commissions Forever
 ## Notes: Tracks repeatable Classic turn-ins and the materials in your bags.
 ## Author: cjber
